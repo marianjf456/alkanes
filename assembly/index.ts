@@ -7,6 +7,9 @@ import { Transaction, Input, Output } from "metashrew-as/assembly/blockdata/tran
 import { console } from "metashrew-as/assembly/utils/logging";
 import { toRLP, RLPItem } from "metashrew-as/assembly/utils/rlp";
 
+import { Protorune } from "protorune/assembly/indexer/index";
+import { NumberingMixin } from "quorum/assembly/indexer/numbering/index";
+
 export function _start(): void {
   const data = input();
   const box = Box.from(data);
