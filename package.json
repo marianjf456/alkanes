@@ -1,9 +1,14 @@
 {
+  "name": "alkane",
+  "description": "alkane metaprotocol",
   "version": "0.1.0",
   "main": "lib/index.js",
   "scripts": {
+    "postinstall": "yarn bundleup",
+    "prepare": "cd runtime && rustup update && cargo build --target wasm32-unknown-unknown && wasm-pack build ./ -- --quiet",
     "asbuild:debug": "asc assembly/index.ts --target debug --enable threads --config asconfig.json",
     "asbuild:release": "asc assembly/index.ts --target release --config asconfig.json",
+    "bundleup": "wasm-merge runtime/target/wasm32-unknown-unknown/debug/runtime.wasm build/debug.wasm -o build/combined.wasm",
     "build": "npm-run-all asbuild:debug asbuild:release",
     "build:debug:preloader": "npm run asbuild:preloader --sharedMemory",
     "prettier:assemblyscript": "prettier --write ./assembly/**/*.ts",
@@ -11,7 +16,10 @@
     "prettier": "npm-run-all prettier:assemblyscript prettier:ts",
     "test": "ts-mocha --timeout 0 ./tests/**.spec.ts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "binaryen": "^118.0.0",
+    "postinstall": "^0.10.3"
+  },
   "devDependencies": {
     "@types/node": "^20.10.6",
     "assemblyscript": "^0.27.22",
@@ -20,15 +28,13 @@
     "fs-extra": "^11.2.0",
     "metashrew-as": "https://github.com/sandshrewmetaprotocols/metashrew-as",
     "metashrew-test": "https://github.com/sandshrewmetaprotocols/metashrew-test",
-    "quorum": "https://github.com/kungfuflex/quorumgenesisprotorune",
-    "protorune": "https://github.com/kungfuflex/protorune",
     "mocha": "^10.3.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.1.1",
+    "protorune": "https://github.com/kungfuflex/protorune",
+    "quorum": "https://github.com/kungfuflex/quorumgenesisprotorune",
     "rlp": "^3.0.0",
     "ts-mocha": "^10.0.0",
     "typescript": "^5.3.3"
-  },
-  "name": "alkane",
-  "description": "alkane metaprotocol"
+  }
 }

@@ -1,2 +1,6 @@
 /node_modules
 /tests
+**/target
+/build
+**/Cargo.lock
+**/yarn.lock
