@@ -1,6 +1,6 @@
 {
-  "name": "alkane",
-  "description": "alkane metaprotocol",
+  "name": "alkanes",
+  "description": "alkanes metaprotocol",
   "version": "0.1.0",
   "main": "lib/index.js",
   "scripts": {
