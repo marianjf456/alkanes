@@ -8,6 +8,8 @@ use std::panic;
 use std::sync::Arc;
 use wasmi;
 use core::ffi;
+use core::ffi::{CStr};
+use std::os::raw::{c_char};
 
 #[no_mangle]
 pub extern "C" fn __wasmi_engine_new() -> *mut wasmi::Engine {
@@ -47,4 +49,23 @@ pub extern "C" fn __wasmi_store_free(ptr: *mut wasmi::Store<State>) -> () {
   unsafe {
     let _ = Box::from_raw(ptr);
   }
+}
+
+pub extern "C" fn __wasmi_module_new(engine: *mut wasmi::Engine, program: *const u8, sz: usize) -> *mut wasmi::Module {
+  Box::leak(Box::new(wasmi::Module::new(unsafe { &*engine }, unsafe { std::slice::from_raw_parts::<'static, u8>(program, sz) }).unwrap())) as *mut wasmi::Module
+}
+
+pub extern "C" fn __wasmi_linker_new(engine: *mut wasmi::Engine) -> *mut wasmi::Linker<State> {
+  Box::leak(Box::new(wasmi::Linker::new(unsafe { &*engine }))) as *mut wasmi::Linker<State>
+}
+
+
+
+pub extern "C" fn __wasmi_func_wrap(_linker: *mut wasmi::Linker<State>, module: *const c_char, func: *const c_char, handler: unsafe extern "C" fn(caller: *mut wasmi::Caller<'static, State>, v: i32) -> i32) -> () {
+  let linker: &'static mut wasmi::Linker<State> = unsafe {
+    &mut *_linker
+  };
+  linker.func_wrap(CStr::from_ptr(module).to_str().unwrap(), CStr::from_ptr(func).to_str().unwrap(), move |mut caller: wasmi::Caller<'static, State>, v: i32| -> i32 {
+    handler((&mut caller) as *mut wasmi::Caller<'static, State>, v)
+  }).unwrap();
 }
