@@ -10,6 +10,7 @@ use wasmi;
 use core::ffi;
 use core::ffi::{CStr};
 use std::os::raw::{c_char};
+use std::mem;
 
 #[no_mangle]
 pub extern "C" fn __wasmi_engine_new() -> *mut wasmi::Engine {
@@ -65,7 +66,7 @@ pub extern "C" fn __wasmi_func_wrap(_linker: *mut wasmi::Linker<State>, module: 
   let linker: &'static mut wasmi::Linker<State> = unsafe {
     &mut *_linker
   };
-  linker.func_wrap(CStr::from_ptr(module).to_str().unwrap(), CStr::from_ptr(func).to_str().unwrap(), move |mut caller: wasmi::Caller<'static, State>, v: i32| -> i32 {
-    handler((&mut caller) as *mut wasmi::Caller<'static, State>, v)
+  linker.func_wrap(unsafe { CStr::from_ptr(module).to_str().unwrap() }, unsafe { CStr::from_ptr(func).to_str().unwrap() }, move |mut caller: wasmi::Caller<'a, State>, v: i32| -> i32 {
+    handler(unsafe { std::mem::transmute::<*mut wasmi::Caller<'a, State>, *mut wasmi::Caller<'static, State>>((&mut caller) as *mut wasmi::Caller<'a, State>) }, v)
   }).unwrap();
 }
