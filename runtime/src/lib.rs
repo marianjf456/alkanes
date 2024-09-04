@@ -59,6 +59,7 @@ pub extern "C" fn __wasmi_store_free(ptr: *mut wasmi::Store<State>) -> () {
     }
 }
 
+#[no_mangle]
 pub extern "C" fn __wasmi_module_new(
     engine: *mut wasmi::Engine,
     program: *const u8,
@@ -72,10 +73,12 @@ pub extern "C" fn __wasmi_module_new(
     )) as *mut wasmi::Module
 }
 
+#[no_mangle]
 pub extern "C" fn __wasmi_linker_new(engine: *mut wasmi::Engine) -> *mut wasmi::Linker<State> {
     Box::leak(Box::new(wasmi::Linker::new(unsafe { &*engine }))) as *mut wasmi::Linker<State>
 }
 
+#[no_mangle]
 pub extern "C" fn __wasmi_func_wrap(
     _linker: *mut wasmi::Linker<State>,
     module: *const c_char,
@@ -112,4 +115,41 @@ pub extern "C" fn __wasmi_func_wrap(
             },
         )
         .unwrap();
+}
+
+#[no_mangle]
+pub extern "C" fn __wasmi_linker_instantiate(
+  linker: *mut wasmi::Linker<State>,
+  store: *mut wasmi::Store<State>,
+  module: *mut wasmi::Module
+) -> *mut wasmi::Instance {
+  unsafe { linker.instantiate(&mut *store, &*module).unwrap().ensure_no_start(&mut *store).unwrap()  }
+}
+
+#[no_mangle]
+pub extern "C" fn __wasmi_store_get_fuel(store: *mut wasmi::Store<State>) -> i32 {
+  unsafe { (&*store).get_fuel().unwrap() as i32 }
+}
+
+#[no_mangle]
+pub extern "C" fn __wasmi_store_set_fuel(store: *mut wasmi::Store<State>, fuel: i32) -> () {
+  wasmi::Store::set_fuel(unsafe { &mut *store }, fuel);
+}
+
+fn wasmi_instance_call(instance: *mut wasmi::Instance, store: *mut wasmi::Store<State>, name: *const c_char, args: *const i32, len: i32, result: *mut i32) -> Result<()> {
+  let str_name = CStr::from_ptr(name).to_str()?;
+  let func = (&mut *instance).get_func(&mut *store, str_name).ok_or("").map_err(|_| anyhow!(format!("call to {} failed"), str_name))?;
+  let args: &[wasmi::Val] = unsafe { std::slice::from_raw_parts<'static, i32>(args, len as usize).into_iter().map(|v| wasmi::Val::I32(v)) };
+  let result_buffer = [wasmi::Val::I32(0)];
+  func.call(&mut *store, args, &mut result_buffer)?;
+  unsafe { *result = result_buffer[0].i32().ok_or("").map_err(|_| anyhow!("result was not an i32"))?; }
+  Ok(());
+}
+
+#[no_mangle]
+pub extern "C" fn __wasmi_instance_call(instance: *mut wasmi::Instance, store: *mut wasmi::Store<State>, name: *const c_char, args: *const i32, len: i32, result: *mut i32) -> i32 {
+  match wasmi_instance_call(instance, store, name, args, len, result) {
+    Ok(_) => 1,
+    Err(_) => 0
+  }
 }
