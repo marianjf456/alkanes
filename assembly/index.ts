@@ -8,6 +8,13 @@ import { console } from "metashrew-as/assembly/utils/logging";
 import { toRLP, RLPItem } from "metashrew-as/assembly/utils/rlp";
 
 import { Protorune } from "protorune/assembly/indexer/index";
+import { Protostone } from "protorune/assembly/indexer/Protostone";
+import { ProtoruneField as Field } from "protorune/assembly/indexer/fields/ProtoruneField";
+import { ProtoruneBalanceSheet } from "protorune/assembly/indexer/ProtoruneBalanceSheet";
+import { Edict } from "metashrew-runes/assembly/indexer/Edict";
+import { RunestoneMessage } from "metashrew-runes/assembly/indexer/RunestoneMessage";
+import { RunesTransaction } from "metashrew-runes/assembly/indexer/RunesTransaction";
+import { RunesBlock } from "metashrew-runes/assembly/indexer/RunesBlock";
 import { MessageContext } from "protorune/assembly/indexer/protomessage/MessageContext";
 import { 
   NumberingMixin, 
@@ -18,7 +25,7 @@ import {
   RuneSource 
 } from "quorumgenesisprotorune/assembly/indexer/numbering/index";
 
-export class AlkaneMessageContext extends MessageContext {
+class AlkaneMessageContext extends MessageContext {
   handle(): boolean {
     //TODO: implement handle()
     return true
@@ -44,7 +51,7 @@ class ProtostoneReduce {
   }
 }
 
-export class AlkaneIndex extends Protorune<AlkaneMessageContext> {
+class AlkaneIndex extends Protorune<AlkaneMessageContext> {
   processRunestone(
     block: RunesBlock,
     tx: RunesTransaction,
