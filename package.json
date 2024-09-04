@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "main": "lib/index.js",
   "scripts": {
-    "postinstall": "yarn bundleup",
-    "prepare": "cd runtime && rustup update && cargo build",
+    "prepare": "yarn bundleup",
+    "postinstall": "cd runtime && rustup update && cargo build",
     "asbuild:debug": "asc assembly/index.ts --target debug --enable threads --config asconfig.json",
     "asbuild:release": "asc assembly/index.ts --target release --config asconfig.json",
     "bundleup": "wasm-merge runtime/target/wasm32-unknown-unknown/debug/alkanes_runtime.wasm build/debug.wasm -o build/combined.wasm",
