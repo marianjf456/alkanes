@@ -2,3 +2,5 @@
 /tests
 **/target
 /build
+**/Cargo.lock
+**/yarn.lock
