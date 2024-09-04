@@ -10,6 +10,7 @@ use std::mem;
 use std::os::raw::c_char;
 use std::panic;
 use std::sync::{Arc, Mutex};
+use anyhow::{Result, anyhow};
 use wasmi;
 
 #[no_mangle]
@@ -123,7 +124,7 @@ pub extern "C" fn __wasmi_linker_instantiate(
   store: *mut wasmi::Store<State>,
   module: *mut wasmi::Module
 ) -> *mut wasmi::Instance {
-  unsafe { linker.instantiate(&mut *store, &*module).unwrap().ensure_no_start(&mut *store).unwrap()  }
+  Box::leak(Box::new(unsafe { (&mut *linker).instantiate(&mut *store, &*module).unwrap().ensure_no_start(&mut *store).unwrap()  })) as *mut wasmi::Instance
 }
 
 #[no_mangle]
@@ -133,7 +134,7 @@ pub extern "C" fn __wasmi_store_get_fuel(store: *mut wasmi::Store<State>) -> i32
 
 #[no_mangle]
 pub extern "C" fn __wasmi_store_set_fuel(store: *mut wasmi::Store<State>, fuel: i32) -> () {
-  wasmi::Store::set_fuel(unsafe { &mut *store }, fuel);
+  wasmi::Store::set_fuel(unsafe { &mut *store }, fuel as u64);
 }
 
 fn wasmi_instance_call(instance: *mut wasmi::Instance, store: *mut wasmi::Store<State>, name: *const c_char, args: *const i32, len: i32, result: *mut i32) -> Result<()> {
@@ -143,7 +144,7 @@ fn wasmi_instance_call(instance: *mut wasmi::Instance, store: *mut wasmi::Store<
   let result_buffer = [wasmi::Val::I32(0)];
   func.call(&mut *store, args, &mut result_buffer)?;
   unsafe { *result = result_buffer[0].i32().ok_or("").map_err(|_| anyhow!("result was not an i32"))?; }
-  Ok(());
+  Ok(())
 }
 
 #[no_mangle]
