@@ -1,4 +1,5 @@
 extern crate alloc;
+use anyhow::{anyhow, Result};
 use bitcoin::blockdata::block::Block;
 use bitcoin::consensus::Decodable;
 use bitcoin::hashes::Hash;
@@ -10,7 +11,6 @@ use std::mem;
 use std::os::raw::c_char;
 use std::panic;
 use std::sync::{Arc, Mutex};
-use anyhow::{Result, anyhow};
 use wasmi;
 
 #[no_mangle]
@@ -120,37 +120,71 @@ pub extern "C" fn __wasmi_func_wrap(
 
 #[no_mangle]
 pub extern "C" fn __wasmi_linker_instantiate(
-  linker: *mut wasmi::Linker<State>,
-  store: *mut wasmi::Store<State>,
-  module: *mut wasmi::Module
+    linker: *mut wasmi::Linker<State>,
+    store: *mut wasmi::Store<State>,
+    module: *mut wasmi::Module,
 ) -> *mut wasmi::Instance {
-  Box::leak(Box::new(unsafe { (&mut *linker).instantiate(&mut *store, &*module).unwrap().ensure_no_start(&mut *store).unwrap()  })) as *mut wasmi::Instance
+    Box::leak(Box::new(unsafe {
+        (&mut *linker)
+            .instantiate(&mut *store, &*module)
+            .unwrap()
+            .ensure_no_start(&mut *store)
+            .unwrap()
+    })) as *mut wasmi::Instance
 }
 
 #[no_mangle]
 pub extern "C" fn __wasmi_store_get_fuel(store: *mut wasmi::Store<State>) -> i32 {
-  unsafe { (&*store).get_fuel().unwrap() as i32 }
+    unsafe { (&*store).get_fuel().unwrap() as i32 }
 }
 
 #[no_mangle]
 pub extern "C" fn __wasmi_store_set_fuel(store: *mut wasmi::Store<State>, fuel: i32) -> () {
-  wasmi::Store::set_fuel(unsafe { &mut *store }, fuel as u64);
+    wasmi::Store::set_fuel(unsafe { &mut *store }, fuel as u64);
 }
 
-fn wasmi_instance_call(instance: *mut wasmi::Instance, store: *mut wasmi::Store<State>, name: *const c_char, args: *const i32, len: i32, result: *mut i32) -> Result<()> {
-  let str_name = CStr::from_ptr(name).to_str()?;
-  let func = (&mut *instance).get_func(&mut *store, str_name).ok_or("").map_err(|_| anyhow!(format!("call to {} failed"), str_name))?;
-  let args: &[wasmi::Val] = unsafe { std::slice::from_raw_parts<'static, i32>(args, len as usize).into_iter().map(|v| wasmi::Val::I32(v)) };
-  let result_buffer = [wasmi::Val::I32(0)];
-  func.call(&mut *store, args, &mut result_buffer)?;
-  unsafe { *result = result_buffer[0].i32().ok_or("").map_err(|_| anyhow!("result was not an i32"))?; }
-  Ok(())
+fn wasmi_instance_call(
+    instance: *mut wasmi::Instance,
+    store: *mut wasmi::Store<State>,
+    name: *const c_char,
+    args: *const i32,
+    len: i32,
+    result: *mut i32,
+) -> Result<()> {
+    unsafe {
+        let str_name = CStr::from_ptr(name).to_str()?;
+        let func = (&mut *instance)
+            .get_func(&mut *store, str_name)
+            .ok_or("")
+            .map_err(|_| anyhow!(format!("call to {:?} failed", str_name)))?;
+        let args: &[wasmi::Val] = unsafe {
+            &std::slice::from_raw_parts::<i32>(args, len as usize)
+                .into_iter()
+                .map(|v| wasmi::Val::I32(*v))
+                .collect::<Vec<wasmi::Val>>()
+        };
+        let mut result_buffer = [wasmi::Val::I32(0)];
+        func.call(&mut *store, args, &mut result_buffer)?;
+
+        *result = result_buffer[0]
+            .i32()
+            .ok_or("")
+            .map_err(|_| anyhow!("result was not an i32"))?;
+    }
+    Ok(())
 }
 
 #[no_mangle]
-pub extern "C" fn __wasmi_instance_call(instance: *mut wasmi::Instance, store: *mut wasmi::Store<State>, name: *const c_char, args: *const i32, len: i32, result: *mut i32) -> i32 {
-  match wasmi_instance_call(instance, store, name, args, len, result) {
-    Ok(_) => 1,
-    Err(_) => 0
-  }
+pub extern "C" fn __wasmi_instance_call(
+    instance: *mut wasmi::Instance,
+    store: *mut wasmi::Store<State>,
+    name: *const c_char,
+    args: *const i32,
+    len: i32,
+    result: *mut i32,
+) -> i32 {
+    match wasmi_instance_call(instance, store, name, args, len, result) {
+        Ok(_) => 1,
+        Err(_) => 0,
+    }
 }
