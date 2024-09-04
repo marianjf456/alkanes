@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "postinstall": "yarn bundleup",
-    "prepare": "cd runtime && rustup update && cargo build --target wasm32-unknown-unknown && wasm-pack build ./ -- --quiet",
+    "prepare": "cd runtime && rustup update && cargo build",
     "asbuild:debug": "asc assembly/index.ts --target debug --enable threads --config asconfig.json",
     "asbuild:release": "asc assembly/index.ts --target release --config asconfig.json",
     "bundleup": "wasm-merge runtime/target/wasm32-unknown-unknown/debug/runtime.wasm build/debug.wasm -o build/combined.wasm",
@@ -18,7 +18,8 @@
   },
   "dependencies": {
     "binaryen": "^118.0.0",
-    "postinstall": "^0.10.3"
+    "postinstall": "^0.10.3",
+    "quorumgenesisprotorune": "https://github.com/kungfuflex/quorumgenesisprotorune"
   },
   "devDependencies": {
     "@types/node": "^20.10.6",

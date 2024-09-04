@@ -16,7 +16,7 @@ import {
   NumberingProtostone, 
   NumberingRunestone, 
   RuneSource 
-} from "quorum/assembly/indexer/numbering/index";
+} from "quorumgenesisprotorune/assembly/indexer/numbering/index";
 
 export class AlkaneMessageContext extends MessageContext {
   handle(): boolean {
@@ -25,12 +25,7 @@ export class AlkaneMessageContext extends MessageContext {
   }
 }
 
-class AlkaneIndex {
-
-}
-
-//TODO: figure out how to define the class
-export class Alkane<T extends AlkaneMessageContext> extends AlkaneIndex {
+class AlkaneIndex extends Protorune<AlkaneMessageContext> {
 
 }
 
@@ -39,6 +34,7 @@ export function _start(): void {
   const box = Box.from(data);
   const height = parsePrimitive<u32>(box);
   const block = new Block(box);
+  new AlkaneIndex().indexBlock(height, block);
   console.log("got block " + height.toString(10));
   _flush();
 }
