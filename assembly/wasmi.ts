@@ -86,8 +86,57 @@ export class Engine {
   static free(v: Engine): void {
     __wasmi_engine_free(v.unwrap());
   }
+  store(context: usize, memoryLimit: usize, fuelLimit: u64) {
+    return Store.wrap(__wasmi_store_new(this.unwrap(), context, memoryLimit, fuelLimit));
+  }
+  linker(): Linker {
+    return Linker.wrap(__wasmi_linker_new(this.unwrap()));
+  }
+  modul(): Module {
+  }
 }
 
 @final
 @unmanaged
 class Store {
+  [key: string]: number;
+  static wrap(v: usize): Store {
+    return changetype<Store>(v);
+  }
+  unwrap(): usize {
+    return changetype<usize>(this);
+  }
+  static free(v: Store): void {
+    __wasmi_store_free(v.unwrap());
+  }
+}
+
+@final
+@unmanaged
+class Module {
+  [key: string]: number;
+  static wrap(v: usize): Module {
+    return changetype<Module>(v);
+  }
+  unwrap(): usize {
+    return changetype<usize>(this);
+  }
+}
+
+@final
+@unmanaged
+class Linker {
+  [key: string]: number;
+  static wrap(v: usize): Linker {
+    return changetype<Linker>(v);
+  }
+  unwrap(): usize {
+    return changetype<usize>(this);
+  }
+  static free(v: Linker): void {
+    __wasmi_linker_free(v.unwrap());
+  }
+}
+
+}
+
