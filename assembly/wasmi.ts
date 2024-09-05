@@ -86,7 +86,7 @@ export class Engine {
   static free(v: Engine): void {
     __wasmi_engine_free(v.unwrap());
   }
-  store(context: usize, memoryLimit: usize, fuelLimit: u64) {
+  store(context: usize, memoryLimit: usize, fuelLimit: u64): Store {
     return Store.wrap(__wasmi_store_new(this.unwrap(), context, memoryLimit, fuelLimit));
   }
   linker(): Linker {
@@ -162,7 +162,7 @@ export class Caller {
   memory(): usize {
     return __wasmi_caller_memory(this.unwrap());
   }
-  context(); usize {
+  context(): usize {
     return __wasmi_caller_context(this.unwrap());
   }
 }
