@@ -92,7 +92,8 @@ export class Engine {
   linker(): Linker {
     return Linker.wrap(__wasmi_linker_new(this.unwrap()));
   }
-  modul(): Module {
+  module(program: ArrayBuffer): Module {
+    return Module.wrap(__wasmi_module_new(this.unwrap(), changetype<usize>(program), load<u32>(changetype<usize>(program) - 4)));
   }
 }
 
@@ -109,6 +110,12 @@ class Store {
   static free(v: Store): void {
     __wasmi_store_free(v.unwrap());
   }
+  setFuel(fuel: i32): void {
+    __wasmi_store_set_fuel(this.unwrap(), fuel);
+  }
+  fuel(): i32 {
+    __wasmi_store_get_fuel(this.unwrap());
+  }
 }
 
 @final
@@ -120,6 +127,9 @@ class Module {
   }
   unwrap(): usize {
     return changetype<usize>(this);
+  }
+  free(v: Module): void {
+    return __wasmi_module_free(v);
   }
 }
 
@@ -135,6 +145,25 @@ class Linker {
   }
   static free(v: Linker): void {
     __wasmi_linker_free(v.unwrap());
+  }
+  instantiate(module: Module, store: Store): Instantiate {
+    return Instance.wrap(__wasmi_linker_instantiate(this.unwrap(), module, store));
+  }
+}
+
+export class Caller {
+  [key: string]: number;
+  static wrap(v: usize): Context {
+    return changetype<Context>(v);
+  }
+  unwrap(): usize {
+    return changetype<usize>(this);
+  }
+  memory(): usize {
+    return __wasmi_caller_memory(this.unwrap());
+  }
+  context(); usize {
+    return __wasmi_caller_context(this.unwrap());
   }
 }
 
