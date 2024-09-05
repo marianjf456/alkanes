@@ -25,9 +25,12 @@ import {
   RuneSource 
 } from "quorumgenesisprotorune/assembly/indexer/numbering/index";
 
+import { loadAlkane } from "./vm";
+
 class AlkaneMessageContext extends MessageContext {
   handle(): boolean {
     //TODO: implement handle()
+    loadAlkane();
     return true
   }
 }

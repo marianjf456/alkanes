@@ -36181,7 +36181,24 @@
   local.get $isCenotaph
   call $~lib/metashrew-runes/assembly/indexer/BalanceSheet/BalanceSheet#save@override
  )
+ (func $assembly/wasmi/wasmi.Instance#constructor (param $this i32) (result i32)
+  local.get $this
+  i32.eqz
+  if
+   i32.const 0
+   call $~lib/rt/stub/__alloc
+   local.set $this
+  end
+  local.get $this
+ )
+ (func $assembly/vm/loadAlkane (result i32)
+  i32.const 0
+  call $assembly/wasmi/wasmi.Instance#constructor
+  return
+ )
  (func $assembly/index/AlkaneMessageContext#handle (param $this i32) (result i32)
+  call $assembly/vm/loadAlkane
+  drop
   i32.const 1
   return
  )
