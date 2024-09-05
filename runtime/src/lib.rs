@@ -12,6 +12,25 @@ use std::os::raw::c_char;
 use std::panic;
 use std::sync::{Arc, Mutex};
 use wasmi;
+use wasmi::AsContext;
+
+#[no_mangle]
+pub extern "C" fn __wasmi_caller_memory(caller: *mut wasmi::Caller<'static, State>) -> *mut u8 {
+    let caller = unsafe { &mut *caller };
+    if let Some(memory) = caller.get_export("memory").and_then(|e| e.into_memory()) {
+        memory.data_ptr((*caller).as_context()) as *mut u8
+    } else {
+        std::ptr::null_mut()
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn __wasmi_caller_context(
+    caller: *mut wasmi::Caller<'static, State>,
+) -> *mut core::ffi::c_void {
+    let caller = unsafe { &mut *caller };
+    return (caller.data()).context;
+}
 
 #[no_mangle]
 pub extern "C" fn __wasmi_engine_new() -> *mut wasmi::Engine {
