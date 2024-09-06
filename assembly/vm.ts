@@ -73,8 +73,8 @@ export class AlkaneInstance {
     const bytecode = ALKANES_INDEX.select(alkaneId.toBytes()).get();
     const engine = wasmi.Engine.default();
     this.engine = engine;
-    this.context = new AlkaneContext(self, caller, 0, incomingRunes, inputs);
-    this.store = engine.store(context.pointer(), FUEL_LIMIT, MEMORY_LIMIT);
+    this.context = new AlkaneContext(self, caller, FUEL_LIMIT, incomingRunes, inputs);
+    this.store = engine.store(this.context.pointer(), FUEL_LIMIT, MEMORY_LIMIT);
     this.linker = engine.linker();
     this.module = engine.module(bytecode);
   }
