@@ -24,6 +24,12 @@ class AlkaneContext {
   public caller: ProtoruneRuneId;
   public fuelLeft: u128;
   public incomingRunes: Array<AlkaneContextIncomingRune>;
+  constructor(self: ProtoruneRuneId, caller: ProtoruneRuneId, fuelLeft: u64, incomingRunes: Array<IncomingRune>) {
+    this.self = self;
+    this.caller = caller;
+    this.fuelLeft = u128.from(fuelLeft);
+    this.incomingRunes = incomingRunes.map<AlkaneContextIncomingRune>((v: IncomingRune, i: i32, ary: Array<IncomingRune>) => AlkaneContextIncomingRune.fromIncomingRune(v));
+  }
   pointer(): usize {
     return changetype<usize>(this);
   }
@@ -43,24 +49,32 @@ class AlkaneContext {
     return result;
   }
   serialize(): ArrayBuffer {
-    const result = new ArrayBuffer((5 + this.incomingRunes.length*3)*16);
     const varints = this.flatten()
-    memory.copy(changetype<
+    const result = new ArrayBuffer(varints.length * 0x10);
+    for (let i: i32 = 0; i < varints.length; i++) {
+      memory.copy(changetype<usize>(result) + i*16, toArrayBuffer(varints[i]), 0x10);
+    }
+    return result;
   }
 }
 
-class AlkaneInstance {
+const FUEL_LIMIT: u64 = 0x10000000;
+const MEMORY_LIMIT: usize = 0x10000000;
+
+export class AlkaneInstance {
   public module: wasmi.Module;
   public instance: wasmi.Instance;
   public store: wasmi.Store;
   public engine: wasmi.Engine;
   public context: AlkaneContext;
-}
-
-export function loadAlkane(alkaneId: ProtoruneRuneId): AlkaneInstance {
-  const alkane = new AlkaneInstance();
-  const bytecode = ALKANES_INDEX.select(alkaneId.toBytes()).get();
-  alkane.engine = wasmi.Engine.default();
-
-  alkane.store = alkane.engine.store(
+  public linker: wasmi.Linker;
+  constructor(self: ProtoruneRuneId, caller: ProtoruneRuneId, incomingRunes: Array<IncomingRune>): AlkaneInstance {
+    const bytecode = ALKANES_INDEX.select(alkaneId.toBytes()).get();
+    const engine = wasmi.Engine.default();
+    this.engine = engine;
+    this.context = new AlkaneContext(self, caller, incomingRunes);
+    this.store = engine.store(context.pointer(), FUEL_LIMIT, MEMORY_LIMIT);
+    this.linker = engine.linker();
+    this.module = engine.module(bytecode);
+  }
 }

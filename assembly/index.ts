@@ -29,8 +29,7 @@ import { loadAlkane } from "./vm";
 
 class AlkaneMessageContext extends MessageContext {
   handle(): boolean {
-    //TODO: implement handle()
-    loadAlkane();
+    const instance = new AlkaneInstance(this.runes, 
     return true
   }
 }
