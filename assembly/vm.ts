@@ -4,6 +4,7 @@ import {
 import { ProtoruneRuneId } from "protorune/assembly/indexer/ProtoruneRuneId";
 import { IndexPointer } from "metashrew-as/assembly/indexer/tables";
 import { ALKANES_INDEX } from "./tables";
+import { u128 } from "as-bignum/assembly";
 
 class AlkaneContextIncomingRune {
   public runeId: ProtoruneRuneId;
@@ -24,7 +25,7 @@ class AlkaneContext {
   public caller: ProtoruneRuneId;
   public fuelLeft: u128;
   public incomingRunes: Array<AlkaneContextIncomingRune>;
-  constructor(self: ProtoruneRuneId, caller: ProtoruneRuneId, fuelLeft: u64, incomingRunes: Array<IncomingRune>) {
+  constructor(self: ProtoruneRuneId, caller: ProtoruneRuneId, fuelLeft: u64, incomingRunes: Array<IncomingRune>, inputs: Array<u128>) {
     this.self = self;
     this.caller = caller;
     this.fuelLeft = u128.from(fuelLeft);
@@ -68,11 +69,11 @@ export class AlkaneInstance {
   public engine: wasmi.Engine;
   public context: AlkaneContext;
   public linker: wasmi.Linker;
-  constructor(self: ProtoruneRuneId, caller: ProtoruneRuneId, incomingRunes: Array<IncomingRune>): AlkaneInstance {
+  constructor(self: ProtoruneRuneId, caller: ProtoruneRuneId, incomingRunes: Array<IncomingRune>, inputs: Array<u128>): AlkaneInstance {
     const bytecode = ALKANES_INDEX.select(alkaneId.toBytes()).get();
     const engine = wasmi.Engine.default();
     this.engine = engine;
-    this.context = new AlkaneContext(self, caller, incomingRunes);
+    this.context = new AlkaneContext(self, caller, 0, incomingRunes, inputs);
     this.store = engine.store(context.pointer(), FUEL_LIMIT, MEMORY_LIMIT);
     this.linker = engine.linker();
     this.module = engine.module(bytecode);

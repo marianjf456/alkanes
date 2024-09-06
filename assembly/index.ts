@@ -7,6 +7,9 @@ import { Transaction, Input, Output } from "metashrew-as/assembly/blockdata/tran
 import { console } from "metashrew-as/assembly/utils/logging";
 import { toRLP, RLPItem } from "metashrew-as/assembly/utils/rlp";
 
+import { RuneId } from "metashrew-runes/assembly/indexer/RuneId";
+import { ProtoruneRuneId } from "protorune/assembly/indexer/ProtoruneRuneId";
+import { u128 } from "as-bignum/assembly";
 import { Protorune } from "protorune/assembly/indexer/index";
 import { Protostone } from "protorune/assembly/indexer/Protostone";
 import { ProtoruneField as Field } from "protorune/assembly/indexer/fields/ProtoruneField";
@@ -24,14 +27,44 @@ import {
   NumberingRunestone, 
   RuneSource 
 } from "quorumgenesisprotorune/assembly/indexer/numbering/index";
-
-import { loadAlkane } from "./vm";
+import { MAX_BYTES_LEB128_INT } from "metashrew-runes/assembly/indexer/constants/index";
+import { readULEB128ToU128 } from "metashrew-runes/assembly/leb128";
+import { AlkaneInstance, loadAlkane } from "./vm";
+import { uint128 } from "metashrew-runes/lib/proto/metashrew-runes";
+import { primitiveToBuffer } from "metashrew-as/assembly/utils/utils";
 
 class AlkaneMessageContext extends MessageContext {
   handle(): boolean {
-    const instance = new AlkaneInstance(this.runes, 
-    return true
+    let calldata = _parseLeb128toU128Array(this.calldata);
+
+    
+    let self = ProtoruneRuneId.from(
+      RuneId.fromBytes(
+        primitiveToBuffer(calldata.slice(0, 2))
+      )
+    );
+    let caller = ProtoruneRuneId.from(RuneId.fromU128(u128.Zero));
+
+    const instance = new AlkaneInstance(self, caller, this.runes, calldata.slice(2)); 
+    return true;
   }
+}
+
+function _parseLeb128toU128Array(input: ArrayBuffer): Array<u128> {
+  const result = new Array<u128>();
+  const inputBox = Box.from(input);
+  const defaultResult = new Array<u128>();
+  
+  while (inputBox.len > 0) {
+    const value = u128.from(0);
+    const size = readULEB128ToU128(inputBox, value);
+    if (size > MAX_BYTES_LEB128_INT) return defaultResult;
+    inputBox.shrinkFront(size);
+    result.push(value);
+  }
+  
+  if (result.length > 0) return result;
+  else return new Array<u128>();
 }
 
 function expandToNumberingAlign(
