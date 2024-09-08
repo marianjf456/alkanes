@@ -1,8 +1,18 @@
-import { Box } from "metashrew-as/assembly/utils/box"
-import { _flush, input, get, set, Index } from "metashrew-as/assembly/indexer/index";
+import { Box } from "metashrew-as/assembly/utils/box";
+import {
+  _flush,
+  input,
+  get,
+  set,
+  Index,
+} from "metashrew-as/assembly/indexer/index";
 import { parsePrimitive } from "metashrew-as/assembly/utils/utils";
 import { Block } from "metashrew-as/assembly/blockdata/block";
-import { Transaction, Input, Output } from "metashrew-as/assembly/blockdata/transaction";
+import {
+  Transaction,
+  Input,
+  Output,
+} from "metashrew-as/assembly/blockdata/transaction";
 
 import { console } from "metashrew-as/assembly/utils/logging";
 import { toRLP, RLPItem } from "metashrew-as/assembly/utils/rlp";
@@ -19,33 +29,34 @@ import { RunestoneMessage } from "metashrew-runes/assembly/indexer/RunestoneMess
 import { RunesTransaction } from "metashrew-runes/assembly/indexer/RunesTransaction";
 import { RunesBlock } from "metashrew-runes/assembly/indexer/RunesBlock";
 import { MessageContext } from "protorune/assembly/indexer/protomessage/MessageContext";
-import { 
-  NumberingMixin, 
-  NumberingMixinProtocol, 
-  NumberingProtoburn, 
-  NumberingProtostone, 
-  NumberingRunestone, 
-  RuneSource 
+import {
+  NumberingMixin,
+  NumberingMixinProtocol,
+  NumberingProtoburn,
+  NumberingProtostone,
+  NumberingRunestone,
+  RuneSource,
 } from "quorumgenesisprotorune/assembly/indexer/numbering/index";
 import { MAX_BYTES_LEB128_INT } from "metashrew-runes/assembly/indexer/constants/index";
 import { readULEB128ToU128 } from "metashrew-runes/assembly/leb128";
-import { AlkaneInstance, loadAlkane } from "./vm";
-import { uint128 } from "metashrew-runes/lib/proto/metashrew-runes";
+import { AlkaneInstance } from "./vm";
 import { primitiveToBuffer } from "metashrew-as/assembly/utils/utils";
 
 class AlkaneMessageContext extends MessageContext {
   handle(): boolean {
     let calldata = _parseLeb128toU128Array(this.calldata);
 
-    
     let self = ProtoruneRuneId.from(
-      RuneId.fromBytes(
-        primitiveToBuffer(calldata.slice(0, 2))
-      )
+      RuneId.fromBytes(primitiveToBuffer(calldata.slice(0, 2))),
     );
     let caller = ProtoruneRuneId.from(RuneId.fromU128(u128.Zero));
 
-    const instance = new AlkaneInstance(self, caller, this.runes, calldata.slice(2)); 
+    const instance = new AlkaneInstance(
+      self,
+      caller,
+      this.runes,
+      calldata.slice(2),
+    );
     return true;
   }
 }
@@ -54,7 +65,7 @@ function _parseLeb128toU128Array(input: ArrayBuffer): Array<u128> {
   const result = new Array<u128>();
   const inputBox = Box.from(input);
   const defaultResult = new Array<u128>();
-  
+
   while (inputBox.len > 0) {
     const value = u128.from(0);
     const size = readULEB128ToU128(inputBox, value);
@@ -62,7 +73,7 @@ function _parseLeb128toU128Array(input: ArrayBuffer): Array<u128> {
     inputBox.shrinkFront(size);
     result.push(value);
   }
-  
+
   if (result.length > 0) return result;
   else return new Array<u128>();
 }
