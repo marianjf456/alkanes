@@ -14,6 +14,9 @@ use std::sync::{Arc, Mutex};
 use wasmi;
 use wasmi::AsContext;
 
+use std::ffi::CString;
+use std::ptr;
+
 #[no_mangle]
 pub extern "C" fn __wasmi_caller_memory(caller: *mut wasmi::Caller<'static, State>) -> *mut u8 {
     let caller = unsafe { &mut *caller };
@@ -205,5 +208,88 @@ pub extern "C" fn __wasmi_instance_call(
     match wasmi_instance_call(instance, store, name, args, len, result) {
         Ok(_) => 1,
         Err(_) => 0,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn load_wasm_module() -> &'static [u8] {
+        // Load a simple Wasm binary for testing purposes
+        // In a real test, this would be the actual Wasm binary content
+        include_bytes!("simple_wasm.wasm")
+    }
+
+    #[test]
+    fn test_engine_creation() {
+        // Test if we can create and free an engine
+        let engine = __wasmi_engine_new();
+        assert!(!engine.is_null(), "Failed to create engine");
+
+        __wasmi_engine_free(engine);
+    }
+
+    #[test]
+    fn test_store_creation() {
+        // Test creating a store with memory limit and fuel
+        let engine = __wasmi_engine_new();
+        let context: *mut core::ffi::c_void = ptr::null_mut();
+        let memory_limit = 1024; // 1KB memory limit for the store
+        let fuel_limit = 10000; // Execution fuel limit
+
+        let store = __wasmi_store_new(engine, context, memory_limit, fuel_limit);
+        assert!(!store.is_null(), "Failed to create store");
+
+        __wasmi_store_free(store);
+        __wasmi_engine_free(engine);
+    }
+
+    #[test]
+    fn test_module_creation() {
+        // Test creating a module from Wasm binary
+        let engine = __wasmi_engine_new();
+        let wasm_module = load_wasm_module();
+        let module = __wasmi_module_new(engine, wasm_module.as_ptr(), wasm_module.len());
+        assert!(!module.is_null(), "Failed to create module");
+
+        __wasmi_engine_free(engine);
+    }
+
+    #[test]
+    fn test_function_call() {
+        // Test instantiating a module and calling a function
+        let engine = __wasmi_engine_new();
+        let wasm_module = load_wasm_module();
+
+        let module = __wasmi_module_new(engine, wasm_module.as_ptr(), wasm_module.len());
+        let store = __wasmi_store_new(engine, ptr::null_mut(), 64 * 1024 * 1024, 10000); // note 1024 memory limit is not enough
+
+        // Create a linker and instantiate the module
+        let linker = __wasmi_linker_new(engine);
+        let instance = __wasmi_linker_instantiate(linker, store, module);
+        assert!(!instance.is_null(), "Failed to instantiate module");
+
+        // Prepare to call the `add` function from the Wasm module
+        let func_name = CString::new("add").unwrap();
+        let args = [1, 2]; // Arguments for the `add` function
+        let mut result = 0;
+
+        let success = __wasmi_instance_call(
+            instance,
+            store,
+            func_name.as_ptr(),
+            args.as_ptr(),
+            args.len() as i32,
+            &mut result,
+        );
+        assert_eq!(success, 1, "Function call failed");
+
+        // Verify that the result is correct (1 + 2 = 3)
+        assert_eq!(result, 3, "Unexpected result from Wasm function");
+
+        // Clean up
+        __wasmi_store_free(store);
+        __wasmi_engine_free(engine);
     }
 }
