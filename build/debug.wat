@@ -294,8 +294,8 @@
  (data $126 (i32.const 9884) "\1c\00\00\00\00\00\00\00\00\00\00\00y\00\00\00\08\00\00\00\18\00\00\00\00\00\00\00\00\00\00\00")
  (data $127 (i32.const 9916) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00p\00i\00p\00i\00n\00g\00 \00t\00o\00 \00p\00r\00o\00t\00o\00c\00o\00l\00:\00\00\00\00\00\00\00")
  (table $0 25 25 funcref)
- (elem $0 (i32.const 1) $~lib/metashrew-as/assembly/utils/box/Box.concat~anonymous|0 $~lib/metashrew-as/assembly/utils/box/Box.concat~anonymous|1 $~lib/metashrew-as/assembly/utils/utils/concat~anonymous|0 $~lib/metashrew-runes/assembly/indexer/RunesTransaction/RunesTransaction#runestone~anonymous|0 $~lib/metashrew-runes/assembly/indexer/RunestoneMessage/RunestoneMessage#loadBalanceSheet~anonymous|0 $~lib/metashrew-runes/assembly/indexer/BalanceSheet/BalanceSheet.concat~anonymous|0 $~lib/metashrew-runes/assembly/utils/fieldToArrayBuffer~anonymous|0 $~lib/metashrew-as/assembly/indexer/index/_flush~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/sourceMapFromTransaction~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/sourceMapFromTransaction~anonymous|1 $~lib/quorumgenesisprotorune/assembly/utils/uniq~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/sourceMapFromTransaction~anonymous|2~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/pointsFromKeys~anonymous|0~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/pointsFromKeys~anonymous|0 $~lib/metashrew-runes/assembly/indexer/RuneId/RuneId.fromBytes~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/sourceMapFromTransaction~anonymous|2 $~lib/protorune/assembly/utils/concatByteArray15BytesPerU128~anonymous|0 $~lib/protorune/assembly/indexer/Protostone/ProtostoneTable#burns~anonymous|0 $~lib/protorune/assembly/indexer/Protoburn/Protoburn#constructor~anonymous|0 $~lib/protorune/assembly/indexer/Protostone/ProtostoneTable#burns~anonymous|1 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/RuneSource/RuneSource#updateAndPreserve~anonymous|0 $assembly/index/AlkaneIndex#processRunestone~anonymous|0 $~lib/protorune/assembly/indexer/Protostone/Protostone#loadBalanceSheet~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/RuneSource/RuneSource#pull~anonymous|0)
- (export "_start" (func $assembly/index/_start))
+ (elem $0 (i32.const 1) $~lib/metashrew-as/assembly/utils/box/Box.concat~anonymous|0 $~lib/metashrew-as/assembly/utils/box/Box.concat~anonymous|1 $~lib/metashrew-as/assembly/utils/utils/concat~anonymous|0 $~lib/metashrew-runes/assembly/indexer/RunesTransaction/RunesTransaction#runestone~anonymous|0 $~lib/metashrew-runes/assembly/indexer/RunestoneMessage/RunestoneMessage#loadBalanceSheet~anonymous|0 $~lib/metashrew-runes/assembly/indexer/BalanceSheet/BalanceSheet.concat~anonymous|0 $~lib/metashrew-runes/assembly/utils/fieldToArrayBuffer~anonymous|0 $~lib/metashrew-as/assembly/indexer/index/_flush~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/sourceMapFromTransaction~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/sourceMapFromTransaction~anonymous|1 $~lib/quorumgenesisprotorune/assembly/utils/uniq~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/sourceMapFromTransaction~anonymous|2~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/pointsFromKeys~anonymous|0~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/pointsFromKeys~anonymous|0 $~lib/metashrew-runes/assembly/indexer/RuneId/RuneId.fromBytes~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin/sourceMapFromTransaction~anonymous|2 $~lib/protorune/assembly/utils/concatByteArray15BytesPerU128~anonymous|0 $~lib/protorune/assembly/indexer/Protostone/ProtostoneTable#burns~anonymous|0 $~lib/protorune/assembly/indexer/Protoburn/Protoburn#constructor~anonymous|0 $~lib/protorune/assembly/indexer/Protostone/ProtostoneTable#burns~anonymous|1 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/RuneSource/RuneSource#updateAndPreserve~anonymous|0 $assembly/indexer/index/AlkaneIndex#processRunestone~anonymous|0 $~lib/protorune/assembly/indexer/Protostone/Protostone#loadBalanceSheet~anonymous|0 $~lib/quorumgenesisprotorune/assembly/indexer/numbering/RuneSource/RuneSource#pull~anonymous|0)
+ (export "_start" (func $assembly/indexer/index/_start))
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/stub/maybeGrowMemory (param $newOffset i32)
@@ -2587,7 +2587,7 @@
  (func $start:~lib/quorumgenesisprotorune/assembly/indexer/numbering/index
   call $start:~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingMixin
  )
- (func $start:assembly/index
+ (func $start:assembly/indexer/index
   call $start:~lib/metashrew-as/assembly/indexer/index
   call $start:~lib/metashrew-as/assembly/blockdata/block
   call $start:~lib/protorune/assembly/indexer/index
@@ -5371,17 +5371,17 @@
   local.set $this
   local.get $this
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#set:etchEnabled (param $this i32) (param $etchEnabled i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#set:etchEnabled (param $this i32) (param $etchEnabled i32)
   local.get $this
   local.get $etchEnabled
   i32.store8
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#set:openMint (param $this i32) (param $openMint i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#set:openMint (param $this i32) (param $openMint i32)
   local.get $this
   local.get $openMint
   i32.store8 offset=1
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#constructor (param $this i32) (param $etchEnabled i32) (param $openMint i32) (result i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#constructor (param $this i32) (param $etchEnabled i32) (param $openMint i32) (result i32)
   local.get $this
   i32.eqz
   if
@@ -5392,22 +5392,22 @@
   end
   local.get $this
   i32.const 0
-  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#set:etchEnabled
+  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#set:etchEnabled
   local.get $this
   i32.const 0
-  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#set:openMint
+  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#set:openMint
   local.get $this
   call $~lib/metashrew-runes/assembly/indexer/Indexer/RunesIndex#constructor
   local.set $this
   local.get $this
   local.get $etchEnabled
-  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#set:etchEnabled
+  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#set:etchEnabled
   local.get $this
   local.get $openMint
-  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#set:openMint
+  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#set:openMint
   local.get $this
  )
- (func $assembly/index/AlkaneIndex#constructor (param $this i32) (param $etchEnabled i32) (param $openMint i32) (result i32)
+ (func $assembly/indexer/index/AlkaneIndex#constructor (param $this i32) (param $etchEnabled i32) (param $openMint i32) (result i32)
   local.get $this
   i32.eqz
   if
@@ -5419,7 +5419,7 @@
   local.get $this
   local.get $etchEnabled
   local.get $openMint
-  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#constructor
+  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#constructor
   local.set $this
   local.get $this
  )
@@ -6814,7 +6814,7 @@
   call $~lib/set/Set<~lib/string/String>#add
   drop
  )
- (func $~lib/protorune/assembly/indexer/protomessage/MessageContext/MessageContext#initializeProtocol<assembly/index/AlkaneMessageContext> (param $this i32) (result i32)
+ (func $~lib/protorune/assembly/indexer/protomessage/MessageContext/MessageContext#initializeProtocol<assembly/indexer/index/AlkaneMessageContext> (param $this i32) (result i32)
   (local $tag i32)
   i32.const 0
   call $~lib/protorune/assembly/indexer/protomessage/MessageContext/MessageContext#protocolTag
@@ -6825,9 +6825,9 @@
   local.get $tag
   return
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#initializeSubprotocols (param $this i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#initializeSubprotocols (param $this i32)
   i32.const 0
-  call $~lib/protorune/assembly/indexer/protomessage/MessageContext/MessageContext#initializeProtocol<assembly/index/AlkaneMessageContext>
+  call $~lib/protorune/assembly/indexer/protomessage/MessageContext/MessageContext#initializeProtocol<assembly/indexer/index/AlkaneMessageContext>
   drop
  )
  (func $~lib/as-bignum/assembly/integer/u128/u128#clone (param $this i32) (result i32)
@@ -19544,9 +19544,9 @@
    end
   end
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#indexBlock (param $this i32) (param $height i32) (param $block i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#indexBlock (param $this i32) (param $height i32) (param $block i32)
   local.get $this
-  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#initializeSubprotocols
+  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#initializeSubprotocols
   local.get $this
   local.get $height
   local.get $block
@@ -20425,7 +20425,7 @@
   call $~lib/metashrew-as/assembly/proto/metashrew/metashrew.KeyValueFlush#encode
   call $~lib/metashrew-as/assembly/indexer/index/__flush
  )
- (func $assembly/index/_start
+ (func $assembly/indexer/index/_start
   (local $data i32)
   (local $box i32)
   (local $height i32)
@@ -20445,10 +20445,10 @@
   i32.const 0
   i32.const 0
   i32.const 0
-  call $assembly/index/AlkaneIndex#constructor
+  call $assembly/indexer/index/AlkaneIndex#constructor
   local.get $height
   local.get $block
-  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#indexBlock
+  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#indexBlock
   global.get $~lib/metashrew-as/assembly/utils/logging/console
   i32.const 7520
   local.get $height
@@ -28885,7 +28885,7 @@
    end
   end
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#processProtoburns<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtoburn/NumberingProtoburn<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingRunestone/NumberingRunestone>> (param $this i32) (param $unallocatedTo i32) (param $balancesByOutput i32) (param $txid i32) (param $runestoneOutputIndex i32) (param $runestone i32) (param $edicts i32) (param $protoburns i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#processProtoburns<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtoburn/NumberingProtoburn<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingRunestone/NumberingRunestone>> (param $this i32) (param $unallocatedTo i32) (param $balancesByOutput i32) (param $txid i32) (param $runestoneOutputIndex i32) (param $runestone i32) (param $edicts i32) (param $protoburns i32)
   (local $runestoneBalanceSheet i32)
   (local $burns i32)
   (local $burnSheets i32)
@@ -29379,11 +29379,11 @@
   call $~lib/protorune/assembly/indexer/Protostone/ProtostoneTable#get:list
   return
  )
- (func $assembly/index/ProtostoneReduce#get:stones (param $this i32) (result i32)
+ (func $assembly/indexer/index/ProtostoneReduce#get:stones (param $this i32) (result i32)
   local.get $this
   i32.load offset=4
  )
- (func $assembly/index/ProtostoneReduce#get:tx (param $this i32) (result i32)
+ (func $assembly/indexer/index/ProtostoneReduce#get:tx (param $this i32) (result i32)
   local.get $this
   i32.load
  )
@@ -29628,19 +29628,19 @@
   local.get $len
   return
  )
- (func $assembly/index/AlkaneIndex#processRunestone~anonymous|0 (param $reduce i32) (param $stone i32) (param $$2 i32) (param $$3 i32) (result i32)
+ (func $assembly/indexer/index/AlkaneIndex#processRunestone~anonymous|0 (param $reduce i32) (param $stone i32) (param $$2 i32) (param $$3 i32) (result i32)
   local.get $reduce
-  call $assembly/index/ProtostoneReduce#get:stones
+  call $assembly/indexer/index/ProtostoneReduce#get:stones
   local.get $stone
   local.get $reduce
-  call $assembly/index/ProtostoneReduce#get:tx
+  call $assembly/indexer/index/ProtostoneReduce#get:tx
   call $~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtostone/NumberingProtostone.fromProtocolMessage
   call $~lib/array/Array<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtostone/NumberingProtostone>#push
   drop
   local.get $reduce
   return
  )
- (func $assembly/index/ProtostoneReduce#set:tx (param $this i32) (param $tx i32)
+ (func $assembly/indexer/index/ProtostoneReduce#set:tx (param $this i32) (param $tx i32)
   local.get $this
   local.get $tx
   i32.store
@@ -29743,7 +29743,7 @@
   call $~lib/array/Array<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtostone/NumberingProtostone>#set:length_
   local.get $this
  )
- (func $assembly/index/ProtostoneReduce#set:stones (param $this i32) (param $stones i32)
+ (func $assembly/indexer/index/ProtostoneReduce#set:stones (param $this i32) (param $stones i32)
   local.get $this
   local.get $stones
   i32.store offset=4
@@ -29752,7 +29752,7 @@
   i32.const 0
   call $~lib/rt/stub/__link
  )
- (func $assembly/index/ProtostoneReduce#constructor (param $this i32) (param $tx i32) (result i32)
+ (func $assembly/indexer/index/ProtostoneReduce#constructor (param $this i32) (param $tx i32) (result i32)
   local.get $this
   i32.eqz
   if
@@ -29763,18 +29763,18 @@
   end
   local.get $this
   i32.const 0
-  call $assembly/index/ProtostoneReduce#set:tx
+  call $assembly/indexer/index/ProtostoneReduce#set:tx
   local.get $this
   i32.const 0
   i32.const 0
   call $~lib/array/Array<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtostone/NumberingProtostone>#constructor
-  call $assembly/index/ProtostoneReduce#set:stones
+  call $assembly/indexer/index/ProtostoneReduce#set:stones
   local.get $this
   local.get $tx
-  call $assembly/index/ProtostoneReduce#set:tx
+  call $assembly/indexer/index/ProtostoneReduce#set:tx
   local.get $this
  )
- (func $~lib/array/Array<~lib/protorune/assembly/indexer/Protostone/Protostone>#reduce<assembly/index/ProtostoneReduce> (param $this i32) (param $fn i32) (param $initialValue i32) (result i32)
+ (func $~lib/array/Array<~lib/protorune/assembly/indexer/Protostone/Protostone>#reduce<assembly/indexer/index/ProtostoneReduce> (param $this i32) (param $fn i32) (param $initialValue i32) (result i32)
   (local $acc i32)
   (local $i i32)
   (local $len i32)
@@ -31780,7 +31780,7 @@
   end
   local.get $this
  )
- (func $assembly/index/AlkaneMessageContext#constructor (param $this i32) (param $protocolTag i32) (param $transaction i32) (param $block i32) (param $height i64) (param $txindex i32) (param $index i32) (param $pointer i32) (param $refund_pointer i32) (param $calldata i32) (result i32)
+ (func $assembly/indexer/index/AlkaneMessageContext#constructor (param $this i32) (param $protocolTag i32) (param $transaction i32) (param $block i32) (param $height i64) (param $txindex i32) (param $index i32) (param $pointer i32) (param $refund_pointer i32) (param $calldata i32) (result i32)
   local.get $this
   i32.eqz
   if
@@ -32872,7 +32872,7 @@
   call $~lib/protorune/assembly/indexer/protomessage/MessageContext/MessageContext#get:runtime
   call $~lib/metashrew-as/assembly/indexer/atomic/AtomicTransaction#commit
  )
- (func $~lib/protorune/assembly/indexer/protomessage/ProtoMessage/ProtoMessage#handle<assembly/index/AlkaneMessageContext> (param $this i32) (param $tx i32) (param $block i32) (param $height i64) (param $i i32)
+ (func $~lib/protorune/assembly/indexer/protomessage/ProtoMessage/ProtoMessage#handle<assembly/indexer/index/AlkaneMessageContext> (param $this i32) (param $tx i32) (param $block i32) (param $height i64) (param $i i32)
   (local $context i32)
   i32.const 0
   i32.const 0
@@ -32889,12 +32889,12 @@
   call $~lib/protorune/assembly/indexer/protomessage/ProtoMessage/ProtoMessage#get:refund_pointer
   local.get $this
   call $~lib/protorune/assembly/indexer/protomessage/ProtoMessage/ProtoMessage#get:calldata
-  call $assembly/index/AlkaneMessageContext#constructor
+  call $assembly/indexer/index/AlkaneMessageContext#constructor
   local.set $context
   local.get $context
   call $~lib/protorune/assembly/indexer/protomessage/MessageContext/MessageContext#run
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#processProtostones<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtostone/NumberingProtostone> (param $this i32) (param $protostones i32) (param $block i32) (param $height i64) (param $tx i32) (param $txid i32) (param $txindex i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#processProtostones<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtostone/NumberingProtostone> (param $this i32) (param $protostones i32) (param $block i32) (param $height i64) (param $tx i32) (param $txid i32) (param $txindex i32)
   (local $i i32)
   (local $protostone i32)
   i32.const 0
@@ -32925,7 +32925,7 @@
      local.get $block
      local.get $height
      local.get $txindex
-     call $~lib/protorune/assembly/indexer/protomessage/ProtoMessage/ProtoMessage#handle<assembly/index/AlkaneMessageContext>
+     call $~lib/protorune/assembly/indexer/protomessage/ProtoMessage/ProtoMessage#handle<assembly/indexer/index/AlkaneMessageContext>
     else
      local.get $protostone
      call $~lib/protorune/assembly/indexer/Protostone/Protostone#get:edicts
@@ -32949,7 +32949,7 @@
    end
   end
  )
- (func $assembly/index/AlkaneIndex#processRunestone (param $this i32) (param $block i32) (param $tx i32) (param $txid i32) (param $height i32) (param $i i32) (result i32)
+ (func $assembly/indexer/index/AlkaneIndex#processRunestone (param $this i32) (param $block i32) (param $tx i32) (param $txid i32) (param $height i32) (param $i i32) (result i32)
   (local $baseRunestone i32)
   (local $runestone i32)
   (local $balancesByOutput i32)
@@ -33044,16 +33044,16 @@
    call $~lib/protorune/assembly/indexer/Protostone/Protostone.from
    local.get $edicts
    local.get $burns
-   call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#processProtoburns<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtoburn/NumberingProtoburn<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingRunestone/NumberingRunestone>>
+   call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#processProtoburns<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtoburn/NumberingProtoburn<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingRunestone/NumberingRunestone>>
   end
   local.get $protostones
   call $~lib/protorune/assembly/indexer/Protostone/ProtostoneTable#flat
   i32.const 9120
   i32.const 0
   local.get $tx
-  call $assembly/index/ProtostoneReduce#constructor
-  call $~lib/array/Array<~lib/protorune/assembly/indexer/Protostone/Protostone>#reduce<assembly/index/ProtostoneReduce>
-  call $assembly/index/ProtostoneReduce#get:stones
+  call $assembly/indexer/index/ProtostoneReduce#constructor
+  call $~lib/array/Array<~lib/protorune/assembly/indexer/Protostone/Protostone>#reduce<assembly/indexer/index/ProtostoneReduce>
+  call $assembly/indexer/index/ProtostoneReduce#get:stones
   local.set $stones
   local.get $this
   local.get $stones
@@ -33063,15 +33063,15 @@
   local.get $tx
   local.get $txid
   local.get $i
-  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#processProtostones<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtostone/NumberingProtostone>
+  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#processProtostones<~lib/quorumgenesisprotorune/assembly/indexer/numbering/NumberingProtostone/NumberingProtostone>
   local.get $runestone
   return
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#get:etchEnabled (param $this i32) (result i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#get:etchEnabled (param $this i32) (result i32)
   local.get $this
   i32.load8_u
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#get:openMint (param $this i32) (result i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#get:openMint (param $this i32) (result i32)
   local.get $this
   i32.load8_u offset=1
  )
@@ -33173,7 +33173,7 @@
    end
   end
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#processProtoburns<~lib/protorune/assembly/indexer/Protoburn/Protoburn> (param $this i32) (param $unallocatedTo i32) (param $balancesByOutput i32) (param $txid i32) (param $runestoneOutputIndex i32) (param $runestone i32) (param $edicts i32) (param $protoburns i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#processProtoburns<~lib/protorune/assembly/indexer/Protoburn/Protoburn> (param $this i32) (param $unallocatedTo i32) (param $balancesByOutput i32) (param $txid i32) (param $runestoneOutputIndex i32) (param $runestone i32) (param $edicts i32) (param $protoburns i32)
   (local $runestoneBalanceSheet i32)
   (local $burns i32)
   (local $burnSheets i32)
@@ -33707,7 +33707,7 @@
   local.get $value
   return
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#processProtostones<~lib/protorune/assembly/indexer/Protostone/Protostone> (param $this i32) (param $protostones i32) (param $block i32) (param $height i64) (param $tx i32) (param $txid i32) (param $txindex i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#processProtostones<~lib/protorune/assembly/indexer/Protostone/Protostone> (param $this i32) (param $protostones i32) (param $block i32) (param $height i64) (param $tx i32) (param $txid i32) (param $txindex i32)
   (local $i i32)
   (local $protostone i32)
   i32.const 0
@@ -33738,7 +33738,7 @@
      local.get $block
      local.get $height
      local.get $txindex
-     call $~lib/protorune/assembly/indexer/protomessage/ProtoMessage/ProtoMessage#handle<assembly/index/AlkaneMessageContext>
+     call $~lib/protorune/assembly/indexer/protomessage/ProtoMessage/ProtoMessage#handle<assembly/indexer/index/AlkaneMessageContext>
     else
      local.get $protostone
      call $~lib/protorune/assembly/indexer/Protostone/Protostone#get:edicts
@@ -33762,7 +33762,7 @@
    end
   end
  )
- (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#processRunestone (param $this i32) (param $block i32) (param $tx i32) (param $txid i32) (param $height i32) (param $i i32) (result i32)
+ (func $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#processRunestone (param $this i32) (param $block i32) (param $tx i32) (param $txid i32) (param $height i32) (param $i i32) (result i32)
   (local $baseRunestone i32)
   (local $runestone i32)
   (local $unallocatedTo i32)
@@ -33779,11 +33779,11 @@
   local.set $runestone
   local.get $runestone
   local.get $this
-  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#get:etchEnabled
+  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#get:etchEnabled
   call $~lib/protorune/assembly/indexer/Protostone/Protostone#set:etchEnabled
   local.get $runestone
   local.get $this
-  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#get:openMint
+  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#get:openMint
   call $~lib/protorune/assembly/indexer/Protostone/Protostone#set:openMint
   local.get $runestone
   call $~lib/protorune/assembly/indexer/Protostone/Protostone#get:fields
@@ -33845,7 +33845,7 @@
    local.get $runestone
    local.get $edicts
    local.get $burns
-   call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#processProtoburns<~lib/protorune/assembly/indexer/Protoburn/Protoburn>
+   call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#processProtoburns<~lib/protorune/assembly/indexer/Protoburn/Protoburn>
   end
   local.get $this
   local.get $protostones
@@ -33856,7 +33856,7 @@
   local.get $tx
   local.get $txid
   local.get $i
-  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#processProtostones<~lib/protorune/assembly/indexer/Protostone/Protostone>
+  call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#processProtostones<~lib/protorune/assembly/indexer/Protostone/Protostone>
   local.get $runestone
   return
  )
@@ -36181,7 +36181,7 @@
   local.get $isCenotaph
   call $~lib/metashrew-runes/assembly/indexer/BalanceSheet/BalanceSheet#save@override
  )
- (func $assembly/wasmi/wasmi.Instance#constructor (param $this i32) (result i32)
+ (func $assembly/indexer/wasmi/wasmi.Instance#constructor (param $this i32) (result i32)
   local.get $this
   i32.eqz
   if
@@ -36191,13 +36191,13 @@
   end
   local.get $this
  )
- (func $assembly/vm/loadAlkane (result i32)
+ (func $assembly/indexer/vm/loadAlkane (result i32)
   i32.const 0
-  call $assembly/wasmi/wasmi.Instance#constructor
+  call $assembly/indexer/wasmi/wasmi.Instance#constructor
   return
  )
- (func $assembly/index/AlkaneMessageContext#handle (param $this i32) (result i32)
-  call $assembly/vm/loadAlkane
+ (func $assembly/indexer/index/AlkaneMessageContext#handle (param $this i32) (result i32)
+  call $assembly/indexer/vm/loadAlkane
   drop
   i32.const 1
   return
@@ -36610,7 +36610,7 @@
     local.get $3
     local.get $4
     local.get $5
-    call $assembly/index/AlkaneIndex#processRunestone
+    call $assembly/indexer/index/AlkaneIndex#processRunestone
     return
    end
    local.get $0
@@ -36619,7 +36619,7 @@
    local.get $3
    local.get $4
    local.get $5
-   call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/index/AlkaneMessageContext>#processRunestone
+   call $~lib/protorune/assembly/indexer/Indexer/Protorune<assembly/indexer/index/AlkaneMessageContext>#processRunestone
    return
   end
   local.get $0
@@ -36646,7 +36646,7 @@
     br $default
    end
    local.get $0
-   call $assembly/index/AlkaneMessageContext#handle
+   call $assembly/indexer/index/AlkaneMessageContext#handle
    return
   end
   local.get $0
@@ -36705,6 +36705,6 @@
   call $~lib/protorune/assembly/indexer/Protoburn/Protoburn#process
  )
  (func $~start
-  call $start:assembly/index
+  call $start:assembly/indexer/index
  )
 )
