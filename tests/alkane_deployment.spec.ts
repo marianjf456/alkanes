@@ -11,6 +11,7 @@ import {
   createMultipleProtomessageFixture,
   createProtoruneFixture,
 } from "protorune/lib/tests/utils/fixtures";
+import { inspect } from "node:util";
 
 export const DEFAULT_PROTOCOL_TAG = BigInt("0x400000000000000000");
 

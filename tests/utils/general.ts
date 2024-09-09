@@ -17,5 +17,5 @@ function findRootDir(currentDir: string): string {
   }
 
 export const DEBUG_WASM = fs.readFileSync(
-    path.join(findRootDir(__dirname), "build", "debug.wasm"),
+    path.join(findRootDir(__dirname), "build", "combined.wasm"),
 );
