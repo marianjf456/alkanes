@@ -71,6 +71,7 @@
  (global $~lib/metashrew-as/assembly/utils/b32/ONE (mut i32) (i32.const 0))
  (global $~lib/metashrew-as/assembly/utils/b32/ALPHABET_MAP i32 (i32.const 1888))
  (global $~lib/metashrew-as/assembly/utils/b32/ALPHABET i32 (i32.const 2176))
+ (global $~lib/metashrew-as/assembly/utils/b32/DEFAULT_LIMIT i32 (i32.const 90))
  (global $~lib/metashrew-as/assembly/utils/b58/ALPHABET i32 (i32.const 2240))
  (global $~lib/metashrew-as/assembly/utils/b58/LEADER (mut i32) (i32.const 0))
  (global $~lib/metashrew-runes/assembly/indexer/constants/index/RUNESTONE_TAG i32 (i32.const 23914))
