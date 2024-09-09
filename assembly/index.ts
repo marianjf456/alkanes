@@ -47,7 +47,7 @@ class AlkaneMessageContext extends MessageContext {
     let calldata = _parseLeb128toU128Array(this.calldata);
 
     let self = ProtoruneRuneId.from(
-      RuneId.fromBytes(primitiveToBuffer(calldata.slice(0, 2))),
+      RuneId.fromBytes(primitiveToBuffer(calldata.slice(0, 2)))
     );
     let caller = ProtoruneRuneId.from(RuneId.fromU128(u128.Zero));
 
@@ -55,7 +55,7 @@ class AlkaneMessageContext extends MessageContext {
       self,
       caller,
       this.runes,
-      calldata.slice(2),
+      calldata.slice(2)
     );
     return true;
   }
@@ -80,7 +80,7 @@ function _parseLeb128toU128Array(input: ArrayBuffer): Array<u128> {
 
 function expandToNumberingAlign(
   v: Array<Protostone>,
-  tx: RunesTransaction,
+  tx: RunesTransaction
 ): Array<Protostone> {
   const result = new Array<Protostone>(0);
   for (let i = 0; i < v.length; i++) {
@@ -103,17 +103,17 @@ class AlkaneIndex extends Protorune<AlkaneMessageContext> {
     tx: RunesTransaction,
     txid: ArrayBuffer,
     height: u32,
-    i: u32,
+    i: u32
   ): RunestoneMessage {
     const baseRunestone = tx.runestone();
     if (changetype<usize>(baseRunestone) === 0)
       return changetype<RunestoneMessage>(0);
     const runestone = NumberingRunestone.fromProtocolMessage(baseRunestone, tx);
     const balancesByOutput = changetype<Map<u32, ProtoruneBalanceSheet>>(
-      runestone.process(tx, txid, height, i),
+      runestone.process(tx, txid, height, i)
     );
     const protostones = Protostone.from(runestone.unwrap()).protostones(
-      tx.outs.length + 1,
+      tx.outs.length + 1
     );
     const _burns = protostones.burns();
     const burns = new Array<NumberingProtoburn<NumberingRunestone>>();
@@ -133,12 +133,12 @@ class AlkaneIndex extends Protorune<AlkaneMessageContext> {
         runestoneOutputIndex,
         Protostone.from(runestone.unwrap()),
         edicts,
-        burns,
+        burns
       );
     }
     const stones = protostones.flat().reduce((reduce, stone) => {
       reduce.stones.push(
-        NumberingProtostone.fromProtocolMessage(stone, reduce.tx),
+        NumberingProtostone.fromProtocolMessage(stone, reduce.tx)
       );
       return reduce;
     }, new ProtostoneReduce(tx)).stones;
@@ -152,7 +152,7 @@ export function _start(): void {
   const box = Box.from(data);
   const height = parsePrimitive<u32>(box);
   const block = new Block(box);
-  new AlkaneIndex().indexBlock(height, block);
+  // new AlkaneIndex().indexBlock(height, block);
   console.log("got block " + height.toString(10));
   _flush();
 }
