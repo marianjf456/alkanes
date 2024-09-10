@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "main": "lib/index.js",
   "scripts": {
-    "prepare": "npm-run-all build bundleup",
+    "prepare": "npm-run-all build bundleup opt",
     "postinstall": "cd runtime && rustup update && cargo build",
     "asbuild:debug": "asc assembly/indexer/index.ts --target debug --enable threads --config asconfig.json",
     "asbuild:release": "asc assembly/indexer/index.ts --target release --config asconfig.json",
@@ -15,7 +15,9 @@
     "prettier:assemblyscript": "prettier --write ./assembly/**/*.ts --plugin assemblyscript-prettier",
     "prettier:ts": "prettier --write ./src.ts/**/*.ts",
     "prettier": "npm-run-all prettier:assemblyscript prettier:ts",
-    "test": "ts-mocha --timeout 0 ./tests/**.spec.ts"
+    "test": "ts-mocha --timeout 0 ./tests/**.spec.ts",
+    "inspect": "wasm-dis",
+    "opt": "wasm-opt build/combined.wasm --multi-memory-lowering -n -o build/combined-out.wasm"
   },
   "dependencies": {
     "binaryen": "^118.0.0",
