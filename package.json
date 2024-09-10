@@ -6,9 +6,8 @@
   "scripts": {
     "prepare": "yarn bundleup",
     "postinstall": "cd runtime && rustup update && cargo build",
-    "asbuild:debug": "asc assembly/indexer/index.ts --target debug --enable threads --config asconfig.json",
-    "asbuild:release": "asc assembly/indexer/index.ts --target release --config asconfig.json",
-    "asbuild:test": "asc assembly/index.ts --target release --config asconfig.json",
+    "asbuild:debug": "asc assembly/index.ts --target debug --enable threads --config asconfig.json",
+    "asbuild:release": "asc assembly/index.ts --target release --config asconfig.json",
     "bundleup": "wasm-merge build/debug.wasm alkanes runtime/target/wasm32-unknown-unknown/debug/alkanes_runtime.wasm alkanes_runtime -o build/combined.wasm -n -q -sec --enable-bulk-memory",
     "build": "npm-run-all asbuild:debug asbuild:release",
     "build:debug:preloader": "npm run asbuild:preloader --sharedMemory",
@@ -27,8 +26,9 @@
     "@types/node": "^20.10.6",
     "assemblyscript": "^0.27.22",
     "assemblyscript-prettier": "^3.0.1",
-    "chai": "^5.1.0",
+    "chai": "4",
     "fs-extra": "^11.2.0",
+    "leb128": "^0.0.5",
     "metashrew-as": "https://github.com/sandshrewmetaprotocols/metashrew-as",
     "metashrew-test": "https://github.com/sandshrewmetaprotocols/metashrew-test",
     "mocha": "^10.3.0",
@@ -38,6 +38,7 @@
     "quorumgenesisprotorune": "https://github.com/kungfuflex/quorumgenesisprotorune",
     "rlp": "^3.0.0",
     "ts-mocha": "^10.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
 }
