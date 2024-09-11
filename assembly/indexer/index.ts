@@ -23,3 +23,5 @@ export function _start(): void {
   console.log("got block " + height.toString(10));
   _flush();
 }
+
+export * from "protorune/assembly/view";
