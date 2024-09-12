@@ -1,42 +1,16 @@
-import { _flush } from "metashrew-as/assembly/indexer/index";
-import { RuneId } from "metashrew-runes/assembly/indexer/RuneId";
-import { ProtoruneRuneId } from "protorune/assembly/indexer/ProtoruneRuneId";
-import { u128 } from "as-bignum/assembly";
 import { Protorune } from "protorune/assembly/indexer/index";
 import { Protostone } from "protorune/assembly/indexer/Protostone";
 import { ProtoruneBalanceSheet } from "protorune/assembly/indexer/ProtoruneBalanceSheet";
 import { Edict } from "metashrew-runes/assembly/indexer/Edict";
 import { RunestoneMessage } from "metashrew-runes/assembly/indexer/RunestoneMessage";
-import { RunesTransaction } from "metashrew-runes/assembly/indexer/RunesTransaction";
 import { RunesBlock } from "metashrew-runes/assembly/indexer/RunesBlock";
-import { MessageContext } from "protorune/assembly/indexer/protomessage/MessageContext";
+import { RunesTransaction } from "metashrew-runes/assembly/indexer/RunesTransaction";
 import {
   NumberingProtoburn,
   NumberingProtostone,
   NumberingRunestone,
 } from "quorumgenesisprotorune/assembly/indexer/numbering/index";
-import { AlkaneInstance } from "./vm";
-import { primitiveToBuffer } from "metashrew-as/assembly/utils/utils";
-import { _parseLeb128toU128Array } from "../utils";
-
-class AlkaneMessageContext extends MessageContext {
-  handle(): boolean {
-    let calldata = _parseLeb128toU128Array(this.calldata);
-
-    let self = ProtoruneRuneId.from(
-      RuneId.fromBytes(primitiveToBuffer(calldata.slice(0, 2))),
-    );
-    let caller = ProtoruneRuneId.from(RuneId.fromU128(u128.Zero));
-
-    const instance = new AlkaneInstance(
-      self,
-      caller,
-      this.runes,
-      calldata.slice(2),
-    );
-    return true;
-  }
-}
+import { AlkaneMessageContext } from "./AlkaneMessageContext";
 
 class ProtostoneReduce {
   tx: RunesTransaction;
