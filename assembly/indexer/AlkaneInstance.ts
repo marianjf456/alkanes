@@ -5,6 +5,26 @@ import { IncomingRune } from "protorune/assembly/indexer/protomessage/IncomingRu
 import { ProtoruneRuneId } from "protorune/assembly/indexer/ProtoruneRuneId";
 import { u128 } from "as-bignum/assembly";
 
+export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
+  return engine
+    .linker()
+    .define("env", "__request_context", (_caller: usize, ptr: i32): i32 => {
+      const caller = wasmi.Caller.wrap(_caller);
+      const context = changetype<AlkaneContext>(caller.context());
+      return context.serialize().byteLength;
+    })
+    .define("env", "__load_context", (_caller: usize, ptr: i32): i32 => {
+      const caller = wasmi.Caller.wrap(_caller);
+      const context = changetype<AlkaneContext>(caller.context());
+      const mem: usize = caller.memory();
+      const serialized = context.serialize();
+      const start = mem + <usize>load<i32>(load<usize>(mem + <usize>ptr));
+      if (start < mem + 4) return start - mem;
+      memory.copy(start, changetype<usize>(serialized), serialized.byteLength);
+      return start - mem;
+    });
+}
+
 export class AlkaneInstance {
   static FUEL_LIMIT: u64 = 0x10000000;
   static MEMORY_LIMIT: usize = 0x10000000;
@@ -30,9 +50,13 @@ export class AlkaneInstance {
       incomingRunes,
       inputs,
     );
-    this.store = engine.store(context.pointer(), AlkaneInstance.MEMORY_LIMIT, AlkaneInstance.FUEL_LIMIT);
+    this.store = engine.store(
+      context.pointer(),
+      AlkaneInstance.MEMORY_LIMIT,
+      AlkaneInstance.FUEL_LIMIT,
+    );
     this.context = context;
-    this.linker = engine.linker();
+    this.linker = makeLinker(engine);
     this.module = engine.module(bytecode);
   }
 }

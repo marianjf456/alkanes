@@ -188,6 +188,10 @@ export namespace wasmi {
         __wasmi_linker_instantiate(this.unwrap(), changetype<usize>(module), changetype<usize>(store)),
       );
     }
+    define(module: string, func: string, handler: (caller: Caller, ptr: i32) => i32): Linker {
+      __wasmi_linker_func_wrap(this.unwrap(), toCStr(module), toCStr(func), changetype<usize>(handler));
+      return this;
+    }
   }
 
   export class Caller {
