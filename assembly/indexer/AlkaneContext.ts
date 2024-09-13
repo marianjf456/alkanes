@@ -48,7 +48,7 @@ export class AlkaneContext {
     for (let i: i32 = 0; i < varints.length; i++) {
       memory.copy(
         changetype<usize>(result) + i * 16,
-        changetype(toArrayBuffer(varints[i])),
+        changetype<usize>(toArrayBuffer(varints[i])),
         0x10,
       );
     }

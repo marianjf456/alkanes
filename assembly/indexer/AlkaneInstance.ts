@@ -9,12 +9,12 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
   return engine
     .linker()
     .define("env", "__request_context", (_caller: usize, ptr: i32): i32 => {
-      const caller = wasmi.Caller.wrap(_caller);
+      const caller = wasmi.Caller.wrap<wasmi.Caller>(_caller);
       const context = changetype<AlkaneContext>(caller.context());
       return context.serialize().byteLength;
     })
     .define("env", "__load_context", (_caller: usize, ptr: i32): i32 => {
-      const caller = wasmi.Caller.wrap(_caller);
+      const caller = wasmi.Caller.wrap<wasmi.Caller>(_caller);
       const context = changetype<AlkaneContext>(caller.context());
       const mem: usize = caller.memory();
       const serialized = context.serialize();

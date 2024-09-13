@@ -1,44 +1,86 @@
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_caller_memory") declare function __wasmi_caller_memory(caller: usize): usize;
+@external("alkanes_runtime", "__wasmi_caller_memory") declare function __wasmi_caller_memory(
+  caller: usize,
+): usize;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_caller_context") declare function __wasmi_caller_context(caller: usize): usize;
+@external("alkanes_runtime", "__wasmi_caller_context") declare function __wasmi_caller_context(
+  caller: usize,
+): usize;
 
 //@ts-ignore
 @external("alkanes_runtime", "__wasmi_engine_new") declare function __wasmi_engine_new(): usize;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_engine_free") declare function __wasmi_engine_free(engine: usize): void;
+@external("alkanes_runtime", "__wasmi_engine_free") declare function __wasmi_engine_free(
+  engine: usize,
+): void;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_store_new") declare function __wasmi_store_new(engine: usize, context: usize, memory_limit: usize, fuel_limit: u64): usize;
+@external("alkanes_runtime", "__wasmi_store_new") declare function __wasmi_store_new(
+  engine: usize,
+  context: usize,
+  memory_limit: usize,
+  fuel_limit: u64,
+): usize;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_store_free") declare function __wasmi_store_free(store: usize): void;
+@external("alkanes_runtime", "__wasmi_store_free") declare function __wasmi_store_free(
+  store: usize,
+): void;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_module_new") declare function __wasmi_module_new(engine: usize, program: usize, sz: usize): usize;
+@external("alkanes_runtime", "__wasmi_module_new") declare function __wasmi_module_new(
+  engine: usize,
+  program: usize,
+  sz: usize,
+): usize;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_module_free") declare function __wasmi_module_free(module: usize): usize;
+@external("alkanes_runtime", "__wasmi_module_free") declare function __wasmi_module_free(
+  module: usize,
+): usize;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_linker_new") declare function __wasmi_linker_new(engine: usize): usize;
+@external("alkanes_runtime", "__wasmi_linker_new") declare function __wasmi_linker_new(
+  engine: usize,
+): usize;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_func_wrap") declare function __wasmi_func_wrap(linker: usize, module: usize, func: usize, handler: usize): void;
+@external("alkanes_runtime", "__wasmi_func_wrap") declare function __wasmi_func_wrap(
+  linker: usize,
+  module: usize,
+  func: usize,
+  handler: usize,
+): void;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_linker_instantiate") declare function __wasmi_linker_instantiate(linker: usize, store: usize, module: usize): usize;
+@external("alkanes_runtime", "__wasmi_linker_instantiate") declare function __wasmi_linker_instantiate(
+  linker: usize,
+  store: usize,
+  module: usize,
+): usize;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_store_set_fuel") declare function __wasmi_store_set_fuel(store: usize, fuel: i32): void;
+@external("alkanes_runtime", "__wasmi_store_set_fuel") declare function __wasmi_store_set_fuel(
+  store: usize,
+  fuel: i32,
+): void;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_store_get_fuel") declare function __wasmi_store_get_fuel(store: usize): void;
+@external("alkanes_runtime", "__wasmi_store_get_fuel") declare function __wasmi_store_get_fuel(
+  store: usize,
+): void;
 
 //@ts-ignore
-@external("alkanes_runtime", "__wasmi_instance_call") declare function __wasmi_instance_call(instance: usize, store: usize, name: usize, args: usize, len: i32, result: usize): i32;
+@external("alkanes_runtime", "__wasmi_instance_call") declare function __wasmi_instance_call(
+  instance: usize,
+  store: usize,
+  name: usize,
+  args: usize,
+  len: i32,
+  result: usize,
+): i32;
 
 export namespace wasmi {
   export class Result<T> {
@@ -74,6 +116,7 @@ export namespace wasmi {
     return result;
   }
 
+
   @final
   @unmanaged
   export class Instance {
@@ -98,6 +141,7 @@ export namespace wasmi {
       return Result.Ok<i32>(load<i32>(changetype<usize>(result)));
     }
   }
+
 
   @final
   @unmanaged
@@ -134,6 +178,7 @@ export namespace wasmi {
     }
   }
 
+
   @final
   @unmanaged
   export class Store {
@@ -155,6 +200,7 @@ export namespace wasmi {
     }
   }
 
+
   @final
   @unmanaged
   export class Module {
@@ -169,6 +215,7 @@ export namespace wasmi {
       __wasmi_module_free(changetype<usize>(v));
     }
   }
+
 
   @final
   @unmanaged
@@ -185,11 +232,24 @@ export namespace wasmi {
     }
     instantiate(module: Module, store: Store): Instance {
       return Instance.wrap(
-        __wasmi_linker_instantiate(this.unwrap(), changetype<usize>(module), changetype<usize>(store)),
+        __wasmi_linker_instantiate(
+          this.unwrap(),
+          changetype<usize>(module),
+          changetype<usize>(store),
+        ),
       );
     }
-    define(module: string, func: string, handler: (caller: Caller, ptr: i32) => i32): Linker {
-      __wasmi_linker_func_wrap(this.unwrap(), toCStr(module), toCStr(func), changetype<usize>(handler));
+    define(
+      module: string,
+      func: string,
+      handler: (caller: usize, ptr: i32) => i32,
+    ): Linker {
+      __wasmi_func_wrap(
+        this.unwrap(),
+        changetype<usize>(toCStr(module)),
+        changetype<usize>(toCStr(func)),
+        changetype<usize>(handler),
+      );
       return this;
     }
   }
