@@ -5,9 +5,11 @@ import { MessageContext } from "protorune/assembly/indexer/protomessage/MessageC
 import { primitiveToBuffer } from "metashrew-as/assembly/utils/utils";
 import { AlkaneInstance } from "./AlkaneInstance";
 import { _parseLeb128toU128Array } from "./utils";
+import { console } from "metashrew-as/assembly/utils/logging";
 
 export class AlkaneMessageContext extends MessageContext {
   handle(): boolean {
+    console.log("inside handle");
     let calldata = _parseLeb128toU128Array(this.calldata);
 
     let self = ProtoruneRuneId.from(

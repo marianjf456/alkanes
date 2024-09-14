@@ -2,7 +2,7 @@ import { Box } from "metashrew-as/assembly/utils/box";
 import { Block } from "metashrew-as/assembly/blockdata/block";
 import { console } from "metashrew-as/assembly/utils/logging";
 import { parsePrimitive } from "metashrew-as/assembly/utils/utils";
-import { input, _flush } from "metashrew-as/assembly//indexer";
+import { _flush, input } from "metashrew-as/assembly/indexer/index";
 import { AlkaneIndex } from "./AlkaneIndex";
 import { SpendablesIndex } from "metashrew-spendables/assembly/indexer";
 import { GENESIS } from "metashrew-runes/assembly/indexer/constants";

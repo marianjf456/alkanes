@@ -17,7 +17,8 @@
     "prettier": "npm-run-all prettier:assemblyscript prettier:ts",
     "test": "ts-mocha --timeout 0 ./tests/**.spec.ts",
     "inspect": "wasm-dis",
-    "opt": "wasm-opt build/combined.wasm --multi-memory-lowering -n -o build/combined-out.wasm"
+    "opt": "wasm-opt build/combined.wasm --multi-memory-lowering -n -o build/combined-out.wasm",
+    "full-test-build": "npm-run-all build bundleup opt"
   },
   "dependencies": {
     "binaryen": "^118.0.0",
