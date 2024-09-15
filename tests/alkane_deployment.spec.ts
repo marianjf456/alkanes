@@ -79,7 +79,7 @@ describe("alkane deployments", () => {
       protocolTag: ALKANES_PROTOCOL_TAG,
       protomessagePointer: 1, // address 2
       protomessageRefundPointer: 2, // address 1
-      calldata: Buffer.from("test calldata"),
+      calldata: Buffer.concat([Buffer.from([0x00]), Buffer.from([0x01])]),
       amount1: amount1,
       amount2: 0n,
     });
