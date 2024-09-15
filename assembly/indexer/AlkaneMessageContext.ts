@@ -8,8 +8,12 @@ import { _parseLeb128toU128Array } from "./utils";
 import { console } from "metashrew-as/assembly/utils/logging";
 
 export class AlkaneMessageContext extends MessageContext {
+  protocolTag(): u128 {
+    // TODO: This doesn't seem to be overwriting
+    return u128.from(1);
+  }
   handle(): boolean {
-    console.log("inside handle");
+    console.log("inside AlkaneMessageContext handle");
     let calldata = _parseLeb128toU128Array(this.calldata);
 
     let self = ProtoruneRuneId.from(
