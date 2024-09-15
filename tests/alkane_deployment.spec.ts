@@ -14,7 +14,7 @@ import {
 } from "protorune/lib/tests/utils/fixtures";
 import { inspect } from "node:util";
 
-export const DEFAULT_PROTOCOL_TAG = BigInt("0x400000000000000000");
+const ALKANES_PROTOCOL_TAG = 1n;
 
 describe("alkane deployments", () => {
   let program: ReturnType<typeof buildProgram>;
@@ -33,7 +33,7 @@ describe("alkane deployments", () => {
 
   it("should test fixture initial values before protoburn", async () => {
     let { block, premineAmount } = await createProtoruneFixture(
-      DEFAULT_PROTOCOL_TAG,
+      ALKANES_PROTOCOL_TAG,
       true
     );
     program.setBlock(block.toHex());
@@ -43,17 +43,17 @@ describe("alkane deployments", () => {
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS2,
       2,
-      DEFAULT_PROTOCOL_TAG
+      ALKANES_PROTOCOL_TAG
     ).isZero();
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS1,
       1,
-      DEFAULT_PROTOCOL_TAG
+      ALKANES_PROTOCOL_TAG
     ).isZero();
   });
   it("should test fixture initial values protoburn", async () => {
     let { block, premineAmount } =
-      await createProtoruneFixture(DEFAULT_PROTOCOL_TAG);
+      await createProtoruneFixture(ALKANES_PROTOCOL_TAG);
     program.setBlock(block.toHex());
     await program.run("_start");
     await expectRunesBalances(TEST_BTC_ADDRESS1, 1).isZero();
@@ -61,12 +61,12 @@ describe("alkane deployments", () => {
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS2,
       2,
-      DEFAULT_PROTOCOL_TAG
+      ALKANES_PROTOCOL_TAG
     ).equals([premineAmount]);
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS1,
       1,
-      DEFAULT_PROTOCOL_TAG
+      ALKANES_PROTOCOL_TAG
     ).isZero();
   });
   it("should index protomessage only -- refund goes to the default protostone pointer", async () => {
@@ -76,7 +76,7 @@ describe("alkane deployments", () => {
     // the used protorunes go to the refund pointer, which is address 1
     // since the input contains the full amount of protorune 1 and 2, all protorunes transfer to address 1
     let { block, premineAmount } = await createMultipleProtomessageFixture({
-      protocolTag: DEFAULT_PROTOCOL_TAG,
+      protocolTag: ALKANES_PROTOCOL_TAG,
       protomessagePointer: 1, // address 2
       protomessageRefundPointer: 2, // address 1
       calldata: Buffer.from("test calldata"),
@@ -90,12 +90,12 @@ describe("alkane deployments", () => {
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS2,
       2,
-      DEFAULT_PROTOCOL_TAG,
+      ALKANES_PROTOCOL_TAG
     ).isZero();
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS1,
       1,
-      DEFAULT_PROTOCOL_TAG,
+      ALKANES_PROTOCOL_TAG
     ).equals([premineAmount, premineAmount]);
   });
 });
