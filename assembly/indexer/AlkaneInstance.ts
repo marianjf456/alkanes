@@ -50,13 +50,17 @@ export class AlkaneInstance {
       incomingRunes,
       inputs,
     );
-    this.store = engine.store(
+    const store = this.store = engine.store(
       context.pointer(),
       AlkaneInstance.MEMORY_LIMIT,
       AlkaneInstance.FUEL_LIMIT,
     );
     this.context = context;
-    this.linker = makeLinker(engine);
-    this.module = engine.module(bytecode);
+    const linker = this.linker = makeLinker(engine);
+    const module = this.module = engine.module(bytecode);
+    this.instance = linker.instantiate(module, store);
+  }
+  call(name: string, args: Array<i32>): wasmi.Result<i32> {
+    return this.instance.call(this.store, name, args);
   }
 }
