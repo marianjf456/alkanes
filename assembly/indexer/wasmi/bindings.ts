@@ -70,7 +70,7 @@
 //@ts-ignore
 @external("alkanes_runtime", "__wasmi_store_get_fuel") declare function __wasmi_store_get_fuel(
   store: usize,
-): void;
+): i32;
 
 //@ts-ignore
 @external("alkanes_runtime", "__wasmi_instance_call") declare function __wasmi_instance_call(
@@ -127,7 +127,7 @@ export namespace wasmi {
     unwrap(): usize {
       return changetype<usize>(this);
     }
-    call<T>(store: Store, name: string, args: Array<i32>): Result<i32> {
+    call(store: Store, name: string, args: Array<i32>): Result<i32> {
       const result = new ArrayBuffer(4);
       const hadError = __wasmi_instance_call(
         changetype<usize>(this),
@@ -196,7 +196,7 @@ export namespace wasmi {
       __wasmi_store_set_fuel(this.unwrap(), fuel);
     }
     fuel(): i32 {
-      __wasmi_store_get_fuel(this.unwrap());
+      return __wasmi_store_get_fuel(this.unwrap());
     }
   }
 
@@ -256,8 +256,8 @@ export namespace wasmi {
 
   export class Caller {
     [key: string]: number;
-    static wrap<T>(v: usize): T {
-      return changetype<T>(v);
+    static wrap(v: usize): Caller {
+      return changetype<Caller>(v);
     }
     unwrap(): usize {
       return changetype<usize>(this);

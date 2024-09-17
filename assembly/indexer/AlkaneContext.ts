@@ -1,7 +1,9 @@
 import { ProtoruneRuneId } from "protorune/assembly/indexer/ProtoruneRuneId";
 import { u128 } from "as-bignum/assembly";
 import { IncomingRune } from "protorune/assembly/indexer/protomessage/IncomingRune";
+import { AlkaneInstance } from "./AlkaneInstance";
 import { AlkaneContextIncomingRune } from "./AlkaneContextIncomingRune";
+import { AlkaneMessageContext } from "./AlkaneMessageContext";
 import { toArrayBuffer } from "metashrew-runes/assembly/utils";
 
 export class AlkaneContext {
@@ -10,6 +12,7 @@ export class AlkaneContext {
   public fuelLeft: u128;
   public incomingRunes: Array<AlkaneContextIncomingRune>;
   public messageContext: AlkaneMessageContext;
+  public instance: AlkaneInstance;
   constructor(
     messageContext: AlkaneMessageContext,
     instance: AlkaneInstance,

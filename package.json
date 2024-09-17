@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.6",
-    "assemblyscript": "^0.27.22",
+    "assemblyscript": "0.26.7",
     "assemblyscript-prettier": "^3.0.1",
     "chai": "4",
     "fs-extra": "^11.2.0",

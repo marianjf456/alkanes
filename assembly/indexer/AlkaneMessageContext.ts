@@ -9,7 +9,9 @@ import { _parseLeb128toU128Array } from "./utils";
 import { console } from "metashrew-as/assembly/utils/logging";
 import { Cellpack } from "./Cellpack";
 import { ALKANES_INDEX } from "./tables";
+import { Inscription } from "metashrew-as/assembly/blockdata/inscription";
 import { fromArrayBuffer, toArrayBuffer } from "metashrew-runes/assembly/utils";
+import { IndexPointer } from "metashrew-as/assembly/indexer/tables";
 
 export class AlkaneMessageContext extends MessageContext {
   protocolTag(): u128 {
@@ -17,7 +19,7 @@ export class AlkaneMessageContext extends MessageContext {
     return u128.from(1);
   }
   sequenceIndex(): IndexPointer {
-    return ALKANES_INDEX.select("sequence");
+    return ALKANES_INDEX.keyword("sequence");
   }
   advanceSequence(): u128 {
     const next = this.sequence() + u128.from(1);
@@ -25,7 +27,7 @@ export class AlkaneMessageContext extends MessageContext {
     return next;
   }
   reservedSequenceIndex(v: u128): IndexPointer {
-    return ALKANES_INDEX.select("sequence-reserve/").select(toArrayBuffer(v));
+    return ALKANES_INDEX.keyword("sequence-reserve/").select(toArrayBuffer(v));
   }
   takeCreate1(v: u128): boolean {
     const reserved = this.reservedSequenceIndex(v);
@@ -44,7 +46,8 @@ export class AlkaneMessageContext extends MessageContext {
     for (let i = 0; i < this.transaction.ins.length; i++) {
       const inscription = this.transaction.ins[i].inscription();
       if (inscription !== null) {
-        return inscription.body();
+        const body = (inscription as Inscription).body();
+	if (body === null) return body as ArrayBuffer;
       }
     }
     return changetype<ArrayBuffer>(0);
@@ -53,22 +56,22 @@ export class AlkaneMessageContext extends MessageContext {
     console.log("inside AlkaneMessageContext handle ");
     let calldata = _parseLeb128toU128Array(this.calldata);
     const cellpack = new Cellpack(calldata);
-    if (cellpack.target.isCreate0()) {
+    if (cellpack.target.isCreate()) {
       const binary = this.findBinary();
       if (changetype<usize>(binary) === 0) {
         console.log('failed to create0');
 	return false;
       } else {
-        ALKANE_INDEX.select(cellpack.target.toBytes()).set(binary);
+        ALKANES_INDEX.select(cellpack.target.toBytes()).set(binary);
       }
     }
-    if (cellpack.target.isCreate1()) {
+    if (cellpack.target.isCreateReserved()) {
       const binary = this.findBinary();
-      if (changetype<usize>(binary) === 0 || this.takeCreate1(cellpack.target.lo)) {
+      if (changetype<usize>(binary) === 0 || this.takeCreate1(cellpack.target.tx)) {
         console.log('failed to create1');
 	return false;
       } else {
-        ALKANE_INDEX.select(cellpack.target.toBytes()).set(binary);
+        ALKANES_INDEX.select(cellpack.target.toBytes()).set(binary);
       }
     }
     let self = cellpack.target;

@@ -1,16 +1,11 @@
 import { ProtoruneRuneId } from "protorune/assembly/indexer/ProtoruneRuneId";
+import { u128 } from "as-bignum/assembly";
 
 export class AlkaneId extends ProtoruneRuneId {
-  public get hi(): u128 {
-    return this.block;
+  isCreate(): boolean {
+    return this.block.isZero() && this.tx.isZero();
   }
-  public get lo(): u128 {
-    return this.tx;
-  }
-  isCreate0(): boolean {
-    return this.hi.isZero() && this.lo.isZero();
-  }
-  isCreate1(): boolean {
-    return this.hi.eq(u128.from(1));
+  isCreateReserved(): boolean {
+    return this.block === u128.from(1);
   }
 }

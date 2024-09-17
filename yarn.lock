@@ -336,6 +336,14 @@ assemblyscript-prettier@^3.0.1:
   dependencies:
     assemblyscript "~0.27.0"
 
+assemblyscript@0.26.7:
+  version "0.26.7"
+  resolved "https://registry.yarnpkg.com/assemblyscript/-/assemblyscript-0.26.7.tgz#b194ee599a1b9d7753e25a1ca4c7d45f42574b7f"
+  integrity sha512-+zjr7RZotrNleOc2raZQJVIoMQ906LmZP9Q9C9IUft3o5QIzerQdKboHIwyO4HZUZor3dG0e9vIFK7w1l0PCsw==
+  dependencies:
+    binaryen "111.0.0-nightly.20230111"
+    long "^5.2.0"
+
 assemblyscript@^0.27.22, assemblyscript@~0.27.0:
   version "0.27.29"
   resolved "https://registry.yarnpkg.com/assemblyscript/-/assemblyscript-0.27.29.tgz#6d18cd0c8892c78d442776777f02ed68d4d29411"
@@ -407,6 +415,11 @@ binary-extensions@^2.0.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.3.0.tgz#f6e14a97858d327252200242d4ccfe522c445522"
   integrity sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==
+
+binaryen@111.0.0-nightly.20230111:
+  version "111.0.0-nightly.20230111"
+  resolved "https://registry.yarnpkg.com/binaryen/-/binaryen-111.0.0-nightly.20230111.tgz#251226c419ec2fb64037314f476d0e47965c3a84"
+  integrity sha512-CUEED/yMHoGeGnOZhQJW5+Luf5z/F58PHK5lw2feh5fbbqauodgnxyYkc2oxSjYwHHRCmFmaYyeQH4zlhRbebg==
 
 binaryen@116.0.0-nightly.20240114:
   version "116.0.0-nightly.20240114"
@@ -1497,7 +1510,7 @@ long@^4.0.0:
   resolved "https://registry.yarnpkg.com/long/-/long-4.0.0.tgz#9a7b71cfb7d361a194ea555241c92f7468d5bf28"
   integrity sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
 
-long@^5.2.1:
+long@^5.2.0, long@^5.2.1:
   version "5.2.3"
   resolved "https://registry.yarnpkg.com/long/-/long-5.2.3.tgz#a3ba97f3877cf1d778eccbcb048525ebb77499e1"
   integrity sha512-lcHwpNoggQTObv5apGNCTdJrO69eHOZMi4BNC+rTLER8iHAqGrUVeLh/irVIM7zTw2bOXA8T6uNPeujwOLg/2Q==
