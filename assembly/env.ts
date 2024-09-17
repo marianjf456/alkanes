@@ -1,7 +1,7 @@
 @external("env", "__request_context") declare function __request_context(): usize;
 @external("env", "__load_context") declare function __load_context(ptr: usize): void;
-@external("env", "__request_storage") declare function __request_storage(ptr: usize): usize;
-@external("env", "__load_storage") declare function __load_storage(ptr: usize, result: usize): void
+@external("env", "__request_load") declare function __request_load(ptr: usize): usize;
+@external("env", "__load") declare function __load(ptr: usize, result: usize): void
 @external("env", "__commit") declare function __commit(ptr: usize): void;
 @external("env", "__call") declare function __call(cellpack: usize, fuel: u64): usize;
 @external("env", "__delegatecall") declare function __delegatecall(cellpack: usize, fuel: u64): usize;
