@@ -9,13 +9,18 @@ export class AlkaneContext {
   public caller: ProtoruneRuneId;
   public fuelLeft: u128;
   public incomingRunes: Array<AlkaneContextIncomingRune>;
+  public messageContext: AlkaneMessageContext;
   constructor(
+    messageContext: AlkaneMessageContext,
+    instance: AlkaneInstance,
     self: ProtoruneRuneId,
     caller: ProtoruneRuneId,
     fuelLeft: u64,
     incomingRunes: Array<IncomingRune>,
-    inputs: Array<u128>,
+    inputs: Array<u128>
   ) {
+    this.messageContext = messageContext;
+    this.instance = instance;
     this.self = self;
     this.caller = caller;
     this.fuelLeft = u128.from(fuelLeft);

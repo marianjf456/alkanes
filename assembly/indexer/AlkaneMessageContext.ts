@@ -74,6 +74,7 @@ export class AlkaneMessageContext extends MessageContext {
     let self = cellpack.target;
     let caller = ProtoruneRuneId.from(RuneId.fromU128(u128.Zero));
     const instance = new AlkaneInstance(
+       this,
        self,
        caller,
        this.runes,
