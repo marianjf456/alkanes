@@ -12,7 +12,7 @@ import {
   createMultipleProtomessageFixture,
   createProtoruneFixture,
 } from "protorune/lib/tests/utils/fixtures";
-import { inspect } from "node:util";
+import { encodeToCalldata } from "../src.ts";
 
 const ALKANES_PROTOCOL_TAG = 1n;
 
@@ -28,13 +28,13 @@ describe("alkane deployments", () => {
   const expectProtoRunesBalances = (
     address: string,
     index: number,
-    protocol: any
+    protocol: any,
   ) => expectBalances(program, address, index, protorunesbyaddress, protocol);
 
   it("should test fixture initial values before protoburn", async () => {
     let { block, premineAmount } = await createProtoruneFixture(
       ALKANES_PROTOCOL_TAG,
-      true
+      true,
     );
     program.setBlock(block.toHex());
     await program.run("_start");
@@ -43,12 +43,12 @@ describe("alkane deployments", () => {
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS2,
       2,
-      ALKANES_PROTOCOL_TAG
+      ALKANES_PROTOCOL_TAG,
     ).isZero();
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS1,
       1,
-      ALKANES_PROTOCOL_TAG
+      ALKANES_PROTOCOL_TAG,
     ).isZero();
   });
   it("should test fixture initial values protoburn", async () => {
@@ -61,12 +61,12 @@ describe("alkane deployments", () => {
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS2,
       2,
-      ALKANES_PROTOCOL_TAG
+      ALKANES_PROTOCOL_TAG,
     ).equals([premineAmount]);
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS1,
       1,
-      ALKANES_PROTOCOL_TAG
+      ALKANES_PROTOCOL_TAG,
     ).isZero();
   });
   it("should index protomessage only -- refund goes to the default protostone pointer", async () => {
@@ -79,7 +79,7 @@ describe("alkane deployments", () => {
       protocolTag: ALKANES_PROTOCOL_TAG,
       protomessagePointer: 1, // address 2
       protomessageRefundPointer: 2, // address 1
-      calldata: Buffer.concat([Buffer.from([0x00]), Buffer.from([0x01])]),
+      calldata: encodeToCalldata([Buffer.from([0x00]), Buffer.from([0x01])]),
       amount1: amount1,
       amount2: 0n,
     });
@@ -90,12 +90,12 @@ describe("alkane deployments", () => {
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS2,
       2,
-      ALKANES_PROTOCOL_TAG
+      ALKANES_PROTOCOL_TAG,
     ).isZero();
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS1,
       1,
-      ALKANES_PROTOCOL_TAG
+      ALKANES_PROTOCOL_TAG,
     ).equals([premineAmount, premineAmount]);
   });
 });
