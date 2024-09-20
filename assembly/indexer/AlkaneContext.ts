@@ -14,7 +14,6 @@ export class AlkaneContext {
   public incomingRunes: Array<AlkaneContextIncomingRune>;
   public messageContext: AlkaneMessageContext;
   public instance: AlkaneInstance;
-  public runtimeBalances: ProtoruneBalanceSheet;
   constructor(
     messageContext: AlkaneMessageContext,
     instance: AlkaneInstance,
@@ -22,7 +21,6 @@ export class AlkaneContext {
     caller: ProtoruneRuneId,
     fuelLeft: u64,
     incomingRunes: Array<IncomingRune>,
-    runtimeBalances: ProtoruneBalanceSheet,
     inputs: Array<u128>
   ) {
     this.messageContext = messageContext;
@@ -34,7 +32,6 @@ export class AlkaneContext {
       (v: IncomingRune, i: i32, ary: Array<IncomingRune>) =>
         AlkaneContextIncomingRune.fromIncomingRune(v),
     );
-    this.runtimeBalances = runtimeBalances;
   }
   pointer(): usize {
     return changetype<usize>(this);
@@ -52,10 +49,6 @@ export class AlkaneContext {
       result.push(rune.runeId.block);
       result.push(rune.runeId.tx);
       result.push(rune.amount);
-    }
-    result.push(u128.from(this.runtimeBalances.runes.length));
-    for (let i = 0; i < this.runtimeBalances.runes.length; i++) {
-      this.runtimeBalances.runes[i]
     }
     return result;
   }

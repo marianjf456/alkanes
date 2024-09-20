@@ -7,7 +7,7 @@ import { primitiveToBuffer } from "metashrew-as/assembly/utils/utils";
 import { AlkaneInstance } from "./AlkaneInstance";
 import { _parseLeb128toU128Array } from "./utils";
 import { console } from "metashrew-as/assembly/utils/logging";
-import { Cellpack } from "./Cellpack";
+import { Cellpack } from "../Cellpack";
 import { ALKANES_INDEX } from "./tables";
 import { Inscription } from "metashrew-as/assembly/blockdata/inscription";
 import { fromArrayBuffer, toArrayBuffer } from "metashrew-runes/assembly/utils";
@@ -81,7 +81,6 @@ export class AlkaneMessageContext extends MessageContext {
        self,
        caller,
        this.runes,
-       this.runtimeBalances,
        cellpack.inputs
     );
     const result = instance.call("__execute", new Array<i32>());

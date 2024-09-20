@@ -67,12 +67,6 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
       writeMemory(caller, deref(caller, ptr, 0), changetype<AlkaneContext>(wasmi.Caller.wrap(_caller).context()).messageContext.block.bytes.toArrayBuffer());
       return 0;
     })
-    .define("env", "__commit", (_caller: usize, ptr: i32): i32 => {
-      const caller = wasmi.Caller.wrap(_caller);
-      const checkpoint = changetype<AlkaneContext>(caller.context()).checkpoint;
-      
-      return 0;
-    })
     .define("env", "__sequence", (_caller: usize, ptr: i32): i32 => {
       const caller = wasmi.Caller.wrap(_caller);
       writeMemory(caller, deref(caller, ptr, 0), changetype<Uint8Array>(changetype<AlkaneContext>(caller.context()).messageContext.sequence().toBytes()).buffer);
@@ -86,7 +80,6 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
     .define("env", "__call", (_caller: usize, ptr: i32): i32 => {
       const caller = wasmi.Caller.wrap(_caller);
       const context = changetype<AlkaneContext>(caller.context());
-      const subContext = new AlkaneContext(
       return 0;
     })
     .define("env", "__delegatecall", (_caller: usize, ptr: i32): i32 => {
