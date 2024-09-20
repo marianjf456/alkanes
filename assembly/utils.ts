@@ -1,4 +1,5 @@
 import { fromArrayBuffer } from "metashrew-runes/assembly/utils";
+import { u128 } from "as-bignum/assembly"
 
 export function u128ListToArrayBuffer(flat: Array<u128>): ArrayBuffer {
   return flat.reduce<ArrayBuffer>((r: ArrayBuffer, v: u128, i: i32, ary: Array<u128>) => {
