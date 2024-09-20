@@ -42,11 +42,11 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
       memory.copy(start, changetype<usize>(serialized), serialized.byteLength);
       return <i32>start - <i32>mem;
     })
-    .define("env", "__request_load", (_caller: usize, ptr: i32): i32 => {
+    .define("env", "__request_storage", (_caller: usize, ptr: i32): i32 => {
       const caller = wasmi.Caller.wrap(_caller);
       return ALKANES_INDEX.keyword("storage/").select(changetype<AlkaneContext>(caller.context()).self.toBytes()).keyword("/").select(readArrayBuffer(caller, deref(caller, ptr, 0))).get().byteLength;
     })
-    .define("env", "__load", (_caller: usize, ptr: i32): i32 => {
+    .define("env", "__load_storage", (_caller: usize, ptr: i32): i32 => {
       const caller = wasmi.Caller.wrap(_caller);
       writeMemory(caller, deref(caller, ptr, 1), ALKANES_INDEX.keyword("storage/").select(changetype<AlkaneContext>(caller.context()).self.toBytes()).keyword("/").select(readArrayBuffer(caller, deref(caller, ptr, 0))).get());
       return 0;
