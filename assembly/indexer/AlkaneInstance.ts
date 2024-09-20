@@ -68,6 +68,9 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
       return 0;
     })
     .define("env", "__commit", (_caller: usize, ptr: i32): i32 => {
+      const caller = wasmi.Caller.wrap(_caller);
+      const checkpoint = changetype<AlkaneContext>(caller.context()).checkpoint;
+      
       return 0;
     })
     .define("env", "__sequence", (_caller: usize, ptr: i32): i32 => {
@@ -81,6 +84,9 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
       return 0;
     })
     .define("env", "__call", (_caller: usize, ptr: i32): i32 => {
+      const caller = wasmi.Caller.wrap(_caller);
+      const context = changetype<AlkaneContext>(caller.context());
+      const subContext = new AlkaneContext(
       return 0;
     })
     .define("env", "__delegatecall", (_caller: usize, ptr: i32): i32 => {
