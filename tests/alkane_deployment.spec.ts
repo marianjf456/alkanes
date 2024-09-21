@@ -12,7 +12,7 @@ import {
   createMultipleProtomessageFixture,
   createProtoruneFixture,
 } from "protorune/lib/tests/utils/fixtures";
-import { encodeToCalldata } from "../src.ts";
+import { u128 } from "@magiceden-oss/runestone-lib/dist/src/integer/u128";
 
 const ALKANES_PROTOCOL_TAG = 1n;
 
@@ -79,7 +79,7 @@ describe("alkane deployments", () => {
       protocolTag: ALKANES_PROTOCOL_TAG,
       protomessagePointer: 1, // address 2
       protomessageRefundPointer: 2, // address 1
-      calldata: encodeToCalldata([Buffer.from([0x00]), Buffer.from([0x01])]),
+      calldata: [u128(0n), u128(1n)], 
       amount1: amount1,
       amount2: 0n,
     });
