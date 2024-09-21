@@ -16,7 +16,6 @@ import { logArray } from "quorumgenesisprotorune/assembly/utils";
 
 export class AlkaneMessageContext extends MessageContext {
   protocolTag(): u128 {
-    // TODO: This doesn't seem to be overwriting
     return u128.from(1);
   }
   sequenceIndex(): IndexPointer {
