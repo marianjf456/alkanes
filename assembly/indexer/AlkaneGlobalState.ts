@@ -19,14 +19,29 @@ export class AlkaneState {
 }
 
 export class AlkaneGlobalState {
-  static wrap(v: Array<Map<string, AlkaneState>>): AlkaneGlobalState {
-    return changetype<AlkaneGlobalState>(v);
-  }
-  static default(): AlkaneGlobalState {
-    return AlkaneGlobalState.wrap(new Array<Map<string, AlkaneState>>(0));
+  public context: AlkaneMessageContext;
+  public store: Map<string, AlkaneState>;
+  constructor(context: AlkaneMessageContext) {
+    this.context = context;
+    this.store = new Map<string, AlkaneState>();
   }
   unwrap(): Array<Map<string, AlkaneState>> {
-    return changetype<Array<Map<string, AlkaneState>>>(this);
+    return this.store;
+  }
+  checkpoint(): void {
+    this.unwrap().push(new Map<string, AlkaneState>());
+  }
+  commit(): void {
+    const ary = this.unwrap();
+    const top = ary.pop();
+    const current = this.current();
+    if (changetype<usize>(current) === 0) {
+      const alkanes = top.keys();
+      for (let i = 0; i < alkanes.length; i++) {
+g       
+      }
+      this.context.runtime.
+    }
   }
   balance(_who: AlkaneId, _what: AlkaneId): u128 {
     const checkpoints = this.unwrap();

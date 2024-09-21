@@ -11,7 +11,7 @@
 @external("env", "__load_transaction") declare function __load_transaction(ptr: usize): void;
 @external("env", "__request_block") declare function __request_block(): usize;
 @external("env", "__load_block") declare function __load_block(ptr: usize): void;
-@external("env", "__fuel") declare function __fuel(): u64;
+@external("env", "__fuel") declare function __fuel(): usize;
 
 import { fromArrayBuffer } from "metashrew-runes/assembly/utils";
 import { u128 } from "as-bignum/assembly";
@@ -226,17 +226,17 @@ export class AlkaneEnvironment {
     return load<u64>(changetype<usize>(buffer));
   }
   call(target: AlkaneId, inputs: Array<u128>, values: Array<AlkaneTransfer>, fuel: u64): CallResult {
-    const result = new ArrayBuffer(__call(changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()), changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()), fuel));
+    const result = new ArrayBuffer(__call(changetype<usize>(this.storage.serialize()), changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()), changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()), fuel));
     __returndatacopy(changetype<usize>(result));
     return CallResult.parse(result);
   }
   staticcall(target: AlkaneId, inputs: Array<u128>, values: Array<AlkaneTransfer>, fuel: u64): CallResult {
-    const result = new ArrayBuffer(__staticcall(changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()), changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()), fuel));
+    const result = new ArrayBuffer(__staticcall(changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()), changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()), changetype<usize>(this.storage.serialize()), fuel));
     __returndatacopy(changetype<usize>(result));
     return CallResult.parse(result);
   }
   delegatecall(target: AlkaneId, inputs: Array<u128>, values: Array<AlkaneTransfer>, fuel: u64): CallResult {
-    const result = new ArrayBuffer(__delegatecall(changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()), changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()), fuel));
+    const result = new ArrayBuffer(__delegatecall(changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()), changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()), changetype<usize>(this.storage.serialize()), fuel));
     __returndatacopy(changetype<usize>(result));
     return CallResult.parse(result);
   }
