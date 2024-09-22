@@ -57,9 +57,7 @@ export class AlkaneMessageContext extends MessageContext {
   handle(): boolean {
     console.log("inside AlkaneMessageContext handle ");
 
-    logArrayBuffer(this.calldata);
     let calldata = _parseLeb128toU128Array(this.calldata);
-    logArray(calldata);
     const cellpack = new Cellpack(calldata);
     if (cellpack.target.isCreate()) {
       const binary = this.findBinary();

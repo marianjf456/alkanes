@@ -1948,7 +1948,7 @@ protobufjs@^6.8.8:
 
 "protorune@https://github.com/kungfuflex/protorune":
   version "0.1.0"
-  resolved "https://github.com/kungfuflex/protorune#b44e6e96eea239a0b6246c1e102ce3fbaf1844fb"
+  resolved "https://github.com/kungfuflex/protorune#751f77ea1dc88a424985bf825842a3133a7239ea"
   dependencies:
     "@protobuf-ts/runtime" "^2.9.4"
     bip32 "^4.0.0"

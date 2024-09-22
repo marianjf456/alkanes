@@ -12,7 +12,8 @@ import {
   createMultipleProtomessageFixture,
   createProtoruneFixture,
 } from "protorune/lib/tests/utils/fixtures";
-import { u128 } from "@magiceden-oss/runestone-lib/dist/src/integer/u128";
+import { Cellpack } from "../src.ts/alkane";
+import { u128 } from "@magiceden-oss/runestone-lib/dist/src/integer";
 
 const ALKANES_PROTOCOL_TAG = 1n;
 
@@ -28,13 +29,13 @@ describe("alkane deployments", () => {
   const expectProtoRunesBalances = (
     address: string,
     index: number,
-    protocol: any,
+    protocol: any
   ) => expectBalances(program, address, index, protorunesbyaddress, protocol);
 
   it("should test fixture initial values before protoburn", async () => {
     let { block, premineAmount } = await createProtoruneFixture(
       ALKANES_PROTOCOL_TAG,
-      true,
+      true
     );
     program.setBlock(block.toHex());
     await program.run("_start");
@@ -43,12 +44,12 @@ describe("alkane deployments", () => {
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS2,
       2,
-      ALKANES_PROTOCOL_TAG,
+      ALKANES_PROTOCOL_TAG
     ).isZero();
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS1,
       1,
-      ALKANES_PROTOCOL_TAG,
+      ALKANES_PROTOCOL_TAG
     ).isZero();
   });
   it("should test fixture initial values protoburn", async () => {
@@ -61,25 +62,25 @@ describe("alkane deployments", () => {
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS2,
       2,
-      ALKANES_PROTOCOL_TAG,
+      ALKANES_PROTOCOL_TAG
     ).equals([premineAmount]);
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS1,
       1,
-      ALKANES_PROTOCOL_TAG,
+      ALKANES_PROTOCOL_TAG
     ).isZero();
   });
   it("should index protomessage only -- refund goes to the default protostone pointer", async () => {
     const amount1 = 100000n;
-    // createMultipleProtomessageFixture hard codes the default protostone pointer to be address 1
-    // this means unused protorunes in the input will go to address 1
-    // the used protorunes go to the refund pointer, which is address 1
-    // since the input contains the full amount of protorune 1 and 2, all protorunes transfer to address 1
+    const cellpack = new Cellpack(u128(0), u128(1), [
+      /*u128(999)*/
+    ]);
+
     let { block, premineAmount } = await createMultipleProtomessageFixture({
       protocolTag: ALKANES_PROTOCOL_TAG,
       protomessagePointer: 1, // address 2
       protomessageRefundPointer: 2, // address 1
-      calldata: [u128(0n), u128(1n)], 
+      calldata: cellpack.serializeToCalldata(),
       amount1: amount1,
       amount2: 0n,
     });
@@ -90,12 +91,12 @@ describe("alkane deployments", () => {
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS2,
       2,
-      ALKANES_PROTOCOL_TAG,
+      ALKANES_PROTOCOL_TAG
     ).isZero();
     await expectProtoRunesBalances(
       TEST_BTC_ADDRESS1,
       1,
-      ALKANES_PROTOCOL_TAG,
+      ALKANES_PROTOCOL_TAG
     ).equals([premineAmount, premineAmount]);
   });
 });

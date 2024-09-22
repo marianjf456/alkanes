@@ -8,6 +8,7 @@ export class Cellpack {
   public target: AlkaneId;
   public inputs: Array<u128>;
   constructor(ary: Array<u128>) {
+    // TODO: Remove this check since we don't want this to crash our indexer. helpful right now for local testing
     assert(ary.length >= 2, "Cellpack received less than 2 u128s as input");
     const alkaneId = new AlkaneId();
     this.target = alkaneId;
