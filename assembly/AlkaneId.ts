@@ -2,19 +2,19 @@ import { ProtoruneRuneId } from "protorune/assembly/indexer/ProtoruneRuneId";
 import { u128 } from "as-bignum/assembly";
 
 export class AlkaneId extends ProtoruneRuneId {
-  constructor() {
-    super(0, 0);
+  constructor(hi: u64 = 0, lo: u32 = 0) {
+    super(hi, lo);
   }
-  static from(hi: u128, lo: u128): AlkaneId {
-    const result = new AlkaneId(0, 0);
+  static fromId(hi: u128, lo: u128): AlkaneId {
+    const result = new AlkaneId();
     result.block = hi;
     result.tx = lo;
     return result;
   }
-  isCreate(): boolean {
+  isCreate(): bool {
     return this.block.isZero() && this.tx.isZero();
   }
-  isCreateReserved(): boolean {
+  isCreateReserved(): bool {
     return this.block === u128.from(1);
   }
 }

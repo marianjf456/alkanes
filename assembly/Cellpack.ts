@@ -20,8 +20,8 @@ export class Cellpack {
   }
   toArray(): Array<u128> {
     const result = new Array<u128>(0);
-    result.push(target.block);
-    result.push(target.tx);
+    result.push(this.target.block);
+    result.push(this.target.tx);
     return result.concat(this.inputs);
   }
   serialize(): ArrayBuffer {
