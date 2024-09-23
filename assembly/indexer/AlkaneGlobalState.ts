@@ -2,8 +2,15 @@ import { AlkaneId } from "../AlkaneId";
 import { u128 } from "as-bignum/assembly";
 import { Box } from "metashrew-as/assembly/utils/box";
 import { ALKANES_INDEX } from "./tables";
-import { fromArrayBuffer, isNullPtr } from "metashrew-runes/assembly/utils";
+import {
+  fromArrayBuffer,
+  isNullPtr,
+  toArrayBuffer,
+} from "metashrew-runes/assembly/utils";
 import { nullptr } from "metashrew-as/assembly/utils/pointer";
+import { AtomicTransaction } from "metashrew-as/assembly/indexer/atomic";
+import { decodeHex } from "metashrew-as/assembly/utils/hex";
+import { AlkaneMessageContext } from "./AlkaneMessageContext";
 
 export class AlkaneState {
   public balances: Map<string, u128> = new Map<string, u128>();
@@ -16,14 +23,28 @@ export class AlkaneState {
     const keys = this.balances.keys();
     const alkaneId = decodeHex(alkaneHex.substring(2, alkaneHex.length));
     for (let i: i32 = 0; i < keys.length; i++) {
-      atomic.set(ALKANES_INDEX.keyword("balances/").select(alkaneId).keyword("/").select(decodeHex(keys[i].substring(2, keys[i].length))).unwrap(), toArrayBuffer(this.balances.get(keys[i])));
+      atomic.set(
+        ALKANES_INDEX.keyword("balances/")
+          .select(alkaneId)
+          .keyword("/")
+          .select(decodeHex(keys[i].substring(2, keys[i].length)))
+          .unwrap(),
+        toArrayBuffer(this.balances.get(keys[i])),
+      );
     }
   }
   _indexStorage(alkaneHex: string, atomic: AtomicTransaction): void {
     const keys = this.storage.keys();
     const alkaneId = decodeHex(alkaneHex.substring(2, alkaneHex.length));
     for (let i: i32 = 0; i < keys.length; i++) {
-      atomic.set(ALKANES_INDEX.keyword("storage/").select(alkaneId).keyword("/").select(decodeHex(keys[i].substring(2, keys[i].length))).unwrap(), this.storage.get(keys[i]));
+      atomic.set(
+        ALKANES_INDEX.keyword("storage/")
+          .select(alkaneId)
+          .keyword("/")
+          .select(decodeHex(keys[i].substring(2, keys[i].length)))
+          .unwrap(),
+        this.storage.get(keys[i]),
+      );
     }
   }
   _pipeBalancesTo(state: AlkaneState): void {
@@ -54,7 +75,7 @@ export class AlkaneState {
 export class AlkaneCheckpoint {
   [key: string]: number;
   static wrap(v: Map<string, AlkaneState>): AlkaneCheckpoint {
-    return changetype<AlkaneState>(v);
+    return changetype<AlkaneCheckpoint>(v);
   }
   unwrap(): Map<string, AlkaneState> {
     return changetype<Map<string, AlkaneState>>(this);
@@ -74,7 +95,7 @@ export class AlkaneCheckpoint {
   flush(atomic: AtomicTransaction): void {
     const map = this.unwrap();
     const keys = map.keys();
-    for (let i: i32; i < keys.length; i++) {
+    for (let i: i32 = 0; i < keys.length; i++) {
       map.get(keys[i]).flush(keys[i], atomic);
     }
   }
@@ -88,13 +109,13 @@ export class AlkaneGlobalState {
   public store: Array<AlkaneCheckpoint>;
   constructor(context: AlkaneMessageContext) {
     this.context = context;
-    this.store = Array<AlkaneCheckpoint>(0);
+    this.store = new Array<AlkaneCheckpoint>(0);
   }
   unwrap(): Array<AlkaneCheckpoint> {
     return this.store;
   }
   checkpoint(): void {
-    this.unwrap().push(AlkaneCheckpoint.wrap(new Map<string, AlkaneState>()));;
+    this.unwrap().push(AlkaneCheckpoint.wrap(new Map<string, AlkaneState>()));
   }
   commit(): void {
     const ary = this.unwrap();
@@ -118,16 +139,16 @@ export class AlkaneGlobalState {
     const whatBytes = _what.toBytes();
     const what = Box.from(whatBytes).toHexString();
     for (let i = checkpoints.length - 1; i > 0; i--) {
-      if (
-        checkpoints[i].has(who) && checkpoints[i].get(who).has(what)
-      ) return checkpoints[i].get(who).balances.get(what);
+      const checkpoint = checkpoints[i].unwrap();
+      if (checkpoint.has(who) && checkpoint.get(who).balances.has(what))
+        return checkpoint.get(who).balances.get(what);
     }
     return fromArrayBuffer(
       ALKANES_INDEX.keyword("balances/")
         .select(whoBytes)
         .keyword("/")
         .select(whatBytes)
-        .get());
+        .get(),
     );
   }
   lookup(_who: AlkaneId, _what: AlkaneId): ArrayBuffer {
@@ -138,22 +159,20 @@ export class AlkaneGlobalState {
     const whatBytes = _what.toBytes();
     const what = Box.from(whatBytes).toHexString();
     for (let i = checkpoints.length - 1; i > 0; i--) {
-      if (
-        checkpoints[i].has(who) && checkpointsp[i].get(who).storage.has(what)
-      ) return checkpoints[i].get(who).storage.get(what);
+      const checkpoint = checkpoints[i].unwrap();
+      if (checkpoint.has(who) && checkpoint.get(who).storage.has(what))
+        return checkpoint.get(who).storage.get(what);
     }
     return ALKANES_INDEX.keyword("balances/")
-        .select(whoBytes)
-        .keyword("/")
-        .select(whatBytes)
-        .get();
+      .select(whoBytes)
+      .keyword("/")
+      .select(whatBytes)
+      .get();
   }
   current(): AlkaneCheckpoint {
     const ary = this.unwrap();
     if (ary.length === 0) return changetype<AlkaneCheckpoint>(0);
     return ary[ary.length - 1];
-  }
-  setBalance(_who: AlkaneId, _what: AlkaneId, amount: u128): void {
   }
   setStorage(_who: AlkaneId, _what: ArrayBuffer, data: ArrayBuffer): void {
     const who = _who.toBytes();
