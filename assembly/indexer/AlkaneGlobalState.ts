@@ -5,59 +5,105 @@ import { ALKANES_INDEX } from "./tables";
 import { fromArrayBuffer, isNullPtr } from "metashrew-runes/assembly/utils";
 import { nullptr } from "metashrew-as/assembly/utils/pointer";
 
-export class AlkaneCheckpoint {
+export class AlkaneState {
   public balances: Map<string, u128> = new Map<string, u128>();
   public storage: Map<string, ArrayBuffer> = new Map<string, ArrayBuffer>();
 
   isNull(): bool {
     return isNullPtr(this);
   }
+  _indexBalances(alkaneHex: string, atomic: AtomicTransaction): void {
+    const keys = this.balances.keys();
+    const alkaneId = decodeHex(alkaneHex.substring(2, alkaneHex.length));
+    for (let i: i32 = 0; i < keys.length; i++) {
+      atomic.set(ALKANES_INDEX.keyword("balances/").select(alkaneId).keyword("/").select(decodeHex(keys[i].substring(2, keys[i].length))).unwrap(), toArrayBuffer(this.balances.get(keys[i])));
+    }
+  }
+  _indexStorage(alkaneHex: string, atomic: AtomicTransaction): void {
+    const keys = this.storage.keys();
+    const alkaneId = decodeHex(alkaneHex.substring(2, alkaneHex.length));
+    for (let i: i32 = 0; i < keys.length; i++) {
+      atomic.set(ALKANES_INDEX.keyword("storage/").select(alkaneId).keyword("/").select(decodeHex(keys[i].substring(2, keys[i].length))).unwrap(), this.storage.get(keys[i]));
+    }
+  }
+  _pipeBalancesTo(state: AlkaneState): void {
+    const keys = this.balances.keys();
+    for (let i: i32 = 0; i < keys.length; i++) {
+      state.balances.set(keys[i], this.balances.get(keys[i]));
+    }
+  }
+  _pipeStorageTo(state: AlkaneState): void {
+    const keys = this.storage.keys();
+    for (let i: i32 = 0; i < keys.length; i++) {
+      state.storage.set(keys[i], this.storage.get(keys[i]));
+    }
+  }
+  flush(alkaneHex: string, atomic: AtomicTransaction) {
+    this._indexBalances(alkaneHex, atomic);
+    this._indexStorage(alkaneHex, atomic);
+  }
+  pipeTo(state: AlkaneState): void {
+    this._pipeBalancesTo(state);
+    this._pipeStorageTo(state);
+  }
 }
 
 
 @unmanaged
 @final
-export class AlkaneState {
+export class AlkaneCheckpoint {
   [key: string]: number;
-  static wrap(v: Array<AlkaneCheckpoint>): AlkaneState {
+  static wrap(v: Map<string, AlkaneState>): AlkaneCheckpoint {
     return changetype<AlkaneState>(v);
   }
-  unwrap(): Array<AlkaneCheckpoint> {
-    return changetype<Array<AlkaneCheckpoint>>(this);
+  unwrap(): Map<string, AlkaneState> {
+    return changetype<Map<string, AlkaneState>>(this);
+  }
+  pipeTo(checkpoint: AlkaneCheckpoint): void {
+    const dest = this.unwrap();
+    const src = checkpoint.unwrap();
+    const keys = src.keys();
+    for (let i: i32 = 0; i < keys.length; i++) {
+      if (!dest.has(keys[i])) {
+        dest.set(keys[i], src.get(keys[i]));
+      } else {
+        src.get(keys[i]).pipeTo(dest.get(keys[i]));
+      }
+    }
+  }
+  flush(atomic: AtomicTransaction): void {
+    const map = this.unwrap();
+    const keys = map.keys();
+    for (let i: i32; i < keys.length; i++) {
+      map.get(keys[i]).flush(keys[i], atomic);
+    }
   }
   isNull(): boolean {
     return changetype<usize>(this) === 0;
-  }
-  current(): AlkaneCheckpoint {
-    const ary = this.unwrap();
-    if (ary.length == 0) return nullptr();
-    return ary[ary.length - 1];
   }
 }
 
 export class AlkaneGlobalState {
   public context: AlkaneMessageContext;
-  public store: Map<string, AlkaneState>;
+  public store: Array<AlkaneCheckpoint>;
   constructor(context: AlkaneMessageContext) {
     this.context = context;
-    this.store = new Map<string, AlkaneState>();
+    this.store = Array<AlkaneCheckpoint>(0);
   }
-  unwrap(): Array<Map<string, AlkaneState>> {
+  unwrap(): Array<AlkaneCheckpoint> {
     return this.store;
   }
   checkpoint(): void {
-    this.unwrap().push(new Map<string, AlkaneState>());
+    this.unwrap().push(AlkaneCheckpoint.wrap(new Map<string, AlkaneState>()));;
   }
   commit(): void {
     const ary = this.unwrap();
     const top = ary.pop();
     const current = this.current();
     if (changetype<usize>(current) === 0) {
-      const alkanes = top.keys();
-      for (let i = 0; i < alkanes.length; i++) {
-g       
-      }
-      this.context.runtime.
+      top.flush();
+    } else {
+      top.pipeTo(current);
     }
   }
   isNull(): bool {
@@ -73,44 +119,55 @@ g
     const what = Box.from(whatBytes).toHexString();
     for (let i = checkpoints.length - 1; i > 0; i--) {
       if (
-        checkpoints[i].has(who) &&
-        !checkpoints[i].get(who).current().isNull()
-      )
-        if (checkpoints[i].get(who).current().balances.has(what))
-          return checkpoints[i].get(who).current().balances.get(what);
+        checkpoints[i].has(who) && checkpoints[i].get(who).has(what)
+      ) return checkpoints[i].get(who).balances.get(what);
     }
     return fromArrayBuffer(
       ALKANES_INDEX.keyword("balances/")
         .select(whoBytes)
         .keyword("/")
         .select(whatBytes)
-        .get(),
+        .get());
     );
   }
-  lookup(_who: AlkaneId, _what: ArrayBuffer): ArrayBuffer {
-    if (this.isNull()) return nullptr();
+  lookup(_who: AlkaneId, _what: AlkaneId): ArrayBuffer {
+    if (this.isNull()) return changetype<ArrayBuffer>(0);
     const checkpoints = this.unwrap();
     const whoBytes = _who.toBytes();
     const who = Box.from(whoBytes).toHexString();
-    const whatBytes = _what;
+    const whatBytes = _what.toBytes();
     const what = Box.from(whatBytes).toHexString();
-    for (let i = checkpoints.length - 1; i >= 0; i--) {
+    for (let i = checkpoints.length - 1; i > 0; i--) {
       if (
-        checkpoints[i].has(who) &&
-        !checkpoints[i].get(who).current().isNull()
-      )
-        if (!checkpoints[i].get(who).current().storage.has(what))
-          return checkpoints[i].get(who).current().storage.get(what);
+        checkpoints[i].has(who) && checkpointsp[i].get(who).storage.has(what)
+      ) return checkpoints[i].get(who).storage.get(what);
     }
-    return ALKANES_INDEX.keyword("storage/")
-      .select(whoBytes)
-      .keyword("/")
-      .select(whatBytes)
-      .get();
+    return ALKANES_INDEX.keyword("balances/")
+        .select(whoBytes)
+        .keyword("/")
+        .select(whatBytes)
+        .get();
   }
-  current(): Map<string, AlkaneState> {
+  current(): AlkaneCheckpoint {
     const ary = this.unwrap();
-    if (ary.length === 0) return changetype<Map<string, AlkaneState>>(0);
+    if (ary.length === 0) return changetype<AlkaneCheckpoint>(0);
     return ary[ary.length - 1];
+  }
+  setBalance(_who: AlkaneId, _what: AlkaneId, amount: u128): void {
+  }
+  setStorage(_who: AlkaneId, _what: ArrayBuffer, data: ArrayBuffer): void {
+    const who = _who.toBytes();
+    const whoBytes = Box.from(who).toHexString();
+    const current = this.current().unwrap();
+    if (!current.has(whoBytes)) current.set(whoBytes, new AlkaneState());
+    current.get(whoBytes).storage.set(Box.from(_what).toHexString(), data);
+  }
+  setBalance(_who: AlkaneId, _what: AlkaneId, data: u128): void {
+    const who = _who.toBytes();
+    const what = _what.toBytes();
+    const whoBytes = Box.from(who).toHexString();
+    const current = this.current().unwrap();
+    if (!current.has(whoBytes)) current.set(whoBytes, new AlkaneState());
+    current.get(whoBytes).balances.set(Box.from(what).toHexString(), data);
   }
 }
