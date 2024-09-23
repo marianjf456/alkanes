@@ -13,3 +13,12 @@ export function parseU128(v: Box): u128 {
   v.shrinkFront(16);
   return result;
 }
+
+export function arrayBufferToU128List(v: ArrayBuffer): Array<u128> {
+  const box = Box.from(v)
+  const result = new Array<u128>(0);
+  while (box.len !== 0 && box.len % 16 === 0) {
+    result.push(parseU128(box));
+  }
+  return result;
+}

@@ -6,6 +6,7 @@ import { AlkaneContextIncomingRune } from "./AlkaneContextIncomingRune";
 import { AlkaneMessageContext } from "./AlkaneMessageContext";
 import { toArrayBuffer } from "metashrew-runes/assembly/utils";
 import { ProtoruneBalanceSheet } from "protorune/assembly/indexer/ProtoruneBalanceSheet";
+import { AlkaneGlobalState } from "./AlkaneGlobalState";
 
 export class AlkaneContext {
   public self: ProtoruneRuneId;
@@ -14,6 +15,8 @@ export class AlkaneContext {
   public incomingRunes: Array<AlkaneContextIncomingRune>;
   public messageContext: AlkaneMessageContext;
   public instance: AlkaneInstance;
+  public state: AlkaneGlobalState;
+  public returndata: ArrayBuffer;
   constructor(
     messageContext: AlkaneMessageContext,
     instance: AlkaneInstance,
@@ -21,7 +24,8 @@ export class AlkaneContext {
     caller: ProtoruneRuneId,
     fuelLeft: u64,
     incomingRunes: Array<IncomingRune>,
-    inputs: Array<u128>
+    inputs: Array<u128>,
+    state: AlkaneGlobalState
   ) {
     this.messageContext = messageContext;
     this.instance = instance;
@@ -32,6 +36,8 @@ export class AlkaneContext {
       (v: IncomingRune, i: i32, ary: Array<IncomingRune>) =>
         AlkaneContextIncomingRune.fromIncomingRune(v),
     );
+    this.state = state;
+    this.returndata = new ArrayBuffer(0);
   }
   pointer(): usize {
     return changetype<usize>(this);

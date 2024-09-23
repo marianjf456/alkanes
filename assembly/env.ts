@@ -107,6 +107,17 @@ export class StorageMap extends Map<string, ArrayBuffer> {
     }
     return result;
   }
+  static parse(v: ArrayBuffer): StorageMap {
+    const box = Box.from(v);
+    const n = parsePrimitive<u32>(box);
+    const result = new StorageMap();
+    for (let i: i32 = 0; i < n; i++) {
+      const key = parseBytes(box, parsePrimitive<u32>(box)).toArrayBuffer();
+      result.store(key, parseBytes(box, parsePrimitive<u32>(box)).toArrayBuffer());
+      
+    }
+    return result;
+  }
 }
 
 function toU128List(v: ArrayBuffer): Array<u128> {
@@ -186,6 +197,14 @@ export class AlkaneTransferParcel {
   }
   serialize(): ArrayBuffer {
     return u128ListToArrayBuffer(this.toArray());
+  }
+  static parse(v: ArrayBuffer): AlkaneTransferParcel {
+    const result = new Array<AlkaneTransfer>(0);
+    const box = Box.from(v);
+    while (box.len > 0) {
+      result.push(AlkaneTransfer.parse(box));
+    }
+    return AlkaneTransferParcel.wrap(result);
   }
 }
 

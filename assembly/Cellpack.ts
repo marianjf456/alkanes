@@ -1,6 +1,6 @@
 import { u128 } from "as-bignum/assembly";
 import { AlkaneId } from "./AlkaneId";
-import { u128ListToArrayBuffer } from "./utils";
+import { u128ListToArrayBuffer, arrayBufferToU128List } from "./utils";
 import { console } from "metashrew-as/assembly/utils";
 import { logArray } from "quorumgenesisprotorune/assembly/utils";
 
@@ -32,5 +32,13 @@ export class Cellpack {
     result.push(id.block);
     result.push(id.tx);
     return new Cellpack(result.concat(inputs));
+  }
+  static fromArrayBuffer(v: ArrayBuffer): Cellpack {
+    let list = arrayBufferToU128List(v);
+    if (list.length < 2) {
+      return Cellpack.fromTuple(AlkaneId.from(u128.Zero, u128.Zero), new Array<u128>(0));
+
+    }
+    return Cellpack.fromTuple(AlkaneId.from(list[0], list[1]), list.slice(2, list.length));
   }
 }

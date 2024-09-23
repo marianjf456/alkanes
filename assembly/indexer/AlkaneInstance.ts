@@ -6,6 +6,7 @@ import { ProtoruneRuneId } from "protorune/assembly/indexer/ProtoruneRuneId";
 import { AlkaneMessageContext } from "./AlkaneMessageContext";
 import { u128 } from "as-bignum/assembly";
 import { primitiveToBuffer } from "metashrew-as/assembly/utils/utils";
+import { AlkaneGlobalState } from "./AlkaneGlobalState";
 
 export function readArrayBuffer(caller: wasmi.Caller, ptr: i32): ArrayBuffer {
   const mem: usize = caller.memory();
@@ -80,6 +81,17 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
     .define("env", "__call", (_caller: usize, ptr: i32): i32 => {
       const caller = wasmi.Caller.wrap(_caller);
       const context = changetype<AlkaneContext>(caller.context());
+      const state = context.state;
+      const cellpack = Cellpack.fromArrayBuffer(readArrayBuffer(caller, deref(caller, ptr, 0)));
+      const incomingRunes = AlkaneTransferParcel.parse(readArrayBuffer(caller, deref(caller, ptr, 1)));
+      state.checkpoint();
+      const storageMap = StorageMap.parse(readArrayBuffer(caller, deref(caller, ptr, 2)));
+      state.take(context.self, storageMap);
+      state.transfer(context.self, cellpack.target, incomingRunes);
+      const instance = new AlkaneInstance(context.messageContext, cellpack.target, context.self, incomingRunes, cellpack.inputs, state);
+      const ptr = instance.call("__execute", new Array<i32>(0));
+      // readArrayBufferFromMemory
+      // if (success) state.commit();
       return 0;
     })
     .define("env", "__delegatecall", (_caller: usize, ptr: i32): i32 => {
@@ -105,6 +117,7 @@ export class AlkaneInstance {
     caller: ProtoruneRuneId,
     incomingRunes: Array<IncomingRune>,
     inputs: Array<u128>,
+    state: AlkaneGlobalState
   ) {
     const bytecode = ALKANES_INDEX.select(self.toBytes()).get();
     const engine = wasmi.Engine.default();
@@ -117,6 +130,7 @@ export class AlkaneInstance {
       AlkaneInstance.FUEL_LIMIT,
       incomingRunes,
       inputs,
+      state
     );
     const store = this.store = engine.store(
       context.pointer(),
