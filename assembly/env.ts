@@ -1,17 +1,76 @@
+
 @external("env", "__request_context") declare function __request_context(): usize;
-@external("env", "__load_context") declare function __load_context(ptr: usize): void;
-@external("env", "__request_storage") declare function __request_storage(ptr: usize): usize;
-@external("env", "__load_storage") declare function __load(ptr: usize, result: usize): void
-@external("env", "__call") declare function __call(cellpack: usize, values: usize, fuel: u64): usize;
-@external("env", "__delegatecall") declare function __delegatecall(cellpack: usize, values: usize, fuel: u64): usize;
-@external("env", "__staticcall") declare function __staticcall(cellpack: usize, values: usize, fuel: u64): usize;
-@external("env", "__balance") declare function __balance(who: usize, what: usize, result: usize): void;
+
+
+@external("env", "__load_context") declare function __load_context(
+  ptr: usize,
+): void;
+
+
+@external("env", "__request_storage") declare function __request_storage(
+  ptr: usize,
+): usize;
+
+
+@external("env", "__load_storage") declare function __load(
+  ptr: usize,
+  result: usize,
+): void;
+
+
+@external("env", "__call") declare function __call(
+  cellpack: usize,
+  values: usize,
+  fuel: u64,
+): usize;
+
+
+@external("env", "__delegatecall") declare function __delegatecall(
+  cellpack: usize,
+  values: usize,
+  fuel: u64,
+): usize;
+
+
+@external("env", "__staticcall") declare function __staticcall(
+  cellpack: usize,
+  values: usize,
+  fuel: u64,
+): usize;
+
+
+@external("env", "__balance") declare function __balance(
+  who: usize,
+  what: usize,
+  result: usize,
+): void;
+
+
 @external("env", "__sequence") declare function __sequence(ptr: usize): void;
+
+
 @external("env", "__request_transaction") declare function __request_transaction(): usize;
-@external("env", "__load_transaction") declare function __load_transaction(ptr: usize): void;
+
+
+@external("env", "__load_transaction") declare function __load_transaction(
+  ptr: usize,
+): void;
+
+
 @external("env", "__request_block") declare function __request_block(): usize;
+<<<<<<< HEAD
 @external("env", "__load_block") declare function __load_block(ptr: usize): void;
 @external("env", "__fuel") declare function __fuel(): usize;
+=======
+
+
+@external("env", "__load_block") declare function __load_block(
+  ptr: usize,
+): void;
+
+
+@external("env", "__fuel") declare function __fuel(): u64;
+>>>>>>> c1f7ae22bb477ff27b73636df2c3fa89b6f82e4e
 
 import { fromArrayBuffer } from "metashrew-runes/assembly/utils";
 import { u128 } from "as-bignum/assembly";
@@ -29,17 +88,19 @@ export function writeBuffer(ptr: usize, buffer: ArrayBuffer): void {
 export class StorageMap extends Map<string, ArrayBuffer> {
   store(k: ArrayBuffer, v: ArrayBuffer): void {
     this.set(Box.from(k).toHexString(), v);
-  } 
+  }
   load(k: ArrayBuffer): ArrayBuffer {
     const key = Box.from(k).toHexString();
     if (this.has(key)) return this.get(key);
     const result = new ArrayBuffer(__request_storage(changetype<usize>(k)));
-   __load_storage(changetype<usize>(k), changetype<usize>(result)); 
+    __load_storage(changetype<usize>(k), changetype<usize>(result));
   }
   serialize(): ArrayBuffer {
-    const keys = this.keys().map<ArrayBuffer>((v: string, i: i32, ary: Array<string>) => {
-      return decodeHex(v.substring(2, v.length));
-    });
+    const keys = this.keys().map<ArrayBuffer>(
+      (v: string, i: i32, ary: Array<string>) => {
+        return decodeHex(v.substring(2, v.length));
+      },
+    );
     const values = this.values();
     let length = 4;
     for (let i = 0; keys.length; i++) {
@@ -63,7 +124,9 @@ function toU128List(v: ArrayBuffer): Array<u128> {
   const result = new Array<u128>(0);
   const buffer = Box.from(v);
   for (let i: i32 = 0; i < v.byteLength; i += 16) {
-    result.push(fromArrayBuffer(buffer.sliceFrom(i).setLength(16).toArrayBuffer()));
+    result.push(
+      fromArrayBuffer(buffer.sliceFrom(i).setLength(16).toArrayBuffer()),
+    );
   }
   return result;
 }
@@ -75,12 +138,15 @@ export class AlkaneContext {
   constructor(v: ArrayBuffer) {
     const values = toU128List(v);
     this.runes = new Map<string, u128>();
-    this.self = AlkaneId.from(values[0], values[1]);
-    this.caller = AlkaneId.from(values[2], values[3]);
+    this.self = AlkaneId.fromId(values[0], values[1]);
+    this.caller = AlkaneId.fromId(values[2], values[3]);
     for (let i: i32 = 4; i < values.length; i += 3) {
-      const thisAlkane = AlkaneId.from(values[i], values[i + 1]);
+      const thisAlkane = AlkaneId.fromId(values[i], values[i + 1]);
       thisAlkane.toBytes();
-      this.runes.set(Box.from(thisAlkane.toBytes()).toHexString(), values[i + 3])
+      this.runes.set(
+        Box.from(thisAlkane.toBytes()).toHexString(),
+        values[i + 3],
+      );
     }
   }
   static load(): AlkaneContext {
@@ -104,9 +170,10 @@ export class AlkaneTransfer {
     const block = parseU128(v);
     const tx = parseU128(v);
     const value = parseU128(v);
-    return AlkaneTransfer.fromTuple(AlkaneId.from(block, tx));
+    return AlkaneTransfer.fromTuple(AlkaneId.fromId(block, tx), value);
   }
 }
+
 
 @final
 @unmanaged
@@ -140,18 +207,22 @@ export class CallResult {
     this.alkanes = alkanes;
     this.data = data;
   }
-  static fromTuple(alkanes: Array<AlkaneTransfer>, data: Array<u128>): CallResult {
+  static fromTuple(
+    alkanes: Array<AlkaneTransfer>,
+    data: Array<u128>,
+  ): CallResult {
     return new CallResult(alkanes, data);
   }
   static parse(v: ArrayBuffer): CallResult {
-    if (v.byteLength % 16 !== 0 || v.byteLength === 0) return changetype<CallResult>(0);
+    if (v.byteLength % 16 !== 0 || v.byteLength === 0)
+      return changetype<CallResult>(0);
     const input = Box.from(v);
     const assets = parseU128(input).toU64();
-    if (<u64>input.len < <u64>16*assets) return changetype<AlkaneTransfer>(0);
+    if (<u64>input.len < <u64>16 * assets) return changetype<AlkaneTransfer>(0);
     const alkanes = new Array<AlkaneTransfer>(0);
     const data = new Array<u128>(0);
     for (let i: u64 = 0; i < assets.length && input.len !== 0; i++) {
-      alkanes.push(AlkaneTransfer.parse(input));   
+      alkanes.push(AlkaneTransfer.parse(input));
     }
     while (input.len !== 0) {
       data.push(parseU128(input));
@@ -159,7 +230,7 @@ export class CallResult {
     return CallResult.fromTuple(alkanes, data);
   }
   isRevert(): boolean {
-    return changetype<CallResult>(this) === 0;
+    return changetype<usize>(this) === 0;
   }
 }
 
@@ -189,10 +260,19 @@ export class AlkaneEnvironment {
   }
   returndata(): i32 {
     const payout = this.payout;
-    return <i32>changetype<usize>(Box.concat([ Box.from(primitiveToBuffer<u32>(payout.unwrap().length)), Box.from(payout.serialize()), Box.from(this.storage.serialize()) ]));
+    return <i32>(
+      changetype<usize>(
+        Box.concat([
+          Box.from(primitiveToBuffer<u32>(payout.unwrap().length)),
+          Box.from(payout.serialize()),
+          Box.from(this.storage.serialize()),
+        ]),
+      )
+    );
   }
   get context(): ExecutionContext {
-    if (changetype<usize>(this._context) === 0) this._context = ExecutionContext.load();
+    if (changetype<usize>(this._context) === 0)
+      this._context = ExecutionContext.load();
     return this._context;
   }
   get block(): ArrayBuffer {
@@ -225,24 +305,61 @@ export class AlkaneEnvironment {
     __fuel(changetype<usize>(buffer));
     return load<u64>(changetype<usize>(buffer));
   }
-  call(target: AlkaneId, inputs: Array<u128>, values: Array<AlkaneTransfer>, fuel: u64): CallResult {
-    const result = new ArrayBuffer(__call(changetype<usize>(this.storage.serialize()), changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()), changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()), fuel));
+  call(
+    target: AlkaneId,
+    inputs: Array<u128>,
+    values: Array<AlkaneTransfer>,
+    fuel: u64,
+  ): CallResult {
+    const result = new ArrayBuffer(
+      __call(
+        changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()),
+        changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()),
+        fuel,
+      ),
+    );
     __returndatacopy(changetype<usize>(result));
     return CallResult.parse(result);
   }
-  staticcall(target: AlkaneId, inputs: Array<u128>, values: Array<AlkaneTransfer>, fuel: u64): CallResult {
-    const result = new ArrayBuffer(__staticcall(changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()), changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()), changetype<usize>(this.storage.serialize()), fuel));
+  staticcall(
+    target: AlkaneId,
+    inputs: Array<u128>,
+    values: Array<AlkaneTransfer>,
+    fuel: u64,
+  ): CallResult {
+    const result = new ArrayBuffer(
+      __staticcall(
+        changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()),
+        changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()),
+        fuel,
+      ),
+    );
     __returndatacopy(changetype<usize>(result));
     return CallResult.parse(result);
   }
-  delegatecall(target: AlkaneId, inputs: Array<u128>, values: Array<AlkaneTransfer>, fuel: u64): CallResult {
-    const result = new ArrayBuffer(__delegatecall(changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()), changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()), changetype<usize>(this.storage.serialize()), fuel));
+  delegatecall(
+    target: AlkaneId,
+    inputs: Array<u128>,
+    values: Array<AlkaneTransfer>,
+    fuel: u64,
+  ): CallResult {
+    const result = new ArrayBuffer(
+      __delegatecall(
+        changetype<usize>(Cellpack.fromTuple(target, inputs).serialize()),
+        changetype<usize>(AlkaneTransferParcel.wrap(values).serialize()),
+        fuel,
+      ),
+    );
     __returndatacopy(changetype<usize>(result));
     return CallResult.parse(result);
   }
   balance(who: AlkaneId, what: AlkaneId): u128 {
     const result = new ArrayBuffer(16);
-    __balance(changetype<usize>(who.serialize()), changetype<usize>(what.serialize()), changetype<usize>(result));
+    __balance(
+      changetype<usize>(who.serialize()),
+      changetype<usize>(what.serialize()),
+      changetype<usize>(result),
+    );
     return result;
   }
 }

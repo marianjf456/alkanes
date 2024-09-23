@@ -12,7 +12,8 @@ import {
   createMultipleProtomessageFixture,
   createProtoruneFixture,
 } from "protorune/lib/tests/utils/fixtures";
-import { inspect } from "node:util";
+import { Cellpack } from "../src.ts/alkane";
+import { u128 } from "@magiceden-oss/runestone-lib/dist/src/integer";
 
 const ALKANES_PROTOCOL_TAG = 1n;
 
@@ -71,15 +72,15 @@ describe("alkane deployments", () => {
   });
   it("should index protomessage only -- refund goes to the default protostone pointer", async () => {
     const amount1 = 100000n;
-    // createMultipleProtomessageFixture hard codes the default protostone pointer to be address 1
-    // this means unused protorunes in the input will go to address 1
-    // the used protorunes go to the refund pointer, which is address 1
-    // since the input contains the full amount of protorune 1 and 2, all protorunes transfer to address 1
+    const cellpack = new Cellpack(u128(0), u128(1), [
+      /*u128(999)*/
+    ]);
+
     let { block, premineAmount } = await createMultipleProtomessageFixture({
       protocolTag: ALKANES_PROTOCOL_TAG,
       protomessagePointer: 1, // address 2
       protomessageRefundPointer: 2, // address 1
-      calldata: Buffer.concat([Buffer.from([0x00]), Buffer.from([0x01])]),
+      calldata: cellpack.serializeToCalldata(),
       amount1: amount1,
       amount2: 0n,
     });

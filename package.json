@@ -27,6 +27,7 @@
     "quorumgenesisprotorune": "https://github.com/kungfuflex/quorumgenesisprotorune"
   },
   "devDependencies": {
+    "@types/leb128": "^0.0.0",
     "@types/node": "^20.10.6",
     "assemblyscript": "0.26.7",
     "assemblyscript-prettier": "^3.0.1",

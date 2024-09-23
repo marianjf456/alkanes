@@ -12,10 +12,10 @@ import { ALKANES_INDEX } from "./tables";
 import { Inscription } from "metashrew-as/assembly/blockdata/inscription";
 import { fromArrayBuffer, toArrayBuffer } from "metashrew-runes/assembly/utils";
 import { IndexPointer } from "metashrew-as/assembly/indexer/tables";
+import { logArray } from "quorumgenesisprotorune/assembly/utils";
 
 export class AlkaneMessageContext extends MessageContext {
   protocolTag(): u128 {
-    // TODO: This doesn't seem to be overwriting
     return u128.from(1);
   }
   sequenceIndex(): IndexPointer {
@@ -40,36 +40,42 @@ export class AlkaneMessageContext extends MessageContext {
   }
   sequence(): u128 {
     const nextSequenceBytes = this.sequenceIndex().get();
-    return nextSequenceBytes.byteLength === 0 ? u128.from(0) : fromArrayBuffer(nextSequenceBytes);
+    return nextSequenceBytes.byteLength === 0
+      ? u128.from(0)
+      : fromArrayBuffer(nextSequenceBytes);
   }
   findBinary(): ArrayBuffer {
     for (let i = 0; i < this.transaction.ins.length; i++) {
       const inscription = this.transaction.ins[i].inscription();
       if (inscription !== null) {
         const body = (inscription as Inscription).body();
-	if (body === null) return body as ArrayBuffer;
+        if (body !== null) return body;
       }
     }
     return changetype<ArrayBuffer>(0);
   }
   handle(): boolean {
     console.log("inside AlkaneMessageContext handle ");
+
     let calldata = _parseLeb128toU128Array(this.calldata);
     const cellpack = new Cellpack(calldata);
     if (cellpack.target.isCreate()) {
       const binary = this.findBinary();
       if (changetype<usize>(binary) === 0) {
-        console.log('failed to create0');
-	return false;
+        console.log("failed to create0");
+        return false;
       } else {
         ALKANES_INDEX.select(cellpack.target.toBytes()).set(binary);
       }
     }
     if (cellpack.target.isCreateReserved()) {
       const binary = this.findBinary();
-      if (changetype<usize>(binary) === 0 || this.takeCreate1(cellpack.target.tx)) {
-        console.log('failed to create1');
-	return false;
+      if (
+        changetype<usize>(binary) === 0 ||
+        this.takeCreate1(cellpack.target.tx)
+      ) {
+        console.log("failed to create1");
+        return false;
       } else {
         ALKANES_INDEX.select(cellpack.target.toBytes()).set(binary);
       }
@@ -77,11 +83,11 @@ export class AlkaneMessageContext extends MessageContext {
     let self = cellpack.target;
     let caller = ProtoruneRuneId.from(RuneId.fromU128(u128.Zero));
     const instance = new AlkaneInstance(
-       this,
-       self,
-       caller,
-       this.runes,
-       cellpack.inputs
+      this,
+      self,
+      caller,
+      this.runes,
+      cellpack.inputs,
     );
     const result = instance.call("__execute", new Array<i32>());
     return result.success;
