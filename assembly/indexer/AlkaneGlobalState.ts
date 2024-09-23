@@ -101,7 +101,7 @@ export class AlkaneGlobalState {
     const top = ary.pop();
     const current = this.current();
     if (changetype<usize>(current) === 0) {
-      top.flush();
+      top.flush(this.context.runtime);
     } else {
       top.pipeTo(current);
     }
