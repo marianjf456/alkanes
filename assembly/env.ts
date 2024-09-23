@@ -58,19 +58,8 @@
 
 
 @external("env", "__request_block") declare function __request_block(): usize;
-<<<<<<< HEAD
 @external("env", "__load_block") declare function __load_block(ptr: usize): void;
-@external("env", "__fuel") declare function __fuel(): usize;
-=======
-
-
-@external("env", "__load_block") declare function __load_block(
-  ptr: usize,
-): void;
-
-
-@external("env", "__fuel") declare function __fuel(): u64;
->>>>>>> c1f7ae22bb477ff27b73636df2c3fa89b6f82e4e
+@external("env", "__fuel") declare function __fuel(ptr: i32): void;
 
 import { fromArrayBuffer } from "metashrew-runes/assembly/utils";
 import { u128 } from "as-bignum/assembly";
@@ -301,7 +290,7 @@ export class AlkaneEnvironment {
     return fromArrayBuffer(buffer);
   }
   get fuel(): u64 {
-    const buffer = new ArrayBuffer(8);
+    const buffer = new ArrayBuffer(sizeof<u64>());
     __fuel(changetype<usize>(buffer));
     return load<u64>(changetype<usize>(buffer));
   }
