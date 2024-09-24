@@ -36,9 +36,9 @@ export class Cellpack {
   static fromArrayBuffer(v: ArrayBuffer): Cellpack {
     let list = arrayBufferToU128List(v);
     if (list.length < 2) {
-      return Cellpack.fromTuple(AlkaneId.from(u128.Zero, u128.Zero), new Array<u128>(0));
+      return Cellpack.fromTuple(AlkaneId.fromId(u128.Zero, u128.Zero), new Array<u128>(0));
 
     }
-    return Cellpack.fromTuple(AlkaneId.from(list[0], list[1]), list.slice(2, list.length));
+    return Cellpack.fromTuple(AlkaneId.fromId(list[0], list[1]), list.slice(2, list.length));
   }
 }

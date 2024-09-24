@@ -48,11 +48,11 @@ export class StorageMap extends Map<string, ArrayBuffer> {
     return StorageMap.consume(Box.from(v));
   }
   static consume(v: Box): StorageMap {
-    const n = parsePrimitive<u32>(box);
+    const n = parsePrimitive<u32>(v);
     const result = new StorageMap();
-    for (let i: i32 = 0; i < n; i++) {
-      const key = parseBytes(box, parsePrimitive<u32>(box)).toArrayBuffer();
-      result.store(key, parseBytes(box, parsePrimitive<u32>(box)).toArrayBuffer());
+    for (let i: i32 = 0; i < <i32>n; i++) {
+      const key = parseBytes(v, parsePrimitive<u32>(v)).toArrayBuffer();
+      result.store(key, parseBytes(v, parsePrimitive<u32>(v)).toArrayBuffer());
       
     }
     return result;

@@ -1,7 +1,6 @@
 import { ProtoruneRuneId } from "protorune/assembly/indexer/ProtoruneRuneId";
 import { IncomingRune } from "protorune/assembly/indexer/protomessage/IncomingRune";
 import { AlkaneTransferParcel } from "../AlkaneTransferParcel";
-import { AlkaneContextIncomingRune } from "./AlkaneContextIncomingRune";
 import { AlkaneTransfer } from "../AlkaneTransfer";
 import { u128 } from "as-bignum/assembly";
 

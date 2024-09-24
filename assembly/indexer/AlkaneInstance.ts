@@ -12,6 +12,8 @@ import { AlkaneId } from "../AlkaneId";
 import { Cellpack } from "../Cellpack";
 import { AlkaneTransferParcel } from "../AlkaneTransferParcel";
 import { StorageMap } from "../StorageMap";
+import { Box } from "metashrew-as/assembly/utils/box";
+import { toArrayBuffer } from "metashrew-runes/assembly/utils";
 
 export function readArrayBuffer(caller: wasmi.Caller, ptr: i32): ArrayBuffer {
   return readArrayBufferAtOffset(caller.memory(), ptr);
@@ -184,7 +186,7 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
         context.messageContext,
         cellpack.target,
         context.self,
-        incomingRunes,
+        AlkaneContextIncomingRune.fromParcel(incomingRunes),
         cellpack.inputs,
         state,
       );
@@ -224,7 +226,7 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
         context.messageContext,
         context.self,
         context.caller,
-        incomingRunes,
+        AlkaneContextIncomingRune.fromParcel(incomingRunes),
         cellpack.inputs,
         state,
       );
@@ -238,7 +240,7 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
             instance.instance.memory(instance.store),
             result.value,
           ),
-          context.self,
+          AlkaneId.fromOther(context.self),
           state,
         );
         state.commit();
@@ -268,7 +270,7 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
         context.messageContext,
         cellpack.target,
         context.self,
-        incomingRunes,
+        AlkaneContextIncomingRune.fromParcel(incomingRunes),
         cellpack.inputs,
         state,
       );
@@ -317,6 +319,9 @@ export class AlkaneInstance {
     inputs: Array<u128>,
     state: AlkaneGlobalState,
   ) {
+    this.linker = changetype<wasmi.Linker>(0);
+    this.module = changetype<wasmi.Module>(0);
+    this.instance = changetype<wasmi.Instance>(0);
     const bytecode = ALKANES_INDEX.select(self.toBytes()).get();
     const engine = wasmi.Engine.default();
     this.engine = engine;

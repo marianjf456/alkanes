@@ -1,4 +1,5 @@
 import { fromArrayBuffer } from "metashrew-runes/assembly/utils";
+import { Box } from "metashrew-as/assembly/utils/box";
 import { u128 } from "as-bignum/assembly"
 
 export function u128ListToArrayBuffer(flat: Array<u128>): ArrayBuffer {

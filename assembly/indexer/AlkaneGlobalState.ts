@@ -135,7 +135,7 @@ export class AlkaneGlobalState {
   }
 
   balance(_who: AlkaneId, _what: AlkaneId): u128 {
-    if (this.isNull()) return nullptr();
+    if (this.isNull()) return nullptr<u128>();
     const checkpoints = this.unwrap();
     const whoBytes = _who.toBytes();
     const who = Box.from(whoBytes).toHexString();
