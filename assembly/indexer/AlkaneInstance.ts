@@ -194,7 +194,7 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
         cellpack.inputs,
         state,
       );
-      const result = instance.call("__execute", new Array<i32>(0));
+      const result = instance.run();
       if (result.success) {
         context.returndata = pipeStorage(
           readArrayBufferAtOffset(
@@ -237,7 +237,7 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
       instance.module = instance.engine.module(
         ALKANES_INDEX.select(cellpack.target.toBytes()).get(),
       );
-      const result = instance.call("__execute", new Array<i32>(0));
+      const result = instance.run();
       if (result.success) {
         context.returndata = pipeStorage(
           readArrayBufferAtOffset(
@@ -282,7 +282,8 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
         cellpack.inputs,
         state,
       );
-      const result = instance.call("__execute", new Array<i32>(0));
+      context.messageContext.runtime.checkpoint();
+      const result = instance.run();
       if (result.success) {
         context.returndata = pipeStorage(
           readArrayBufferAtOffset(
@@ -297,6 +298,7 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
         context.returndata = new ArrayBuffer(0);
         state.rollback();
       }
+      context.messageContext.runtime.rollback();
       return context.returndata.byteLength;
     })
     .define("env", "__returndatacopy", (_caller: usize, ptr: i32): i32 => {
@@ -358,38 +360,39 @@ export class AlkaneInstance {
     return this.instance.call(this.store, name, args);
   }
   run(): wasmi.Result<i32> {
-    const cellpack = Cellpack.fromTuple(this.context.self, this.context.inputs);
+    const context: AlkaneContext = this.context;
+    const cellpack = Cellpack.fromTuple(AlkaneId.fromOther(context.self), context.inputs);
     if (cellpack.target.isCreate()) {
-      this.context.self.block = u128.from(1);
-      this.context.self.tx = this.messageContext.advanceSequence();
-      const binary = this.messageContext.findBinary();
+      context.self.block = u128.from(1);
+      context.self.tx = context.messageContext.advanceSequence();
+      const binary = context.messageContext.findBinary();
       if (changetype<usize>(binary) === 0) {
         console.log("failed to create0");
         return wasmi.Result.Err<i32>();
       } else {
-        this.messageContext.runtime.set(ALKANES_INDEX.select(cellpack.target.toBytes()).unwrap(), binary);
+        context.messageContext.runtime.set(ALKANES_INDEX.select(cellpack.target.toBytes()).unwrap(), binary);
       }
     }
     if (cellpack.target.isCreateReserved()) {
-      const binary = this.messageContext.findBinary();
+      const binary = context.messageContext.findBinary();
       if (
         changetype<usize>(binary) === 0 ||
-        this.messageContext.takeCreate1(cellpack.target.tx)
+        context.messageContext.takeCreate1(cellpack.target.tx)
       ) {
         console.log("failed to create1");
         return wasmi.Result.Err<i32>();
       } else {
         cellpack.target.block = u128.from(3);
-        this.messageContext.runtime.set(ALKANES_INDEX.select(cellpack.target.toBytes()).unwrap(), binary);
+        context.messageContext.runtime.set(ALKANES_INDEX.select(cellpack.target.toBytes()).unwrap(), binary);
       }
     }
     if (cellpack.target.isFactory()) {
-      const binary = this.messageContext.runtime.get(ALKANES_INDEX.select(AlkaneId.fromId(cellpack.target.getFactoryType(), cellpack.target.tx).toBytes()).unwrap())
+      const binary = context.messageContext.runtime.get(ALKANES_INDEX.select(AlkaneId.fromId(cellpack.target.getFactoryType(), cellpack.target.tx).toBytes()).unwrap())
       if (binary.byteLength === 0) return wasmi.Result.Err<i32>();
-      this.context.self.block = u128.from(0);
-      this.context.self.tx = this.messageContext.advanceSequence();
-      this.messageContext.runtime.set(ALKANES_INDEX.select(this.context.self.toBytes()).unwrap(), binary);
+      context.self.block = u128.from(0);
+      context.self.tx = context.messageContext.advanceSequence();
+      context.messageContext.runtime.set(ALKANES_INDEX.select(context.self.toBytes()).unwrap(), binary);
     }
-    return this.instance.call("__execute", new Array<i32>());
+    return this.call("__execute", new Array<i32>());
   }
 }

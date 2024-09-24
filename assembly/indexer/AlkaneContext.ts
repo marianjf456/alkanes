@@ -17,6 +17,7 @@ export class AlkaneContext {
   public instance: AlkaneInstance;
   public state: AlkaneGlobalState;
   public returndata: ArrayBuffer;
+  public inputs: Array<u128>;
   constructor(
     messageContext: AlkaneMessageContext,
     instance: AlkaneInstance,
@@ -34,6 +35,7 @@ export class AlkaneContext {
     this.fuelLeft = u128.from(fuelLeft);
     this.incomingRunes = incomingRunes;
     this.state = state;
+    this.inputs = inputs;
     this.returndata = new ArrayBuffer(0);
   }
   pointer(): usize {
@@ -52,6 +54,9 @@ export class AlkaneContext {
       result.push(rune.runeId.block);
       result.push(rune.runeId.tx);
       result.push(rune.amount);
+    }
+    for (let i = 0; i < this.inputs.length; i++) {
+      result.push(this.inputs[i]);
     }
     return result;
   }
