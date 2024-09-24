@@ -33,4 +33,13 @@ export class AlkaneId extends ProtoruneRuneId {
   eq(v: AlkaneId): boolean {
     return this.block === v.block && this.tx === v.tx;
   }
+  isFactory(): boolean {
+    return this.block === u128.from(4) || this.block === u128.from(5);
+  }
+  getFactoryType(): u128 {
+    if (!this.isFactory()) return u128.Max;
+    if (this.block === u128.from(4)) return u128.Zero;
+    if (this.block === u128.from(5)) return u128.from(1);
+    return u128.Max;
+  }
 }

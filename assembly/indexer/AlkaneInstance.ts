@@ -357,4 +357,39 @@ export class AlkaneInstance {
   call(name: string, args: Array<i32>): wasmi.Result<i32> {
     return this.instance.call(this.store, name, args);
   }
+  run(): wasmi.Result<i32> {
+    const cellpack = Cellpack.fromTuple(this.context.self, this.context.inputs);
+    if (cellpack.target.isCreate()) {
+      this.context.self.block = u128.from(1);
+      this.context.self.tx = this.messageContext.advanceSequence();
+      const binary = this.messageContext.findBinary();
+      if (changetype<usize>(binary) === 0) {
+        console.log("failed to create0");
+        return wasmi.Result.Err<i32>();
+      } else {
+        this.messageContext.runtime.set(ALKANES_INDEX.select(cellpack.target.toBytes()).unwrap(), binary);
+      }
+    }
+    if (cellpack.target.isCreateReserved()) {
+      const binary = this.messageContext.findBinary();
+      if (
+        changetype<usize>(binary) === 0 ||
+        this.messageContext.takeCreate1(cellpack.target.tx)
+      ) {
+        console.log("failed to create1");
+        return wasmi.Result.Err<i32>();
+      } else {
+        cellpack.target.block = u128.from(3);
+        this.messageContext.runtime.set(ALKANES_INDEX.select(cellpack.target.toBytes()).unwrap(), binary);
+      }
+    }
+    if (cellpack.target.isFactory()) {
+      const binary = this.messageContext.runtime.get(ALKANES_INDEX.select(AlkaneId.fromId(cellpack.target.getFactoryType(), cellpack.target.tx).toBytes()).unwrap())
+      if (binary.byteLength === 0) return wasmi.Result.Err<i32>();
+      this.context.self.block = u128.from(0);
+      this.context.self.tx = this.messageContext.advanceSequence();
+      this.messageContext.runtime.set(ALKANES_INDEX.select(this.context.self.toBytes()).unwrap(), binary);
+    }
+    return this.instance.call("__execute", new Array<i32>());
+  }
 }

@@ -26,7 +26,7 @@ export class AlkaneMessageContext extends MessageContext {
   }
   advanceSequence(): u128 {
     const next = this.sequence() + u128.from(1);
-    this.sequenceIndex().set(toArrayBuffer(next));
+    this.runtime.set(this.sequenceIndex().unwrap(), toArrayBuffer(next));
     return next;
   }
   reservedSequenceIndex(v: u128): IndexPointer {
@@ -34,15 +34,15 @@ export class AlkaneMessageContext extends MessageContext {
   }
   takeCreate1(v: u128): boolean {
     const reserved = this.reservedSequenceIndex(v);
-    if (reserved.get().byteLength === 0) {
-      reserved.set(primitiveToBuffer<u8>(1));
+    if (this.runtime.get(reserved.unwrap()).byteLength === 0) {
+      this.runtime.set(reserved.unwrap(), primitiveToBuffer<u8>(1));
       return true;
     } else {
       return false;
     }
   }
   sequence(): u128 {
-    const nextSequenceBytes = this.sequenceIndex().get();
+    const nextSequenceBytes = this.runtime.get(this.sequenceIndex().unwrap());
     return nextSequenceBytes.byteLength === 0
       ? u128.from(0)
       : fromArrayBuffer(nextSequenceBytes);
@@ -62,27 +62,6 @@ export class AlkaneMessageContext extends MessageContext {
 
     let calldata = _parseLeb128toU128Array(this.calldata);
     const cellpack = new Cellpack(calldata);
-    if (cellpack.target.isCreate()) {
-      const binary = this.findBinary();
-      if (changetype<usize>(binary) === 0) {
-        console.log("failed to create0");
-        return false;
-      } else {
-        ALKANES_INDEX.select(cellpack.target.toBytes()).set(binary);
-      }
-    }
-    if (cellpack.target.isCreateReserved()) {
-      const binary = this.findBinary();
-      if (
-        changetype<usize>(binary) === 0 ||
-        this.takeCreate1(cellpack.target.tx)
-      ) {
-        console.log("failed to create1");
-        return false;
-      } else {
-        ALKANES_INDEX.select(cellpack.target.toBytes()).set(binary);
-      }
-    }
     let self = cellpack.target;
     let caller = ProtoruneRuneId.from(RuneId.fromU128(u128.Zero));
     const state = new AlkaneGlobalState(this);
@@ -96,7 +75,7 @@ export class AlkaneMessageContext extends MessageContext {
       cellpack.inputs,
       state
     );
-    const result = instance.call("__execute", new Array<i32>());
+    const result = instance.call("__execute", new Array<i32>(0));
     return result.success;
   }
 }
