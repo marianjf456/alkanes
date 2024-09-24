@@ -127,6 +127,9 @@ export class AlkaneGlobalState {
       top.pipeTo(current);
     }
   }
+  rollback(): void {
+    this.unwrap().pop();
+  }
   isNull(): bool {
     return isNullPtr(this.current());
   }

@@ -82,6 +82,12 @@
   result: usize,
 ): i32;
 
+//@ts-ignore
+@external("alkanes_runtime", "__wasmi_instance_memory") declare function __wasmi_instance_memory(
+  instance: usize,
+  store: usize,
+): usize;
+
 export namespace wasmi {
   export class Result<T> {
     public value: T;
@@ -139,6 +145,9 @@ export namespace wasmi {
       );
       if (hadError !== 0) return Result.Err<i32>();
       return Result.Ok<i32>(load<i32>(changetype<usize>(result)));
+    }
+    memory(store: Store): usize {
+      return __wasmi_instance_memory(this.unwrap(), store.unwrap());
     }
   }
 

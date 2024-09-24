@@ -108,7 +108,9 @@ export class StorageMap extends Map<string, ArrayBuffer> {
     return result;
   }
   static parse(v: ArrayBuffer): StorageMap {
-    const box = Box.from(v);
+    return StorageMap.consume(Box.from(v));
+  }
+  static consume(v: Box): StorageMap {
     const n = parsePrimitive<u32>(box);
     const result = new StorageMap();
     for (let i: i32 = 0; i < n; i++) {
@@ -266,14 +268,15 @@ export class AlkaneEnvironment {
   pay(id: AlkaneId, amount: u128): void {
     this.payout.unwrap().push(AlkaneTransfer.fromTuple(id, amount));
   }
-  returndata(): i32 {
+  returndata(v: Array<u128>): i32 {
     const payout = this.payout;
     return <i32>(
       changetype<usize>(
         Box.concat([
+          Box.from(this.storage.serialize()),
           Box.from(primitiveToBuffer<u32>(payout.unwrap().length)),
           Box.from(payout.serialize()),
-          Box.from(this.storage.serialize()),
+	  Box.from(u128ListToArrayBuffer(v))
         ]),
       )
     );

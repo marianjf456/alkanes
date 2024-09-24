@@ -1,21 +1,10 @@
 extern crate alloc;
 use anyhow::{anyhow, Result};
-use bitcoin::blockdata::block::Block;
-use bitcoin::consensus::Decodable;
-use bitcoin::hashes::Hash;
-use core::ffi;
 use core::ffi::CStr;
-use std::collections::HashMap;
-use std::fmt::Write;
-use std::mem;
 use std::os::raw::c_char;
-use std::panic;
-use std::sync::{Arc, Mutex};
 use wasmi;
 use wasmi::AsContext;
 
-use std::ffi::CString;
-use std::ptr;
 
 #[no_mangle]
 pub extern "C" fn __wasmi_caller_memory(caller: *mut wasmi::Caller<'static, State>) -> *mut u8 {
@@ -73,6 +62,12 @@ pub extern "C" fn __wasmi_store_new(
     store.limiter(|state| &mut state.limiter);
     wasmi::Store::<State>::set_fuel(&mut store, fuel_limit).unwrap();
     Box::leak(Box::new(store)) as *mut wasmi::Store<State>
+}
+
+pub extern "C" fn __wasmi_instance_memory(ptr: *mut wasmi::Instance, store: *mut wasmi::Store<State>) -> *mut core::ffi::c_void {
+  unsafe {
+    (*ptr).get_memory(&mut *store, "memory").unwrap().data_mut(&mut *store) as *mut [u8] as *mut core::ffi::c_void
+  }
 }
 
 #[no_mangle]
@@ -162,7 +157,7 @@ pub extern "C" fn __wasmi_store_get_fuel(store: *mut wasmi::Store<State>) -> i32
 
 #[no_mangle]
 pub extern "C" fn __wasmi_store_set_fuel(store: *mut wasmi::Store<State>, fuel: i32) -> () {
-    wasmi::Store::set_fuel(unsafe { &mut *store }, fuel as u64);
+    wasmi::Store::set_fuel(unsafe { &mut *store }, fuel as u64).unwrap();
 }
 
 fn wasmi_instance_call(
@@ -179,7 +174,7 @@ fn wasmi_instance_call(
             .get_func(&mut *store, str_name)
             .ok_or("")
             .map_err(|_| anyhow!(format!("call to {:?} failed", str_name)))?;
-        let args: &[wasmi::Val] = unsafe {
+        let args: &[wasmi::Val] = {
             &std::slice::from_raw_parts::<i32>(args, len as usize)
                 .into_iter()
                 .map(|v| wasmi::Val::I32(*v))

@@ -9,7 +9,10 @@ import { primitiveToBuffer } from "metashrew-as/assembly/utils/utils";
 import { AlkaneGlobalState } from "./AlkaneGlobalState";
 
 export function readArrayBuffer(caller: wasmi.Caller, ptr: i32): ArrayBuffer {
-  const mem: usize = caller.memory();
+  return readArrayBufferAtOffset(caller.memory(), ptr);
+}
+
+export function readArrayBufferAtOffset(mem: usize, ptr: i32): ArrayBuffer {
   if (ptr < 4) return new ArrayBuffer(0);
   const start = load<u32>(mem + <usize>ptr - 4);
   const buffer = new ArrayBuffer(<i32>start);
@@ -24,6 +27,13 @@ export function writeMemory(caller: wasmi.Caller, ptr: i32, v: ArrayBuffer): voi
 export function deref(caller: wasmi.Caller, ptr: i32, i: usize): i32 {
   return load<i32>(caller.memory() + <usize>ptr + <usize>sizeof<i32>()*i);
 }
+
+export function pipeStorage(result: ArrayBuffer, state: AlkaneGlobalState): ArrayBuffer {
+  const box = Box.from(result);
+  state.take(target, StorageMap.consume(box));
+  return box.toArrayBuffer(); 
+}
+
 
 export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
   return engine
@@ -45,11 +55,20 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
     })
     .define("env", "__request_storage", (_caller: usize, ptr: i32): i32 => {
       const caller = wasmi.Caller.wrap(_caller);
-      return ALKANES_INDEX.keyword("storage/").select(changetype<AlkaneContext>(caller.context()).self.toBytes()).keyword("/").select(readArrayBuffer(caller, deref(caller, ptr, 0))).get().byteLength;
+      return context.state.lookup(context.self, readArrayBuffer(caller, deref(caller, ptr, 0))).byteLength;
     })
     .define("env", "__load_storage", (_caller: usize, ptr: i32): i32 => {
       const caller = wasmi.Caller.wrap(_caller);
-      writeMemory(caller, deref(caller, ptr, 1), ALKANES_INDEX.keyword("storage/").select(changetype<AlkaneContext>(caller.context()).self.toBytes()).keyword("/").select(readArrayBuffer(caller, deref(caller, ptr, 0))).get());
+      const context = changetype<AlkaneContext>(caller.context());
+      writeMemory(caller, deref(caller, ptr, 1), context.state.lookup(context.self, readArrayBuffer(caller, deref(caller, ptr, 0))));
+      return 0;
+    })
+    .define("env", "__balance", (_caller: usize, ptr: i32): i32 => {
+      const caller = wasmi.Caller.wrap(_caller);
+      const context = changetype<AlkaneContext>(caller.context());
+      const who = AlkaneId.parse(readArrayBuffer(caller, deref(caller, ptr, 0)));
+      const what = AlkaneId.parse(readArrayBuffer(caller, deref(caller, ptr, 1)));
+      writeMemory(caller, deref(caller, ptr, 2), toArrayBuffer(context.state.balance(who, what)));
       return 0;
     })
     .define("env", "__request_transaction", (_caller: usize, ptr: i32): i32 => {
@@ -89,17 +108,63 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
       state.take(context.self, storageMap);
       state.transfer(context.self, cellpack.target, incomingRunes);
       const instance = new AlkaneInstance(context.messageContext, cellpack.target, context.self, incomingRunes, cellpack.inputs, state);
-      const ptr = instance.call("__execute", new Array<i32>(0));
-      // readArrayBufferFromMemory
-      // if (success) state.commit();
-      return 0;
+      const result = instance.call("__execute", new Array<i32>(0));
+      if (result.success) {
+        context.returndata = pipeStorage(readArrayBufferAtOffset(instance.instance.memory(instance.store), result.value), cellpack.target, state);
+	state.commit();
+      } else {
+        context.returndata = new ArrayBuffer(0);
+        state.rollback();
+      }
+      return context.returndata.byteLength;
     })
     .define("env", "__delegatecall", (_caller: usize, ptr: i32): i32 => {
-      return 0;
+      const caller = wasmi.Caller.wrap(_caller);
+      const context = changetype<AlkaneContext>(caller.context());
+      const state = context.state;
+      const cellpack = Cellpack.fromArrayBuffer(readArrayBuffer(caller, deref(caller, ptr, 0)));
+      const incomingRunes = AlkaneTransferParcel.parse(readArrayBuffer(caller, deref(caller, ptr, 1)));
+      state.checkpoint();
+      const storageMap = StorageMap.parse(readArrayBuffer(caller, deref(caller, ptr, 2)));
+      state.take(context.self, storageMap);
+      const instance = new AlkaneInstance(context.messageContext, context.self, context.caller, incomingRunes, cellpack.inputs, state);
+      instance.module = instance.engine.module(ALKANE_INDEX.select(cellpack.target.toBytes()).get());
+      const result = instance.call("__execute", new Array<i32>(0));
+      if (result.success) {
+        context.returndata = pipeStorage(readArrayBufferAtOffset(instance.instance.memory(instance.store), result.value), context.self, state);
+	state.commit();
+      } else {
+        context.returndata = new ArrayBuffer(0);
+        state.rollback();
+      }
+      return context.returndata.byteLength;
     })
     .define("env", "__staticcall", (_caller: usize, ptr: i32): i32 => {
-      return 0;
+      const caller = wasmi.Caller.wrap(_caller);
+      const context = changetype<AlkaneContext>(caller.context());
+      const state = context.state;
+      const cellpack = Cellpack.fromArrayBuffer(readArrayBuffer(caller, deref(caller, ptr, 0)));
+      const incomingRunes = AlkaneTransferParcel.parse(readArrayBuffer(caller, deref(caller, ptr, 1)));
+      state.checkpoint();
+      const storageMap = StorageMap.parse(readArrayBuffer(caller, deref(caller, ptr, 2)));
+      state.take(context.self, storageMap);
+      state.transfer(context.self, cellpack.target, incomingRunes);
+      const instance = new AlkaneInstance(context.messageContext, cellpack.target, context.self, incomingRunes, cellpack.inputs, state);
+      const result = instance.call("__execute", new Array<i32>(0));
+      if (result.success) {
+        context.returndata = pipeStorage(readArrayBufferAtOffset(instance.instance.memory(instance.store), result.value), cellpack.target, state);
+	state.rollback();
+      } else {
+        context.returndata = new ArrayBuffer(0);
+        state.rollback();
+      }
+      return context.returndata.byteLength;
     })
+    .define("__returndatacopy", (_caller: usize, ptr: i32): i32 => {
+      const caller = wasmi.Caller.wrap(_caller);
+      writeMemory(caller, deref(caller, ptr, 0), changetype<AlkaneContext>(caller.context()).returndata);
+      return 0;
+    });
 }
 
 export class AlkaneInstance {

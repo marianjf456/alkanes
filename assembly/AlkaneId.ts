@@ -11,6 +11,11 @@ export class AlkaneId extends ProtoruneRuneId {
     result.tx = lo;
     return result;
   }
+  static parse(v: ArrayBuffer): AlkaneId {
+    const box = Box.from(v);
+    const hi = parseU128(box);
+    return AlkaneId.from(hi, parseU128(box));
+  }
   isCreate(): bool {
     return this.block.isZero() && this.tx.isZero();
   }
