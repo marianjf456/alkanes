@@ -75,7 +75,7 @@ export class AlkaneMessageContext extends MessageContext {
       cellpack.inputs,
       state
     );
-    const result = instance.call("__execute", new Array<i32>(0));
+    const result = instance.run();
     return result.success;
   }
 }
