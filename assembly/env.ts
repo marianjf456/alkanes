@@ -103,7 +103,7 @@ export class AlkaneEnvironment {
   pay(id: AlkaneId, amount: u128): void {
     this.payout.unwrap().push(AlkaneTransfer.fromTuple(id, amount));
   }
-  returndata(v: Array<u128>): i32 {
+  returndata(v: ArrayBuffer): i32 {
     const payout = this.payout;
     return <i32>(
       changetype<usize>(
@@ -111,7 +111,7 @@ export class AlkaneEnvironment {
           Box.from(this.storage.serialize()),
           Box.from(primitiveToBuffer<u32>(payout.unwrap().length)),
           Box.from(payout.serialize()),
-	  Box.from(u128ListToArrayBuffer(v))
+	  Box.from(v)
         ]),
       )
     );
