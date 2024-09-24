@@ -1,5 +1,8 @@
 import { ProtoruneRuneId } from "protorune/assembly/indexer/ProtoruneRuneId";
 import { IncomingRune } from "protorune/assembly/indexer/protomessage/IncomingRune";
+import { AlkaneTransferParcel } from "../AlkaneTransferParcel";
+import { AlkaneContextIncomingRune } from "./AlkaneContextIncomingRune";
+import { AlkaneTransfer } from "../AlkaneTransfer";
 import { u128 } from "as-bignum/assembly";
 
 export class AlkaneContextIncomingRune {
@@ -19,5 +22,13 @@ export class AlkaneContextIncomingRune {
       ProtoruneRuneId.from(rune.runeId),
       rune.amount,
     );
+  }
+  static fromAlkaneTransfer(transfer: AlkaneTransfer): AlkaneContextIncomingRune {
+    return AlkaneContextIncomingRune.from(changetype<ProtoruneRuneId>(transfer.id), transfer.value);
+  }
+  static fromParcel(parcel: AlkaneTransferParcel): Array<AlkaneContextIncomingRune> {
+    return parcel.unwrap().map<AlkaneContextIncomingRune>((v: AlkaneTransfer, i: i32, ary: Array<AlkaneTransfer>) => {
+      return AlkaneContextIncomingRune.fromAlkaneTransfer(v);
+    });
   }
 }

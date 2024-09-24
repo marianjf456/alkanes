@@ -59,7 +59,7 @@ export class AlkaneState {
       state.storage.set(keys[i], this.storage.get(keys[i]));
     }
   }
-  flush(alkaneHex: string, atomic: AtomicTransaction) {
+  flush(alkaneHex: string, atomic: AtomicTransaction): void {
     this._indexBalances(alkaneHex, atomic);
     this._indexStorage(alkaneHex, atomic);
   }

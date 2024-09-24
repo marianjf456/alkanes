@@ -22,3 +22,18 @@ export function arrayBufferToU128List(v: ArrayBuffer): Array<u128> {
   }
   return result;
 }
+
+export function toU128List(v: ArrayBuffer): Array<u128> {
+  const result = new Array<u128>(0);
+  const buffer = Box.from(v);
+  for (let i: i32 = 0; i < v.byteLength; i += 16) {
+    result.push(
+      fromArrayBuffer(buffer.sliceFrom(i).setLength(16).toArrayBuffer()),
+    );
+  }
+  return result;
+}
+
+export function writeBuffer(ptr: usize, buffer: ArrayBuffer): void {
+  memory.copy(ptr, changetype<usize>(buffer) - 4, <usize>buffer.byteLength + 4);
+}

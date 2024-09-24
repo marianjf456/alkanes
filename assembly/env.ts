@@ -65,183 +65,13 @@ import { fromArrayBuffer } from "metashrew-runes/assembly/utils";
 import { u128 } from "as-bignum/assembly";
 import { AlkaneId } from "./AlkaneId";
 import { Cellpack } from "./Cellpack";
-import { parseU128, u128ListToArrayBuffer } from "./utils";
 import { Box, primitiveToBuffer } from "metashrew-as/assembly/utils";
 
-import { decodeHex } from "metashrew-as/assembly/utils";
 
-export function writeBuffer(ptr: usize, buffer: ArrayBuffer): void {
-  memory.copy(ptr, changetype<usize>(buffer) - 4, <usize>buffer.byteLength + 4);
-}
-
-export class StorageMap extends Map<string, ArrayBuffer> {
-  store(k: ArrayBuffer, v: ArrayBuffer): void {
-    this.set(Box.from(k).toHexString(), v);
-  }
-  load(k: ArrayBuffer): ArrayBuffer {
-    const key = Box.from(k).toHexString();
-    if (this.has(key)) return this.get(key);
-    const result = new ArrayBuffer(__request_storage(changetype<usize>(k)));
-    __load_storage(changetype<usize>(k), changetype<usize>(result));
-  }
-  serialize(): ArrayBuffer {
-    const keys = this.keys().map<ArrayBuffer>(
-      (v: string, i: i32, ary: Array<string>) => {
-        return decodeHex(v.substring(2, v.length));
-      },
-    );
-    const values = this.values();
-    let length = 4;
-    for (let i = 0; keys.length; i++) {
-      length += 4 + keys[i].byteLength;
-      length += 4 + values[i].byteLength;
-    }
-    const result = new ArrayBuffer(length);
-    store<u32>(changetype<usize>(result), <u32>keys.length);
-    let ptr: usize = 4;
-    for (let i = 0; keys.length; i++) {
-      writeBuffer(changetype<usize>(result) + ptr, keys[i]);
-      ptr += 4 + keys[i].byteLength;
-      writeBuffer(changetype<usize>(result) + ptr, values[i]);
-      ptr += 4 + values[i].byteLength;
-    }
-    return result;
-  }
-  static parse(v: ArrayBuffer): StorageMap {
-    return StorageMap.consume(Box.from(v));
-  }
-  static consume(v: Box): StorageMap {
-    const n = parsePrimitive<u32>(box);
-    const result = new StorageMap();
-    for (let i: i32 = 0; i < n; i++) {
-      const key = parseBytes(box, parsePrimitive<u32>(box)).toArrayBuffer();
-      result.store(key, parseBytes(box, parsePrimitive<u32>(box)).toArrayBuffer());
-      
-    }
-    return result;
-  }
-}
-
-function toU128List(v: ArrayBuffer): Array<u128> {
-  const result = new Array<u128>(0);
-  const buffer = Box.from(v);
-  for (let i: i32 = 0; i < v.byteLength; i += 16) {
-    result.push(
-      fromArrayBuffer(buffer.sliceFrom(i).setLength(16).toArrayBuffer()),
-    );
-  }
-  return result;
-}
-
-export class AlkaneContext {
-  public self: AlkaneId;
-  public caller: AlkaneId;
-  public runes: Map<string, u128>;
-  constructor(v: ArrayBuffer) {
-    const values = toU128List(v);
-    this.runes = new Map<string, u128>();
-    this.self = AlkaneId.fromId(values[0], values[1]);
-    this.caller = AlkaneId.fromId(values[2], values[3]);
-    for (let i: i32 = 4; i < values.length; i += 3) {
-      const thisAlkane = AlkaneId.fromId(values[i], values[i + 1]);
-      thisAlkane.toBytes();
-      this.runes.set(
-        Box.from(thisAlkane.toBytes()).toHexString(),
-        values[i + 3],
-      );
-    }
-  }
-  static load(): AlkaneContext {
-    const buffer = new ArrayBuffer(<i32>__request_context());
-    __load_context(changetype<usize>(buffer));
-    return new AlkaneContext(buffer);
-  }
-}
-
-export class AlkaneTransfer {
-  public id: AlkaneId;
-  public value: u128;
-  constructor(id: AlkaneId, value: u128) {
-    this.id = id;
-    this.value = value;
-  }
-  static fromTuple(id: AlkaneId, value: u128): AlkaneTransfer {
-    return new AlkaneTransfer(id, value);
-  }
-  static parse(v: Box): AlkaneTransfer {
-    const block = parseU128(v);
-    const tx = parseU128(v);
-    const value = parseU128(v);
-    return AlkaneTransfer.fromTuple(AlkaneId.fromId(block, tx), value);
-  }
-}
-
-
-@final
-@unmanaged
-export class AlkaneTransferParcel {
-  [key: string]: number;
-  static wrap(ary: Array<AlkaneTransfer>): AlkaneTransferParcel {
-    return changetype<AlkaneTransferParcel>(ary);
-  }
-  unwrap(): Array<AlkaneTransfer> {
-    return changetype<Array<AlkaneTransfer>>(this);
-  }
-  toArray(): Array<u128> {
-    const parcel: Array<AlkaneTransfer> = this.unwrap();
-    const result = new Array<u128>(0);
-    for (let i = 0; i < parcel.length; i++) {
-      result.push(parcel[i].id.block);
-      result.push(parcel[i].id.tx);
-      result.push(parcel[i].value);
-    }
-    return result;
-  }
-  serialize(): ArrayBuffer {
-    return u128ListToArrayBuffer(this.toArray());
-  }
-  static parse(v: ArrayBuffer): AlkaneTransferParcel {
-    const result = new Array<AlkaneTransfer>(0);
-    const box = Box.from(v);
-    while (box.len > 0) {
-      result.push(AlkaneTransfer.parse(box));
-    }
-    return AlkaneTransferParcel.wrap(result);
-  }
-}
-
-export class CallResult {
-  public alkanes: Array<AlkaneTransfer>;
-  public data: Array<u128>;
-  constructor(alkanes: Array<AlkaneTransfer>, data: Array<u128>) {
-    this.alkanes = alkanes;
-    this.data = data;
-  }
-  static fromTuple(
-    alkanes: Array<AlkaneTransfer>,
-    data: Array<u128>,
-  ): CallResult {
-    return new CallResult(alkanes, data);
-  }
-  static parse(v: ArrayBuffer): CallResult {
-    if (v.byteLength % 16 !== 0 || v.byteLength === 0)
-      return changetype<CallResult>(0);
-    const input = Box.from(v);
-    const assets = parseU128(input).toU64();
-    if (<u64>input.len < <u64>16 * assets) return changetype<AlkaneTransfer>(0);
-    const alkanes = new Array<AlkaneTransfer>(0);
-    const data = new Array<u128>(0);
-    for (let i: u64 = 0; i < assets.length && input.len !== 0; i++) {
-      alkanes.push(AlkaneTransfer.parse(input));
-    }
-    while (input.len !== 0) {
-      data.push(parseU128(input));
-    }
-    return CallResult.fromTuple(alkanes, data);
-  }
-  isRevert(): boolean {
-    return changetype<usize>(this) === 0;
-  }
+export function loadContext(): AlkaneContext {
+  const buffer = new ArrayBuffer(<i32>__request_context());
+  __load_context(changetype<usize>(buffer));
+  return new AlkaneContext(buffer);
 }
 
 export class AlkaneEnvironment {
@@ -283,7 +113,7 @@ export class AlkaneEnvironment {
   }
   get context(): ExecutionContext {
     if (changetype<usize>(this._context) === 0)
-      this._context = ExecutionContext.load();
+      this._context = loadContext();
     return this._context;
   }
   get block(): ArrayBuffer {

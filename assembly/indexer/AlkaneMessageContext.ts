@@ -13,6 +13,9 @@ import { Inscription } from "metashrew-as/assembly/blockdata/inscription";
 import { fromArrayBuffer, toArrayBuffer } from "metashrew-runes/assembly/utils";
 import { IndexPointer } from "metashrew-as/assembly/indexer/tables";
 import { logArray } from "quorumgenesisprotorune/assembly/utils";
+import { AlkaneGlobalState } from "./AlkaneGlobalState";
+import { AlkaneContextIncomingRune } from "./AlkaneContextIncomingRune";
+import { IncomingRune } from "protorune/assembly/indexer/protomessage/IncomingRune";
 
 export class AlkaneMessageContext extends MessageContext {
   protocolTag(): u128 {
@@ -87,7 +90,9 @@ export class AlkaneMessageContext extends MessageContext {
       this,
       self,
       caller,
-      this.runes,
+      this.runes.map<AlkaneContextIncomingRune>((v: IncomingRune, i: i32, ary: Array<IncomingRune>) => {
+        return AlkaneContextIncomingRune.fromIncomingRune(v);
+      }),
       cellpack.inputs,
       state
     );

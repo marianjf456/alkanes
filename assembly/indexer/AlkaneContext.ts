@@ -23,7 +23,7 @@ export class AlkaneContext {
     self: ProtoruneRuneId,
     caller: ProtoruneRuneId,
     fuelLeft: u64,
-    incomingRunes: Array<IncomingRune>,
+    incomingRunes: Array<AlkaneContextIncomingRune>,
     inputs: Array<u128>,
     state: AlkaneGlobalState
   ) {
@@ -32,10 +32,7 @@ export class AlkaneContext {
     this.self = self;
     this.caller = caller;
     this.fuelLeft = u128.from(fuelLeft);
-    this.incomingRunes = incomingRunes.map<AlkaneContextIncomingRune>(
-      (v: IncomingRune, i: i32, ary: Array<IncomingRune>) =>
-        AlkaneContextIncomingRune.fromIncomingRune(v),
-    );
+    this.incomingRunes = incomingRunes;
     this.state = state;
     this.returndata = new ArrayBuffer(0);
   }

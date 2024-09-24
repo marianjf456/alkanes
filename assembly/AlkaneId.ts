@@ -22,4 +22,7 @@ export class AlkaneId extends ProtoruneRuneId {
   isCreateReserved(): bool {
     return this.block === u128.from(1);
   }
+  static fromOther<T>(v: T): AlkaneId {
+    return changetype<AlkaneId>(v);
+  }
 }
