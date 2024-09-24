@@ -1,6 +1,7 @@
 import { AlkaneId } from "./AlkaneId";
 import { toU128List } from "./utils";
 import { Box } from "metashrew-as/assembly/utils/box";
+import { u128 } from "as-bignum/assembly";
 
 export class AlkaneContext {
   public self: AlkaneId;

@@ -180,8 +180,12 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
       const storageMap = StorageMap.parse(
         readArrayBuffer(caller, deref(caller, ptr, 2)),
       );
-      state.take(context.self, storageMap);
-      state.transfer(context.self, cellpack.target, incomingRunes);
+      state.take(AlkaneId.fromOther(context.self), storageMap);
+      if (!state.transfer(AlkaneId.fromOther(context.self), cellpack.target, incomingRunes)) {
+        state.rollback();
+        context.returndata = new ArrayBuffer(0);
+	return context.returndata.byteLength;
+      }
       const instance = new AlkaneInstance(
         context.messageContext,
         cellpack.target,
@@ -221,7 +225,7 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
       const storageMap = StorageMap.parse(
         readArrayBuffer(caller, deref(caller, ptr, 2)),
       );
-      state.take(context.self, storageMap);
+      state.take(AlkaneId.fromOther(context.self), storageMap);
       const instance = new AlkaneInstance(
         context.messageContext,
         context.self,
@@ -264,8 +268,12 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
       const storageMap = StorageMap.parse(
         readArrayBuffer(caller, deref(caller, ptr, 2)),
       );
-      state.take(context.self, storageMap);
-      state.transfer(context.self, cellpack.target, incomingRunes);
+      state.take(AlkaneId.fromOther(context.self), storageMap);
+      if (!state.transfer(AlkaneId.fromOther(context.self), cellpack.target, incomingRunes)) {
+        state.rollback();
+        context.returndata = new ArrayBuffer(0);
+	return context.returndata.byteLength;
+      }
       const instance = new AlkaneInstance(
         context.messageContext,
         cellpack.target,

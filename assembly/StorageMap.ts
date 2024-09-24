@@ -3,23 +3,30 @@
 ): usize;
 
 
-@external("env", "__load_storage") declare function __load(
+@external("env", "__load_storage") declare function __load_storage(
   ptr: usize,
   result: usize,
 ): void;
 
 import { Box } from "metashrew-as/assembly/utils/box";
 import { parsePrimitive, parseBytes, decodeHex } from "metashrew-as/assembly/utils";
+import { writeBuffer } from "./utils";
 
 export class StorageMap extends Map<string, ArrayBuffer> {
   store(k: ArrayBuffer, v: ArrayBuffer): void {
     this.set(Box.from(k).toHexString(), v);
   }
+  keyset(): Array<ArrayBuffer> {
+    return this.keys().map<ArrayBuffer>((v: string, i: i32, ary: Array<string>) => {
+      return decodeHex(v.substring(2, v.length));
+    })
+  }
   load(k: ArrayBuffer): ArrayBuffer {
     const key = Box.from(k).toHexString();
     if (this.has(key)) return this.get(key);
-    const result = new ArrayBuffer(__request_storage(changetype<usize>(k)));
+    const result = new ArrayBuffer(<i32>__request_storage(changetype<usize>(k)));
     __load_storage(changetype<usize>(k), changetype<usize>(result));
+    return result;
   }
   serialize(): ArrayBuffer {
     const keys = this.keys().map<ArrayBuffer>(

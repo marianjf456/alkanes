@@ -11,6 +11,9 @@ import { nullptr } from "metashrew-as/assembly/utils/pointer";
 import { AtomicTransaction } from "metashrew-as/assembly/indexer/atomic";
 import { decodeHex } from "metashrew-as/assembly/utils/hex";
 import { AlkaneMessageContext } from "./AlkaneMessageContext";
+import { AlkaneTransfer } from "../AlkaneTransfer";
+import { AlkaneTransferParcel } from "../AlkaneTransferParcel";
+import { StorageMap } from "../StorageMap";
 
 export class AlkaneState {
   public balances: Map<string, u128> = new Map<string, u128>();
@@ -153,6 +156,28 @@ export class AlkaneGlobalState {
         .select(whatBytes)
         .get(),
     );
+  }
+  transfer(src: AlkaneId, dest: AlkaneId, parcel: AlkaneTransferParcel): boolean {
+    const ary = parcel.unwrap();
+    for (let i: i32 = 0; i < ary.length; i++) {
+      if (!src.eq(ary[i].id)) {
+        const balance = this.balance(src, ary[i].id);
+        if (balance < ary[i].value) return false;
+        this.setBalance(src, ary[i].id, balance - ary[i].value);
+      }
+      if (!dest.eq(ary[i].id)) {
+        const destBalance = this.balance(dest, ary[i].id);
+        if (u128.Max - destBalance < ary[i].value) return false;
+        this.setBalance(dest, ary[i].id, ary[i].value + destBalance);
+      }
+    } 
+    return true;
+  }
+  take(target: AlkaneId, map: StorageMap): void {
+    const keyset = map.keyset();
+    for (let i: i32 = 0; i < keyset.length; i++) {
+      this.setStorage(target, keyset[i], map.load(keyset[i]));
+    }
   }
   lookup(_who: AlkaneId, _what: AlkaneId): ArrayBuffer {
     if (this.isNull()) return changetype<ArrayBuffer>(0);

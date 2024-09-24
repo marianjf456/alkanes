@@ -30,4 +30,7 @@ export class AlkaneId extends ProtoruneRuneId {
   static fromOther<T>(v: T): AlkaneId {
     return changetype<AlkaneId>(v);
   }
+  eq(v: AlkaneId): boolean {
+    return this.block === v.block && this.tx === v.tx;
+  }
 }
