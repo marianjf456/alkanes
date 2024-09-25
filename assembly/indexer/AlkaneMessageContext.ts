@@ -48,9 +48,11 @@ export class AlkaneMessageContext extends MessageContext {
       : fromArrayBuffer(nextSequenceBytes);
   }
   findBinary(): ArrayBuffer {
+    console.log("transaction ins len "+this.transaction.ins.length.toString())
     for (let i = 0; i < this.transaction.ins.length; i++) {
       const inscription = this.transaction.ins[i].inscription();
       if (inscription !== null) {
+        console.log("found non null inscription")
         const body = (inscription as Inscription).body();
         if (body !== null) return body;
       }
@@ -59,7 +61,6 @@ export class AlkaneMessageContext extends MessageContext {
   }
   handle(): boolean {
     console.log("inside AlkaneMessageContext handle ");
-
     let calldata = _parseLeb128toU128Array(this.calldata);
     const cellpack = new Cellpack(calldata);
     let self = cellpack.target;
@@ -75,7 +76,9 @@ export class AlkaneMessageContext extends MessageContext {
       cellpack.inputs,
       state
     );
+    console.log("created instance, about to execute")
     const result = instance.run();
+    console.log("finished execute")
     return result.success;
   }
 }

@@ -27,6 +27,7 @@
     "quorumgenesisprotorune": "https://github.com/kungfuflex/quorumgenesisprotorune"
   },
   "devDependencies": {
+    "@scure/btc-signer": "^1.4.0",
     "@types/leb128": "^0.0.0",
     "@types/node": "^20.10.6",
     "assemblyscript": "0.26.7",
@@ -36,6 +37,7 @@
     "leb128": "^0.0.5",
     "metashrew-as": "https://github.com/sandshrewmetaprotocols/metashrew-as",
     "metashrew-test": "https://github.com/sandshrewmetaprotocols/metashrew-test",
+    "micro-ordinals": "^0.1.1",
     "mocha": "^10.3.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.1.1",
