@@ -56,15 +56,29 @@ export const constructProtostoneTxWithInscription = (
     output: number;
   }[],
   protostones?: ProtoStone[],
-  runeTransferPointer?: number
+  runeTransferPointer?: number,
+  // input: any
 ): string => {
   const tx = new btc.Transaction({ customScripts: CUSTOM_SCRIPTS, allowUnknownOutputs: true });
-  inputs.forEach((input) => {
-    tx.addInput({
-      txid: input.inputTxHash,
-      index: input.inputTxOutputIndex,
-    });
-  });
+  // TODO: Test inputs that contain protorunes that also may be a part of the protomessage
+  // removed for now because we can't find the utxo that creates this input
+  // inputs.forEach((input, idx) => {
+  //   tx.addInput({
+  //     // txid: input.inputTxHash,
+  //     // index: input.inputTxOutputIndex,
+  //     nonWitnessUtxo: {
+  //       version: 1,
+
+  //       inputs: [],
+  //       outputs: [{
+  //         amount: input.inputTxOutputIndex,
+  //         script: Uint8Array.from([0])
+  //       }],
+  //       lockTime: 0
+  //     }
+  //   });
+  //   tx.signIdx(privKey1, idx)
+  // });
   tx.addInput(inscriptionInput);
 
   outputs.forEach((output) => {
@@ -85,6 +99,9 @@ export const constructProtostoneTxWithInscription = (
     amount: 0n,
   });
 
+  tx.sign(privKey1)
+  tx.finalize()
+
   return tx.hex;
 };
 
@@ -104,6 +121,7 @@ export async function createAlkaneFixture({
   amount?: bigint;
 }) {
   let {
+    input,
     block,
     output,
     refundOutput,
@@ -176,7 +194,8 @@ export async function createAlkaneFixture({
     outputs,
     edicts,
     protostones,
-    runeTransferPointer
+    runeTransferPointer,
+    // input
   );
   block.transactions?.push(
     bitcoinjs.Transaction.fromHex(inscriptionProtoburnHex)

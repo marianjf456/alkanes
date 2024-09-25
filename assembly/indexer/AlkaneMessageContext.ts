@@ -69,6 +69,7 @@ export class AlkaneMessageContext extends MessageContext {
         return false;
       } else {
         ALKANES_INDEX.select(cellpack.target.toBytes()).set(binary);
+        console.log("Successfully set the binary")
       }
     }
     if (cellpack.target.isCreateReserved()) {
@@ -85,6 +86,8 @@ export class AlkaneMessageContext extends MessageContext {
     }
     let self = cellpack.target;
     let caller = ProtoruneRuneId.from(RuneId.fromU128(u128.Zero));
+    console.log("about to create instance with cellpack.inputs")
+    logArray(cellpack.inputs)
     const instance = new AlkaneInstance(
       this,
       self,
@@ -92,7 +95,9 @@ export class AlkaneMessageContext extends MessageContext {
       this.runes,
       cellpack.inputs,
     );
+    console.log("created instance, about to execute")
     const result = instance.call("__execute", new Array<i32>());
+    console.log("finished execute")
     return result.success;
   }
 }
