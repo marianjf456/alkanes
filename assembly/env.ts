@@ -104,8 +104,11 @@ export class AlkaneEnvironment {
   pay(id: AlkaneId, amount: u128): void {
     this.payout.unwrap().push(AlkaneTransfer.fromTuple(id, amount));
   }
-  pointer(keyword: string): StoragePointer {
-    return StoragePointer.for(keyword);
+  keyword(s: string): StoragePointer {
+    return StoragePointer.for(s);
+  }
+  select(v: ArrayBuffer): StoragePointer {
+    return StoragePointer.wrap(v);
   }
   returndata(v: ArrayBuffer): i32 {
     const payout = this.payout;
