@@ -6,6 +6,7 @@ import { _flush, input } from "metashrew-as/assembly/indexer/index";
 import { AlkaneIndex } from "./AlkaneIndex";
 import { SpendablesIndex } from "metashrew-spendables/assembly/indexer";
 import { GENESIS } from "metashrew-runes/assembly/indexer/constants";
+import { wasmi } from "./wasmi/bindings";
 
 export function _start(): void {
   const data = input();
