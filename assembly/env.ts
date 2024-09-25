@@ -71,6 +71,7 @@ import { StorageMap } from "./StorageMap";
 import { AlkaneContext } from "./AlkaneContext";
 import { AlkaneTransfer } from "./AlkaneTransfer";
 import { AlkaneTransferParcel } from "./AlkaneTransferParcel";
+import { StoragePointer } from "./StoragePointer";
 
 
 export function loadContext(): AlkaneContext {
@@ -102,6 +103,9 @@ export class AlkaneEnvironment {
   }
   pay(id: AlkaneId, amount: u128): void {
     this.payout.unwrap().push(AlkaneTransfer.fromTuple(id, amount));
+  }
+  pointer(keyword: string): StoragePointer {
+    return StoragePointer.for(keyword);
   }
   returndata(v: ArrayBuffer): i32 {
     const payout = this.payout;
