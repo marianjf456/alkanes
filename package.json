@@ -10,7 +10,8 @@
     "asbuild:release": "asc assembly/indexer/index.ts --target release --config asconfig.json",
     "asbuild:test": "asc assembly/index.ts --target release --config asconfig.json",
     "bundleup": "wasm-merge build/debug.wasm alkanes runtime/target/wasm32-unknown-unknown/debug/alkanes_runtime.wasm alkanes_runtime -o build/combined.wasm -n -q -sec --enable-bulk-memory",
-    "build": "npm-run-all asbuild:debug asbuild:release",
+    "metadce": "wasm-metadce build/combined-out.wasm --graph-file metadce/graph.json -o build/combined-metadce.wasm --all-features > /dev/null",
+    "build": "npm-run-all asbuild:debug asbuild:release build:ts",
     "build:debug:preloader": "npm run asbuild:preloader --sharedMemory",
     "prettier:assemblyscript": "prettier --write ./assembly/**/*.ts --plugin assemblyscript-prettier",
     "prettier:ts": "prettier --write ./src.ts/**/*.ts",
@@ -18,7 +19,8 @@
     "test": "NODE_NO_WARNINGS=1 ts-mocha --timeout 0 ./tests/**.spec.ts",
     "inspect": "wasm-dis",
     "opt": "wasm-opt build/combined.wasm --multi-memory-lowering -n -o build/combined-out.wasm",
-    "full-test-build": "npm-run-all build bundleup opt"
+    "build:ts": "tsc",
+    "full-test-build": "npm-run-all build bundleup opt metadce"
   },
   "dependencies": {
     "binaryen": "^118.0.0",

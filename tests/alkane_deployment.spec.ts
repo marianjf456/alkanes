@@ -12,9 +12,9 @@ import {
   createMultipleProtomessageFixture,
   createProtoruneFixture,
 } from "protorune/lib/tests/utils/fixtures";
-import { Cellpack } from "../src.ts/alkane";
+import { Cellpack } from "../lib/alkane";
 import { u128 } from "@magiceden-oss/runestone-lib/dist/src/integer";
-import { loadWasmFile } from "../src.ts/wasm";
+import { loadWasmFile } from "../lib/wasm";
 import * as btc from "@scure/btc-signer";
 import { hex, utf8 } from "@scure/base";
 import { createAlkaneFixture } from "./utils/fixtures";

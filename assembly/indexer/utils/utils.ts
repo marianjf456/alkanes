@@ -5,7 +5,6 @@ import { readULEB128ToU128 } from "metashrew-runes/assembly/leb128";
 import { Protostone } from "protorune/assembly/indexer/Protostone";
 import { RunesTransaction } from "metashrew-runes/assembly/indexer/RunesTransaction";
 import { NumberingProtostone } from "quorumgenesisprotorune/assembly/indexer/numbering/index";
-import { console } from "metashrew-as/assembly/utils/logging";
 
 export function _parseLeb128toU128Array(input: ArrayBuffer): Array<u128> {
   const result = new Array<u128>();
@@ -15,7 +14,6 @@ export function _parseLeb128toU128Array(input: ArrayBuffer): Array<u128> {
   while (inputBox.len > 0) {
     const value = u128.from(0);
     const size = readULEB128ToU128(inputBox, value);
-    console.log(value.toString());
     if (size > MAX_BYTES_LEB128_INT) return defaultResult;
     inputBox.shrinkFront(size);
     result.push(value);

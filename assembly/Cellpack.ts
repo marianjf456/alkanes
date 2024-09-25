@@ -1,7 +1,6 @@
 import { u128 } from "as-bignum/assembly";
 import { AlkaneId } from "./AlkaneId";
 import { u128ListToArrayBuffer, arrayBufferToU128List } from "./utils";
-import { console } from "metashrew-as/assembly/utils";
 import { logArray } from "quorumgenesisprotorune/assembly/utils";
 
 export class Cellpack {
@@ -15,8 +14,6 @@ export class Cellpack {
     this.inputs = ary.slice(2);
     this.target.block = ary[0];
     this.target.tx = ary[1];
-    console.log("cellpack block is " + this.target.block.toString());
-    console.log("cellpack tx is " + this.target.tx.toString());
   }
   toArray(): Array<u128> {
     const result = new Array<u128>(0);

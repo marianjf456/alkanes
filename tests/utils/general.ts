@@ -16,10 +16,12 @@ function findRootDir(currentDir: string): string {
   }
 }
 
+const SUFFIX = process.env.ALKANES_WASM_SUFFIX || 'out';
+
 const DEBUG_WASM_PATH = path.join(
   findRootDir(__dirname),
   "build",
-  "combined-out.wasm"
+  "combined-" + SUFFIX +".wasm"
 );
 
 console.log(DEBUG_WASM_PATH);

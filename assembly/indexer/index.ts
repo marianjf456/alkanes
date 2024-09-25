@@ -20,7 +20,6 @@ export function _start(): void {
     new SpendablesIndex().indexBlock(height, block);
   }
   new AlkaneIndex().indexBlock(height, block);
-  console.log("got block " + height.toString(10));
   _flush();
 }
 

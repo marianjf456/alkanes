@@ -67,7 +67,7 @@ import { u128 } from "as-bignum/assembly";
 import { AlkaneId } from "./AlkaneId";
 import { Cellpack } from "./Cellpack";
 import { Box, primitiveToBuffer } from "metashrew-as/assembly/utils";
-import { StorageMap } from "./StorageMap";
+import { AlkaneStorageMap } from "./AlkaneStorageMap";
 import { AlkaneContext } from "./AlkaneContext";
 import { AlkaneTransfer } from "./AlkaneTransfer";
 import { AlkaneTransferParcel } from "./AlkaneTransferParcel";
@@ -85,7 +85,7 @@ export class AlkaneEnvironment {
   private _transaction: ArrayBuffer;
   private _sequence: u128;
   private _context: AlkaneContext;
-  private _storage: StorageMap;
+  private _storage: AlkaneStorageMap;
   private _payout: Array<AlkaneTransfer>;
   constructor() {
     this._block = changetype<ArrayBuffer>(0);
@@ -93,7 +93,7 @@ export class AlkaneEnvironment {
     this._sequence = changetype<u128>(0);
     this._context = changetype<AlkaneContext>(0);
     this._payout = changetype<Array<AlkaneTransfer>>(0);
-    this._storage = changetype<StorageMap>(0);
+    this._storage = changetype<AlkaneStorageMap>(0);
   }
   get payout(): AlkaneTransferParcel {
     if (changetype<usize>(this._payout)) {
@@ -142,9 +142,9 @@ export class AlkaneEnvironment {
     }
     return this._transaction;
   }
-  get storage(): StorageMap {
+  get storage(): AlkaneStorageMap {
     if (changetype<usize>(this._storage) === 0) {
-      this._storage = new StorageMap();
+      this._storage = new AlkaneStorageMap();
     }
     return this._storage;
   }

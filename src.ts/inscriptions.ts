@@ -2,7 +2,7 @@ import * as btc from "@scure/btc-signer";
 import * as ordinals from "micro-ordinals";
 import * as psbt from "@scure/btc-signer/psbt";
 
-export const CUSTOM_SCRIPTS = [ordinals.OutOrdinalReveal];
+export const CUSTOM_SCRIPTS: Array<typeof ordinals.OutOrdinalReveal> = [ordinals.OutOrdinalReveal];
 
 export const constructRevealTxInput = (
   programWasm: Uint8Array,
@@ -28,7 +28,6 @@ export const constructRevealTxInput = (
 
   // We need to send some bitcoins to this address before reveal.
   // Also, there should be enough to cover reveal tx fee.
-  console.log("Address", revealPayment.address); // 'tb1p5mykwcq5ly7y2ctph9r2wfgldq94eccm2t83dd58k785p0zqzwkspyjkp5'
 
   // Be extra careful: it's possible to accidentally send an inscription as a fee.
   // Also, rarity is only available with ordinal wallet.

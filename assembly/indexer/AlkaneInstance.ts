@@ -14,6 +14,7 @@ import { AlkaneTransferParcel } from "../AlkaneTransferParcel";
 import { StorageMap } from "../StorageMap";
 import { Box } from "metashrew-as/assembly/utils/box";
 import { toArrayBuffer } from "metashrew-runes/assembly/utils";
+import { console } from "metashrew-as/assembly/utils/logging";
 
 export function readArrayBuffer(caller: wasmi.Caller, ptr: i32): ArrayBuffer {
   return readArrayBufferAtOffset(caller.memory(), ptr);
@@ -49,13 +50,18 @@ export function deref(caller: wasmi.Caller, ptr: i32, i: usize): i32 {
 
 export function pipeStorage(result: ArrayBuffer, target: AlkaneId, state: AlkaneGlobalState): ArrayBuffer {
   const box = Box.from(result);
-  state.take(target, StorageMap.consume(box));
+  state.take(target, StorageMap.consumeToStorageMap(box));
   return box.toArrayBuffer();
 }
 
 export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
   return engine
     .linker()
+    .define("env", "__log", (_caller: usize, ptr: i32): i32 => {
+      const caller = wasmi.Caller.wrap(_caller);
+      console.log(String.UTF8.decode(readArrayBuffer(caller, deref(caller, ptr, 0))));
+      return 0;
+    })
     .define("env", "__request_context", (_caller: usize, ptr: i32): i32 => {
       const caller = wasmi.Caller.wrap(_caller);
       const context = changetype<AlkaneContext>(caller.context());
@@ -177,7 +183,7 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
         readArrayBuffer(caller, deref(caller, ptr, 1)),
       );
       state.checkpoint();
-      const storageMap = StorageMap.parse(
+      const storageMap = StorageMap.parseStorageMap(
         readArrayBuffer(caller, deref(caller, ptr, 2)),
       );
       state.take(AlkaneId.fromOther(context.self), storageMap);
@@ -222,7 +228,7 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
         readArrayBuffer(caller, deref(caller, ptr, 1)),
       );
       state.checkpoint();
-      const storageMap = StorageMap.parse(
+      const storageMap = StorageMap.parseStorageMap(
         readArrayBuffer(caller, deref(caller, ptr, 2)),
       );
       state.take(AlkaneId.fromOther(context.self), storageMap);
@@ -265,7 +271,7 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
         readArrayBuffer(caller, deref(caller, ptr, 1)),
       );
       state.checkpoint();
-      const storageMap = StorageMap.parse(
+      const storageMap = StorageMap.parseStorageMap(
         readArrayBuffer(caller, deref(caller, ptr, 2)),
       );
       state.take(AlkaneId.fromOther(context.self), storageMap);
@@ -367,7 +373,6 @@ export class AlkaneInstance {
       context.self.tx = context.messageContext.advanceSequence();
       const binary = context.messageContext.findBinary();
       if (changetype<usize>(binary) === 0) {
-        console.log("failed to create0");
         return wasmi.Result.Err<i32>();
       } else {
         context.messageContext.runtime.set(ALKANES_INDEX.select(cellpack.target.toBytes()).unwrap(), binary);
@@ -379,7 +384,6 @@ export class AlkaneInstance {
         changetype<usize>(binary) === 0 ||
         context.messageContext.takeCreate1(cellpack.target.tx)
       ) {
-        console.log("failed to create1");
         return wasmi.Result.Err<i32>();
       } else {
         cellpack.target.block = u128.from(3);

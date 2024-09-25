@@ -1,16 +1,18 @@
-@external("env", "__request_storage") declare function __request_storage(
-  ptr: usize,
-): usize;
-
-
-@external("env", "__load_storage") declare function __load_storage(
-  ptr: usize,
-  result: usize,
-): void;
-
 import { Box } from "metashrew-as/assembly/utils/box";
 import { parsePrimitive, parseBytes, decodeHex } from "metashrew-as/assembly/utils";
 import { writeBuffer } from "./utils";
+
+export function parseStorageMap<T extends AlkaneStorageMap>(v: ArrayBuffer): T {
+  const result = instantiate<T>();
+  result.parse(v);
+  return result;
+}
+
+export function consumeToStorageMap<T extends AlkaneStorageMap>(v: Box): T {
+  const result = instantiate<T>();
+  result.consume(v);
+  return result;
+}
 
 export class StorageMap extends Map<string, ArrayBuffer> {
   store(k: ArrayBuffer, v: ArrayBuffer): void {
@@ -24,9 +26,7 @@ export class StorageMap extends Map<string, ArrayBuffer> {
   load(k: ArrayBuffer): ArrayBuffer {
     const key = Box.from(k).toHexString();
     if (this.has(key)) return this.get(key);
-    const result = new ArrayBuffer(<i32>__request_storage(changetype<usize>(k)));
-    __load_storage(changetype<usize>(k), changetype<usize>(result));
-    return result;
+    return changetype<ArrayBuffer>(0);
   }
   serialize(): ArrayBuffer {
     const keys = this.keys().map<ArrayBuffer>(
@@ -51,17 +51,21 @@ export class StorageMap extends Map<string, ArrayBuffer> {
     }
     return result;
   }
-  static parse(v: ArrayBuffer): StorageMap {
-    return StorageMap.consume(Box.from(v));
+  static parseStorageMap(v: ArrayBuffer): StorageMap {
+    return parseStorageMap<StorageMap>(v);
   }
-  static consume(v: Box): StorageMap {
+  static consumeToStorageMap(v: Box): StorageMap {
+    return consumeToStorageMap<StorageMap>(v);
+  }
+  parse(v: ArrayBuffer): void {
+    return this.consume(Box.from(v));
+  }
+  consume(v: Box): void {
     const n = parsePrimitive<u32>(v);
-    const result = new StorageMap();
     for (let i: i32 = 0; i < <i32>n; i++) {
       const key = parseBytes(v, parsePrimitive<u32>(v)).toArrayBuffer();
-      result.store(key, parseBytes(v, parsePrimitive<u32>(v)).toArrayBuffer());
+      this.store(key, parseBytes(v, parsePrimitive<u32>(v)).toArrayBuffer());
       
     }
-    return result;
   }
 }

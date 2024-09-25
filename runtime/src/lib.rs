@@ -64,6 +64,7 @@ pub extern "C" fn __wasmi_store_new(
     Box::leak(Box::new(store)) as *mut wasmi::Store<State>
 }
 
+#[no_mangle]
 pub extern "C" fn __wasmi_instance_memory(ptr: *mut wasmi::Instance, store: *mut wasmi::Store<State>) -> *mut core::ffi::c_void {
   unsafe {
     (*ptr).get_memory(&mut *store, "memory").unwrap().data_mut(&mut *store) as *mut [u8] as *mut core::ffi::c_void
