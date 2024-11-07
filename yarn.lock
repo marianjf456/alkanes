@@ -2027,6 +2027,20 @@ protobufjs@^6.8.8:
     "@types/node" ">=13.7.0"
     long "^4.0.0"
 
+"protorune@github:kungfuflex/protorune#master":
+  version "0.1.0"
+  uid "4483aa0e4fb4def729bb93f0d2dc92d7d3d559cd"
+  resolved "https://codeload.github.com/kungfuflex/protorune/tar.gz/4483aa0e4fb4def729bb93f0d2dc92d7d3d559cd"
+  dependencies:
+    "@protobuf-ts/runtime" "^2.9.4"
+    bip32 "^4.0.0"
+    bip39 "^3.1.0"
+    clone "^2.1.2"
+    ecpair "^2.1.0"
+    lodash "^4.17.21"
+    tiny-secp256k1 "^2.2.3"
+    yargs "^17.7.2"
+
 "protorune@https://github.com/kungfuflex/protorune":
   version "0.1.0"
   resolved "https://github.com/kungfuflex/protorune#4483aa0e4fb4def729bb93f0d2dc92d7d3d559cd"
