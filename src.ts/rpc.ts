@@ -10,7 +10,7 @@ import {
   encodeBlockHeightInput,
 } from "metashrew-runes/lib/src.ts/outpoint";
 import { MetashrewRunes } from "metashrew-runes/lib/src.ts/rpc";
-import * as protobuf from "protorune";
+import * as protobuf from "./proto/protorune";
 
 import leb128 from "leb128";
 
@@ -84,22 +84,24 @@ export class AlkanesRpc extends MetashrewRunes {
   async simulate({
     alkanes,
     transaction,
+    height,
     block,
     calldata,
     txindex,
     vout,
     pointer,
-    refund_pointer,
+    refundPointer,
   }: any): Promise<any> {
     const buffer = invoke.encodeSimulateRequest({
       alkanes,
       transaction,
       block,
+      height,
       calldata,
       txindex,
       vout,
       pointer,
-      refund_pointer,
+      refundPointer,
     });
     const byteString = await this._call({
       method: "simulate",

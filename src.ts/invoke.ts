@@ -1,34 +1,41 @@
-import MessageContextParcel from "proto"
+import {
+  SimulateResponse,
+  MessageContextParcel,
+  AlkaneTransfer,
+} from "./proto/alkanes";
 
 export function encodeSimulateRequest({
   alkanes,
   transaction,
+  height,
   block,
   calldata,
   txindex,
   vout,
   pointer,
-  refund_pointer,
+  refundPointer,
 }: {
-  alkanes: [{ block: BigInt; tx: BigInt }];
+  alkanes: AlkaneTransfer[];
   transaction: string;
-  block: string;
+  block: bigint;
+  height: bigint;
   calldata: string;
   txindex: number;
   vout: number;
   pointer: number;
-  refund_pointer: number;
-}):string {
-  const input: any = new MessageContextParcel{
+  refundPointer: number;
+}): string {
+  let input: MessageContextParcel = MessageContextParcel.create();
+  input = {
     alkanes,
-  transaction,
-  block,
-  calldata,
-  txindex,
-  vout,
-  pointer,
-  refund_pointer,
-
+    transaction: Uint8Array.from(Buffer.from(transaction, "hex")),
+    block,
+    height,
+    calldata: Uint8Array.from(Buffer.from(calldata, "hex")),
+    txindex,
+    vout,
+    pointer,
+    refundPointer,
   };
 
   return (
@@ -36,7 +43,7 @@ export function encodeSimulateRequest({
   );
 }
 
-export function decodeSimulateRequest(request: string): string {
-    const res = SimulateResponse.fromHex(request)
+export function decodeSimulateRequest(request: string): SimulateResponse {
+  const res = SimulateResponse.fromBinary(Buffer.from(request, "hex"));
   return res;
 }

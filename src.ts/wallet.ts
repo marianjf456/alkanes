@@ -1,6 +1,10 @@
 import { decodeRunes } from "metashrew-runes/lib/src.ts/outpoint";
-import { ProtorunesWalletRequest, RuntimeInput, Runtime } from "protorune";
-import { stripHexPrefix } from "./util";
+import {
+  ProtorunesWalletRequest,
+  RuntimeInput,
+  Runtime,
+} from "./proto/protorune";
+import { stripHexPrefix } from "./utils";
 import leb128 from "leb128";
 
 /**
