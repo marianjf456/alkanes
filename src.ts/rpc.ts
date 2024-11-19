@@ -18,6 +18,9 @@ import {
 import { Edict } from "@magiceden-oss/runestone-lib/dist/src/edict.js";
 import { AlkaneTransfer } from "./alkane";
 import { Rune } from "@magiceden-oss/runestone-lib/dist/src/rune.js";
+import { u64, u32, u128 } from '@magiceden-oss/runestone-lib/dist/src/integer';
+import { ProtoruneEdict } from "./protorune/protoruneedict";
+import { ProtoruneRuneId } from "./protorune/protoruneruneid";
 
 import { Psbt } from "bitcoinjs-lib";
 import { ProtoStone } from "./protorune/protostone";
@@ -156,7 +159,7 @@ export class AlkanesRpc extends MetashrewRunes {
       edicts,
     });
     return encodeRunestoneProtostone({
-      edicts: runes.map((r) => ({ id: r.id, output: 2, amount: r.value })),
+      edicts: runes.map((r) => ({ id: new ProtoruneRuneId(u128(r.id.block), u128(r.id.tx)), output: u32(2), amount: u128(r.value) })),
       pointer: 3,
       protostones: [protostone],
     }).encodedRunestone;

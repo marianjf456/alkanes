@@ -7,6 +7,8 @@ import {
   OP_RETURN,
 } from "@magiceden-oss/runestone-lib/dist/src/constants";
 import { Edict } from "@magiceden-oss/runestone-lib/dist/src/edict";
+import { ProtoruneRuneId } from "./protoruneruneid";
+import { ProtoruneEdict } from "./protoruneedict";
 import { Etching } from "@magiceden-oss/runestone-lib/dist/src/etching";
 import { SeekBuffer } from "@magiceden-oss/runestone-lib/dist/src/seekbuffer";
 import { Tag } from "@magiceden-oss/runestone-lib/dist/src/tag";
@@ -25,7 +27,6 @@ import {
 import { Rune } from "@magiceden-oss/runestone-lib/dist/src/rune";
 import { Flag } from "@magiceden-oss/runestone-lib/dist/src/flag";
 import { Instruction } from "@magiceden-oss/runestone-lib/dist/src/utils";
-import { RuneId } from "@magiceden-oss/runestone-lib/dist/src/runeid";
 import { script } from "@magiceden-oss/runestone-lib/dist/src/script";
 import { Message } from "@magiceden-oss/runestone-lib/dist/src/message";
 import { Artifact } from "@magiceden-oss/runestone-lib/dist/src/artifact";
@@ -41,15 +42,6 @@ import chunk from "lodash/chunk";
 export const MAX_SPACERS = 0b00000111_11111111_11111111_11111111;
 
 export type RunestoneTx = { vout: { scriptPubKey: { hex: string } }[] };
-
-export type ProtoruneEdict = {
-  id: {
-    block: bigint;
-    tx: bigint;
-  };
-  amount: bigint;
-  output: number;
-};
 
 type Payload = Buffer | Flaw;
 
@@ -107,7 +99,7 @@ export class RunestoneProtostoneUpgrade {
   constructor(
     readonly mint: Option<ProtoruneRuneId>,
     readonly pointer: Option<u32>,
-    readonly edicts: Edict[],
+    readonly edicts: ProtoruneEdict[],
     readonly etching: Option<Etching>,
     /* BEGIN CODE CHANGE */
     readonly protostones: ProtoStone[]
@@ -207,7 +199,7 @@ export class RunestoneProtostoneUpgrade {
         Number(x.id.block - y.id.block || x.id.tx - y.id.tx)
       );
 
-      let previous = new ProtoruneRuneId(BigInt(0), Bigint(0));
+      let previous = new ProtoruneRuneId(u128(0), u128(0));
       for (const edict of edicts) {
         const [block, tx] = previous.delta(edict.id).unwrap();
 
@@ -280,9 +272,9 @@ export function encodeRunestoneProtostone(runestone: RunestoneProtostoneSpec): {
 } {
   const mint = runestone.mint
     ? Some(
-        new RuneId(
-          BigInt(u64Strict(BigInt(runestone.mint.block))),
-          BigInt(u32Strict(BigInt(runestone.mint.tx)))
+        new ProtoruneRuneId(
+          u128(runestone.mint.block),
+          u128(runestone.mint.tx)
         )
       )
     : None;
@@ -292,10 +284,10 @@ export function encodeRunestoneProtostone(runestone: RunestoneProtostoneSpec): {
       ? Some(runestone.pointer).map(u32Strict)
       : None;
 
-  const edicts = (runestone.edicts ?? []).map((edict) => ({
-    id: new RuneId(u64Strict(BigInt(edict.id.block)), u32Strict(BigInt(edict.id.tx))),
+  const edicts: ProtoruneEdict[] = (runestone.edicts ?? []).map((edict) => ({
+    id: new ProtoruneRuneId(u128(edict.id.block), u128(edict.id.tx)),
     amount: u128Strict(edict.amount),
-    output: u32Strict(edict.output),
+    output: edict.output,
   }));
 
   const protostones = runestone.protostones ?? [];
