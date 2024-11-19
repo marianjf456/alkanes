@@ -1,0 +1,46 @@
+version: "3.3"
+services:
+  bitcoind:
+    image: kylemanna/bitcoind
+    entrypoint: ["btc_oneshot"]
+    command: ["-txindex", "-rpcbind=0.0.0.0 -regtest"]
+    ports:
+      - 0.0.0.0:18444:18444
+      - 127.0.0.1:18443:18443
+  keydb:
+    ports:
+      - "6379:6379"
+    image: eqalpha/keydb
+    restart: always
+    command:
+      [
+        "keydb-server",
+        "/etc/keydb/keydb.conf",
+        "--storage-provider",
+        "flash",
+        "/data/flash",
+        "--appendonly",
+        "yes",
+        "--maxmemory-policy",
+        "allkeys-lru",
+        "--unixsocket",
+        "/data/keydb.sock",
+        "--unixsocketperm",
+        "777",
+      ]
+  metashrew:
+    build:
+      dockerfile: docker/Dockerfile.indexer
+      context: ./
+    image: metashrew/metashrew
+    environment:
+      DAEMON_RPC_URL: bitcoind:18443
+  metashrew-view:
+    build:
+      dockerfile: docker/Dockerfile.view
+      context: ./
+    image: metashrew/metashrew-view
+    environment:
+      REDIS_URL: redis://keydb:6379
+    ports:
+      - 8080:8080
