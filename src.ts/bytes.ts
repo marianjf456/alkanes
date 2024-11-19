@@ -1,5 +1,5 @@
 export function unpack(v: Buffer): BigInt[] {
-  return Array.from(v).reduce((r, v, i) => {
+  return Array.from(v).reduce((r: number[][], v: number, i) => {
     if (i % 15 === 0) {
       r.push([]);
     }
