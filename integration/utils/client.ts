@@ -17,7 +17,7 @@ export class Client {
     this.url = params.url;
     this.apiUrl = params.apiUrl;
     this.projectId = params.projectId;
-    this.rpcUrl = `${params.url}/${params.version}/${params.projectId}`;
+    this.rpcUrl = params.url;
     this.version = params.version;
   }
   async call(method: string, ...params: any[]) {
@@ -28,26 +28,29 @@ export class Client {
       id: 1,
     };
     return await fetch(this.rpcUrl, {
+      headers: {
+        Authorization: 'Basic ' + Buffer.from('bitcoinrpc:bitcoinrpc').toString('base64')
+      },
       method: "POST",
       body: JSON.stringify(body),
-    }).then((res) => res.json());
+    }).then(async (res) => ({ data: await res.json() }));
   }
 
   async init(addresses: any[]) {
-    const blockCount = await this.call("btc_getblockcount");
+    const blockCount = await this.call("getblockcount");
     if (blockCount.data.result > 250) return blockCount.data.result;
     try {
       await this.call(
-        "btc_generatetoaddress",
+        "generatetoaddress",
         60,
         REGTEST_FAUCET.nativeSegwit.address,
       );
       await addresses.reduce(async (a, address) => {
         await a;
-        await this.call("btc_generatetoaddress", 1, address);
+        await this.call("generatetoaddress", 1, address);
       }, Promise.resolve());
       const tx = await this.call(
-        "btc_generatetoaddress",
+        "generatetoaddress",
         200 - addresses.length,
         RANDOM_ADDRESS,
       );

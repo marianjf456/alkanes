@@ -34,7 +34,7 @@ services:
       context: ./
     image: metashrew/metashrew
     environment:
-      DAEMON_RPC_ADDR: http://bitcoind:18445
+      DAEMON_RPC_ADDR: http://bitcoind:18444
       AUTH: bitcoinrpc:bitcoinrpc
       REDIS_URL: redis://keydb:6379
     restart: unless-stopped

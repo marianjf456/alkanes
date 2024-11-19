@@ -10,3 +10,7 @@ export async function init() {
     console.log(result);
   }
 }
+
+(async () => {
+  await init();
+})().catch((err) => console.error(err));

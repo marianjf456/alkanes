@@ -1,4 +1,4 @@
-import bitcoin from "bitcoinjs-lib";
+import bitcoin = require("bitcoinjs-lib");
 
 export const DEFAULT_FEE_RATE = 10;
 export const DEFAULT_FEE = 250;
@@ -93,7 +93,7 @@ export const INIT_OPTIONS = {
     network: bitcoin.networks.testnet,
   },
   regtest: {
-    url: "http://localhost:3000",
+    url: "http://localhost:18444",
     apiUrl: "https://staging-api.oyl.gg",
     version: "v1",
     projectId: "regtest",
