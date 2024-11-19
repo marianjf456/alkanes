@@ -97,10 +97,10 @@ const TagCoder: P.Coder<TagRaw[], Tags> = {
     if (unknown.length) res.unknown = unknown;
     for (const field in tmp) {
       if (field === 'parent' && tmp[field].length > 1) {
-        res[field as TagName] = tmp[field].map((i) => TagCoders.parent.decode(i));
+        (res as any)[field as TagName] = tmp[field as any].map((i) => TagCoders.parent.decode(i));
         continue;
       }
-      res[field as TagName] = TagCoders[field as TagName].decode(utils.concatBytes(...tmp[field]));
+      (res as any)[field as TagName] = TagCoders[field as TagName].decode(utils.concatBytes(...tmp[field]));
     }
     return res as Tags;
   },

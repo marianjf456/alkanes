@@ -27,4 +27,3 @@ export type CborValue = {
 };
 export declare const CBOR: P.CoderType<any>;
 export {};
-//# sourceMappingURL=cbor.d.ts.map
