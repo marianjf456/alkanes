@@ -11,8 +11,13 @@ import {
 } from "metashrew-runes/lib/src.ts/outpoint";
 import { MetashrewRunes } from "metashrew-runes/lib/src.ts/rpc";
 import * as protobuf from "./proto/protorune";
+import {
+  RunestoneProtostoneUpgrade,
+  encodeRunestoneProtostone,
+} from "./protorune/proto_runestone_upgrade";
 
-import leb128 from "leb128";
+import { Psbt } from "bitcoinjs-lib";
+import { ProtoStone } from "./protorune/protostone";
 
 const addHexPrefix = (s) => (s.substr(0, 2) === "0x" ? s : "0x" + s);
 
@@ -86,7 +91,8 @@ export class AlkanesRpc extends MetashrewRunes {
     transaction,
     height,
     block,
-    calldata,
+    inputs,
+    tx,
     txindex,
     vout,
     pointer,
@@ -97,7 +103,8 @@ export class AlkanesRpc extends MetashrewRunes {
       transaction,
       block,
       height,
-      calldata,
+      tx,
+      inputs,
       txindex,
       vout,
       pointer,
@@ -120,5 +127,35 @@ export class AlkanesRpc extends MetashrewRunes {
     });
     const decoded = protowallet.decodeRuntimeOutput(byteString);
     return decoded;
+  }
+
+  async pack({
+    runes,
+    cellpack,
+    pointer,
+    refundPointer,
+    edicts,
+  }: {
+    runes: Rune[];
+    cellpack: Buffer;
+    pointer: number;
+    refundPointer: number;
+    edicts: Edict[];
+  }): Promise<any> {
+    const calldata = this.convertTou128(cellpack);
+    const protostone = new ProtoStone({
+      message: {
+        calldata,
+        pointer,
+        refundPointer,
+      },
+      protocolTag: BigInt(44),
+      edicts,
+    });
+    return encodeRunestoneProtostone({
+      edicts: runes.map((r) => ({ ...r, output: 2 })),
+      pointer: 3,
+      protostones: [protostone],
+    }).encodedRunestone;
   }
 }

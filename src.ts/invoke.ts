@@ -1,3 +1,4 @@
+import { Cellpack } from "./alkane";
 import {
   SimulateResponse,
   MessageContextParcel,
@@ -9,7 +10,8 @@ export function encodeSimulateRequest({
   transaction,
   height,
   block,
-  calldata,
+  tx,
+  inputs,
   txindex,
   vout,
   pointer,
@@ -18,8 +20,9 @@ export function encodeSimulateRequest({
   alkanes: AlkaneTransfer[];
   transaction: string;
   block: bigint;
+  tx: string;
+  inputs: bigint[];
   height: bigint;
-  calldata: string;
   txindex: number;
   vout: number;
   pointer: number;
@@ -31,7 +34,7 @@ export function encodeSimulateRequest({
     transaction: Uint8Array.from(Buffer.from(transaction, "hex")),
     block,
     height,
-    calldata: Uint8Array.from(Buffer.from(calldata, "hex")),
+    calldata: new Cellpack(block, tx, inputs).serializeToCalldata(),
     txindex,
     vout,
     pointer,
