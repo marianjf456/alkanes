@@ -26,7 +26,7 @@ export class AlkaneContext {
     fuelLeft: u64,
     incomingRunes: Array<AlkaneContextIncomingRune>,
     inputs: Array<u128>,
-    state: AlkaneGlobalState
+    state: AlkaneGlobalState,
   ) {
     this.messageContext = messageContext;
     this.instance = instance;

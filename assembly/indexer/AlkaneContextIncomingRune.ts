@@ -22,12 +22,23 @@ export class AlkaneContextIncomingRune {
       rune.amount,
     );
   }
-  static fromAlkaneTransfer(transfer: AlkaneTransfer): AlkaneContextIncomingRune {
-    return AlkaneContextIncomingRune.from(changetype<ProtoruneRuneId>(transfer.id), transfer.value);
+  static fromAlkaneTransfer(
+    transfer: AlkaneTransfer,
+  ): AlkaneContextIncomingRune {
+    return AlkaneContextIncomingRune.from(
+      changetype<ProtoruneRuneId>(transfer.id),
+      transfer.value,
+    );
   }
-  static fromParcel(parcel: AlkaneTransferParcel): Array<AlkaneContextIncomingRune> {
-    return parcel.unwrap().map<AlkaneContextIncomingRune>((v: AlkaneTransfer, i: i32, ary: Array<AlkaneTransfer>) => {
-      return AlkaneContextIncomingRune.fromAlkaneTransfer(v);
-    });
+  static fromParcel(
+    parcel: AlkaneTransferParcel,
+  ): Array<AlkaneContextIncomingRune> {
+    return parcel
+      .unwrap()
+      .map<AlkaneContextIncomingRune>(
+        (v: AlkaneTransfer, i: i32, ary: Array<AlkaneTransfer>) => {
+          return AlkaneContextIncomingRune.fromAlkaneTransfer(v);
+        },
+      );
   }
 }

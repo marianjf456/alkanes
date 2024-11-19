@@ -68,11 +68,13 @@ export class AlkaneMessageContext extends MessageContext {
       this,
       self,
       caller,
-      this.runes.map<AlkaneContextIncomingRune>((v: IncomingRune, i: i32, ary: Array<IncomingRune>) => {
-        return AlkaneContextIncomingRune.fromIncomingRune(v);
-      }),
+      this.runes.map<AlkaneContextIncomingRune>(
+        (v: IncomingRune, i: i32, ary: Array<IncomingRune>) => {
+          return AlkaneContextIncomingRune.fromIncomingRune(v);
+        },
+      ),
       cellpack.inputs,
-      state
+      state,
     );
     const result = instance.run();
     return result.success;

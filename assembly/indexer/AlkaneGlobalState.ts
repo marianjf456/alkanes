@@ -157,7 +157,11 @@ export class AlkaneGlobalState {
         .get(),
     );
   }
-  transfer(src: AlkaneId, dest: AlkaneId, parcel: AlkaneTransferParcel): boolean {
+  transfer(
+    src: AlkaneId,
+    dest: AlkaneId,
+    parcel: AlkaneTransferParcel,
+  ): boolean {
     const ary = parcel.unwrap();
     for (let i: i32 = 0; i < ary.length; i++) {
       if (!src.eq(ary[i].id)) {
@@ -170,7 +174,7 @@ export class AlkaneGlobalState {
         if (u128.Max - destBalance < ary[i].value) return false;
         this.setBalance(dest, ary[i].id, ary[i].value + destBalance);
       }
-    } 
+    }
     return true;
   }
   take(target: AlkaneId, map: StorageMap): void {

@@ -7,5 +7,4 @@ import { RunesBlock } from "metashrew-runes/assembly/indexer/RunesBlock";
 import { RunesTransaction } from "metashrew-runes/assembly/indexer/RunesTransaction";
 import { AlkaneMessageContext } from "./AlkaneMessageContext";
 
-export class AlkaneIndex extends Protorune<AlkaneMessageContext> {
-}
+export class AlkaneIndex extends Protorune<AlkaneMessageContext> {}

@@ -48,7 +48,11 @@ export function deref(caller: wasmi.Caller, ptr: i32, i: usize): i32 {
   return load<i32>(caller.memory() + <usize>ptr + <usize>sizeof<i32>() * i);
 }
 
-export function pipeStorage(result: ArrayBuffer, target: AlkaneId, state: AlkaneGlobalState): ArrayBuffer {
+export function pipeStorage(
+  result: ArrayBuffer,
+  target: AlkaneId,
+  state: AlkaneGlobalState,
+): ArrayBuffer {
   const box = Box.from(result);
   state.take(target, StorageMap.consumeToStorageMap(box));
   return box.toArrayBuffer();
@@ -59,7 +63,9 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
     .linker()
     .define("env", "__log", (_caller: usize, ptr: i32): i32 => {
       const caller = wasmi.Caller.wrap(_caller);
-      console.log(String.UTF8.decode(readArrayBuffer(caller, deref(caller, ptr, 0))));
+      console.log(
+        String.UTF8.decode(readArrayBuffer(caller, deref(caller, ptr, 0))),
+      );
       return 0;
     })
     .define("env", "__request_context", (_caller: usize, ptr: i32): i32 => {
@@ -187,10 +193,16 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
         readArrayBuffer(caller, deref(caller, ptr, 2)),
       );
       state.take(AlkaneId.fromOther(context.self), storageMap);
-      if (!state.transfer(AlkaneId.fromOther(context.self), cellpack.target, incomingRunes)) {
+      if (
+        !state.transfer(
+          AlkaneId.fromOther(context.self),
+          cellpack.target,
+          incomingRunes,
+        )
+      ) {
         state.rollback();
         context.returndata = new ArrayBuffer(0);
-	return context.returndata.byteLength;
+        return context.returndata.byteLength;
       }
       const instance = new AlkaneInstance(
         context.messageContext,
@@ -275,10 +287,16 @@ export function makeLinker(engine: wasmi.Engine): wasmi.Linker {
         readArrayBuffer(caller, deref(caller, ptr, 2)),
       );
       state.take(AlkaneId.fromOther(context.self), storageMap);
-      if (!state.transfer(AlkaneId.fromOther(context.self), cellpack.target, incomingRunes)) {
+      if (
+        !state.transfer(
+          AlkaneId.fromOther(context.self),
+          cellpack.target,
+          incomingRunes,
+        )
+      ) {
         state.rollback();
         context.returndata = new ArrayBuffer(0);
-	return context.returndata.byteLength;
+        return context.returndata.byteLength;
       }
       const instance = new AlkaneInstance(
         context.messageContext,
@@ -367,7 +385,10 @@ export class AlkaneInstance {
   }
   run(): wasmi.Result<i32> {
     const context: AlkaneContext = this.context;
-    const cellpack = Cellpack.fromTuple(AlkaneId.fromOther(context.self), context.inputs);
+    const cellpack = Cellpack.fromTuple(
+      AlkaneId.fromOther(context.self),
+      context.inputs,
+    );
     if (cellpack.target.isCreate()) {
       context.self.block = u128.from(1);
       context.self.tx = context.messageContext.advanceSequence();
@@ -375,7 +396,10 @@ export class AlkaneInstance {
       if (changetype<usize>(binary) === 0) {
         return wasmi.Result.Err<i32>();
       } else {
-        context.messageContext.runtime.set(ALKANES_INDEX.select(cellpack.target.toBytes()).unwrap(), binary);
+        context.messageContext.runtime.set(
+          ALKANES_INDEX.select(cellpack.target.toBytes()).unwrap(),
+          binary,
+        );
       }
     }
     if (cellpack.target.isCreateReserved()) {
@@ -387,15 +411,28 @@ export class AlkaneInstance {
         return wasmi.Result.Err<i32>();
       } else {
         cellpack.target.block = u128.from(3);
-        context.messageContext.runtime.set(ALKANES_INDEX.select(cellpack.target.toBytes()).unwrap(), binary);
+        context.messageContext.runtime.set(
+          ALKANES_INDEX.select(cellpack.target.toBytes()).unwrap(),
+          binary,
+        );
       }
     }
     if (cellpack.target.isFactory()) {
-      const binary = context.messageContext.runtime.get(ALKANES_INDEX.select(AlkaneId.fromId(cellpack.target.getFactoryType(), cellpack.target.tx).toBytes()).unwrap())
+      const binary = context.messageContext.runtime.get(
+        ALKANES_INDEX.select(
+          AlkaneId.fromId(
+            cellpack.target.getFactoryType(),
+            cellpack.target.tx,
+          ).toBytes(),
+        ).unwrap(),
+      );
       if (binary.byteLength === 0) return wasmi.Result.Err<i32>();
       context.self.block = u128.from(0);
       context.self.tx = context.messageContext.advanceSequence();
-      context.messageContext.runtime.set(ALKANES_INDEX.select(context.self.toBytes()).unwrap(), binary);
+      context.messageContext.runtime.set(
+        ALKANES_INDEX.select(context.self.toBytes()).unwrap(),
+        binary,
+      );
     }
     return this.call("__execute", new Array<i32>());
   }

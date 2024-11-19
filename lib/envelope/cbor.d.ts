@@ -1,28 +1,28 @@
-import * as P from 'micro-packed';
+import * as P from "micro-packed";
 type Bytes = Uint8Array;
 export type CborValue = {
-    TAG: 'uint';
+    TAG: "uint";
     data: number | bigint;
 } | {
-    TAG: 'negint';
+    TAG: "negint";
     data: number | bigint;
 } | {
-    TAG: 'simple';
+    TAG: "simple";
     data: boolean | null | undefined | number;
 } | {
-    TAG: 'string';
+    TAG: "string";
     data: string;
 } | {
-    TAG: 'bytes';
+    TAG: "bytes";
     data: Bytes;
 } | {
-    TAG: 'array';
+    TAG: "array";
     data: CborValue[];
 } | {
-    TAG: 'map';
+    TAG: "map";
     data: [CborValue][];
 } | {
-    TAG: 'tag';
+    TAG: "tag";
     data: [CborValue, CborValue];
 };
 export declare const CBOR: P.CoderType<any>;
