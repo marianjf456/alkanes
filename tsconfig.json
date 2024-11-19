@@ -1,8 +1,22 @@
 {
-  "extends": "@paulmillr/jsbt/tsconfigs/cjs.json",
-  "compilerOptions": {
-    "outDir": "lib"
-  },
-  "include": ["src.ts/index.ts"],
-  "exclude": ["node_modules", "lib"]
+    "compilerOptions": {
+        "allowUnusedLabels": true,
+        "experimentalDecorators": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+	"resolveJsonModule": true,
+        "target": "es2020",
+        "noImplicitAny": false,
+        "esModuleInterop": true,
+        "sourceMap": true,
+        "outDir": "./lib",
+	"strictNullChecks": false,
+        "declaration": true,
+        "types": [
+            "node"
+        ]
+    },
+    "include": [
+        "./src.ts/*"
+    ]
 }

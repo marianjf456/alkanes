@@ -1,6 +1,6 @@
-import { Coder } from '@scure/base';
-import * as P from 'micro-packed';
-import { ScriptType, OptScript, CustomScript } from '@scure/btc-signer';
+import { Coder } from "@scure/base";
+import * as P from "micro-packed";
+import { ScriptType, OptScript, CustomScript } from "@scure/btc-signer";
 type Bytes = Uint8Array;
 export declare const InscriptionId: P.Coder<string, Bytes>;
 type TagRaw = {
@@ -29,7 +29,7 @@ export type Inscription = {
     cursed?: boolean;
 };
 type OutOrdinalRevealType = {
-    type: 'tr_ord_reveal';
+    type: "tr_ord_reveal";
     pubkey: Bytes;
     inscriptions: Inscription[];
 };
@@ -60,13 +60,6 @@ export declare const __test__: {
         note: P.CoderType<string>;
     };
     TagCoder: P.Coder<TagRaw[], Tags>;
-    parseEnvelopes: (script: ScriptType, pos?: number) => {
-        start: number;
-        end: number;
-        pushnum: boolean;
-        payload: ScriptType;
-        stutter: boolean;
-    }[];
+    parseEnvelopes: (script: ScriptType, pos?: number) => any[];
 };
 export {};
-//# sourceMappingURL=index.d.ts.map
