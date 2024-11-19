@@ -13,14 +13,15 @@
   "module": "lib/esm/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "prepare": "npm-run-all build bundleup opt",
     "postinstall": "cd runtime && rustup update && cargo build",
     "asbuild:debug": "asc assembly/indexer/index.ts --target debug --enable threads --config asconfig.json",
     "asbuild:release": "asc assembly/indexer/index.ts --target release --config asconfig.json",
     "asbuild:test": "asc assembly/index.ts --target release --config asconfig.json",
     "bundleup": "wasm-merge build/debug.wasm alkanes runtime/target/wasm32-unknown-unknown/debug/alkanes_runtime.wasm alkanes_runtime -o build/combined.wasm -n -q -sec --enable-bulk-memory",
     "metadce": "wasm-metadce build/combined-out.wasm --graph-file metadce/graph.json -o build/combined-metadce.wasm --all-features > /dev/null",
-    "build": "tsc && tsc -p tsconfig.esm.json",
+    "build": "npm-run-all build:ts build:protoc",
+    "build:ts": "tsc && tsc -p tsconfig.esm.json",
+    "build:protoc": "protoc --ts_out src.ts/proto --proto_path=proto/ proto/*.proto",
     "build:release": "cd build; npm run build:release",
     "lint": "prettier --print-width 100 --single-quote --check src",
     "format": "prettier --print-width 100 --single-quote --write src",
@@ -31,7 +32,6 @@
     "test": "NODE_NO_WARNINGS=1 ts-mocha --timeout 0 ./tests/**.spec.ts",
     "inspect": "wasm-dis",
     "opt": "wasm-opt build/combined.wasm --multi-memory-lowering -n -o build/combined-out.wasm",
-    "build:ts": "tsc",
     "full-test-build": "npm-run-all build bundleup opt metadce"
   },
   "sideEffects": false,
@@ -42,15 +42,14 @@
     "enquirer": "2.4.1",
     "metashrew-runes": "https://github.com/sandshrewmetaprotocols/metashrew-runes",
     "micro-packed": "~0.6.2",
-    "postinstall": "^0.10.3",
-    "quorumgenesisprotorune": "https://github.com/kungfuflex/quorumgenesisprotorune"
+    "postinstall": "^0.10.3"
   },
   "devDependencies": {
+    "@noble/curves": "^1.4.0",
     "@paulmillr/jsbt": "0.1.0",
     "@scure/btc-signer": "^1.4.0",
     "@types/leb128": "^0.0.0",
     "@types/node": "20.12.7",
-    "@noble/curves": "^1.4.0",
     "assemblyscript": "0.26.7",
     "assemblyscript-prettier": "^3.0.1",
     "chai": "4",
