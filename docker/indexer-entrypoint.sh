@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 _DAEMON_RPC_ADDR=${DAEMON_RPC_ADDR:-127.0.0.1:8332}
 _INDEXER=${INDEXER:-/metashrew/indexer.wasm}
