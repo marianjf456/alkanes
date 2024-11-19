@@ -15,9 +15,13 @@ import {
   RunestoneProtostoneUpgrade,
   encodeRunestoneProtostone,
 } from "./protorune/proto_runestone_upgrade";
+import { Edict } from "@magiceden-oss/runestone-lib/dist/src/edict.js";
+import { AlkaneTransfer } from "./alkane";
+import { Rune } from "@magiceden-oss/runestone-lib/dist/src/rune.js";
 
 import { Psbt } from "bitcoinjs-lib";
 import { ProtoStone } from "./protorune/protostone";
+import { toBuffer, leftPadByte } from "./bytes";
 
 const addHexPrefix = (s) => (s.substr(0, 2) === "0x" ? s : "0x" + s);
 
@@ -68,7 +72,7 @@ export class AlkanesRpc extends MetashrewRunes {
       "0x" +
       Buffer.from(
         protobuf.OutpointWithProtocol.toBinary({
-          protocol: leb128.unsigned.encode(protocolTag),
+          protocol: toBuffer(protocolTag),
           txid: Buffer.from(txid, "hex"),
           vout,
         })
@@ -136,24 +140,23 @@ export class AlkanesRpc extends MetashrewRunes {
     refundPointer,
     edicts,
   }: {
-    runes: Rune[];
+    runes: AlkaneTransfer[];
     cellpack: Buffer;
     pointer: number;
     refundPointer: number;
     edicts: Edict[];
   }): Promise<any> {
-    const calldata = this.convertTou128(cellpack);
     const protostone = new ProtoStone({
       message: {
-        calldata,
+        calldata: cellpack,
         pointer,
         refundPointer,
       },
-      protocolTag: BigInt(44),
+      protocolTag: BigInt(1),
       edicts,
     });
     return encodeRunestoneProtostone({
-      edicts: runes.map((r) => ({ ...r, output: 2 })),
+      edicts: runes.map((r) => ({ id: r.id, output: 2, amount: r.value })),
       pointer: 3,
       protostones: [protostone],
     }).encodedRunestone;

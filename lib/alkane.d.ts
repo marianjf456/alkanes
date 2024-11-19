@@ -1,6 +1,10 @@
 import { u128 } from "@magiceden-oss/runestone-lib/dist/src/integer";
 import { CalldataWrapper } from "protorune/lib/src.ts/calldata";
 export declare function lebEncodeU128(inputs: u128[]): Buffer;
+export type AlkaneTransfer = {
+    id: AlkaneId;
+    value: bigint;
+};
 export declare class AlkaneId {
     block: u128;
     tx: u128;

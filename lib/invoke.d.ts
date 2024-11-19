@@ -3,7 +3,7 @@ export declare function encodeSimulateRequest({ alkanes, transaction, height, bl
     alkanes: AlkaneTransfer[];
     transaction: string;
     block: bigint;
-    tx: string;
+    tx: bigint;
     inputs: bigint[];
     height: bigint;
     txindex: number;

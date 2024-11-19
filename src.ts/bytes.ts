@@ -39,12 +39,12 @@ export function unpack(v: Buffer): bigint[] {
     .map((v) => BigInt("0x" + Buffer.from(v.reverse()).toString("hex")));
 }
 
-function leftPad15(v: string): string {
+export function leftPad15(v: string): string {
   if (v.length > 30) throw Error("varint in encoding cannot exceed 15 bytes");
   return "0".repeat(30 - v.length) + v;
 }
 
-function leftPadByte(v: string): string {
+export function leftPadByte(v: string): string {
   if (v.length % 2) {
     return "0" + v;
   }
@@ -63,6 +63,14 @@ export function encodeVarInt(value: bigint): Buffer {
 
 export function encipher(values: bigint[]): Buffer {
   return Buffer.concat(values.map((v) => encodeVarInt(v)));
+}
+
+export const toBuffer = (v: number | bigint) => {
+  return Buffer.from(Array.from(Buffer.from(leftPadByte(v.toString(16)), 'hex')).reverse());
+}
+
+export const fromBuffer = (v: Buffer): bigint => {
+  return BigInt('0x' + Buffer.from(Array.from(v).reverse()).toString('hex'));
 }
 
 export function decipher(values: Buffer): bigint[] {

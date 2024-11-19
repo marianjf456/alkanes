@@ -25,8 +25,12 @@ type BigTypedNumber<T> = bigint & {
  */
 export type u128 = BigTypedNumber<"u128">;
 export declare function unpack(v: Buffer): bigint[];
+export declare function leftPad15(v: string): string;
+export declare function leftPadByte(v: string): string;
 export declare function encodeVarInt(value: bigint): Buffer;
 export declare function encipher(values: bigint[]): Buffer;
+export declare const toBuffer: (v: number | bigint) => Buffer;
+export declare const fromBuffer: (v: Buffer) => bigint;
 export declare function decipher(values: Buffer): bigint[];
 export declare function decodeVarInt(seekBuffer: SeekBuffer): bigint;
 export declare function tryDecodeVarInt(seekBuffer: SeekBuffer): bigint;

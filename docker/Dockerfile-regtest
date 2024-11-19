@@ -1,0 +1,36 @@
+FROM kylemanna/bitcoind
+RUN apt-get update
+RUN apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    supervisor \
+    libclang-dev \
+    redis \
+    pkg-config \
+    libssl-dev
+RUN apt-get update -y
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+WORKDIR /metashrew
+RUN git clone https://github.com/kungfuflex/metashrew
+RUN bash -c 'cd metashrew; cargo build --release'
+WORKDIR /alkanes-rs
+COPY ./alkanes-rs ./alkanes-rs
+RUN bash -c 'cd alkanes-rs; cargo build --release'
+WORKDIR /app
+COPY ./src.ts ./src.ts
+COPY ./package.json ./package.json
+COPY ./yarn.lock ./yarn.lock
+COPY ./bin ./bin
+COPY ./lib ./lib
+COPY ./tsconfig.json ./tsconfig.json
+COPY ./tsconfig.esm.json ./tsconfig.json
+WORKDIR /nvm
+RUN git clone https://github.com/nvm-sh/nvm
+RUN bash nvm/install.sh
+WORKDIR /app
+RUN bash -c 'source $HOME/.nvm/nvm.sh; nvm install --lts; npm install -g yarn; yarn'
+RUN mkdir -p /var/log/supervisord
+COPY supervisord-regtest.conf ./supervisord.conf
+CMD ["/usr/bin/supervisord", "-c", "supervisord.conf"]

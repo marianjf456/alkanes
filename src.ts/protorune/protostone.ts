@@ -16,34 +16,10 @@ export type ProtoMessage = {
   refundPointer: Option<u32>;
 };
 
-export const padLeft = (s) => (s.length % 2 === 1 ? "0" + s : s);
+import { decipher, leftPadByte } from "../bytes";
 
-export const toBuffer = (n) => Buffer.from(padLeft(n.toString(16)), "hex");
 
-export function readULEB128(v) {
-  const decoded = leb128.unsigned.decode(v);
-  const { length } = leb128.unsigned.encode(
-    Buffer.from(
-      ((s) => (s.length % 2 === 1 ? "0" + s : s))(BigInt(decoded).toString(16)),
-      "hex",
-    ),
-  );
-  return {
-    value: decoded,
-    tail: ((b) => (b.length === 0 ? null : b))(v.slice(length)),
-  };
-}
-
-export function decodeList(v) {
-  let tail = v;
-  const result = [];
-  while (tail) {
-    const decoded = readULEB128(tail);
-    tail = decoded.tail;
-    result.push(BigInt(decoded.value));
-  }
-  return result;
-}
+export const toBuffer = (n) => Buffer.from(leftPadByte(n.toString(16)), "hex");
 
 export class ProtoStone {
   burn?: ProtoBurn;
@@ -186,12 +162,12 @@ export class ProtoStone {
 
     // pushing the protocol_id and len first as per the spec
     const length_payload = payloads.reduce(
-      (r, v) => r + decodeList(v).length,
+      (r, v) => r + decipher(v).length,
       0,
     );
     const prefix = [
       toBuffer(
-        payloads.reduce((r, v) => r || decodeList(v)[0] === 83n, false)
+        payloads.reduce((r, v) => r || decipher(v)[0] === 83n, false)
           ? u128(13)
           : u128(this.protocolTag),
       ),
@@ -199,7 +175,7 @@ export class ProtoStone {
     ];
     const result = prefix.concat(
       payloads.reduce(
-        (r, v) => r.concat(decodeList(v).map((v) => toBuffer(v))),
+        (r, v) => r.concat(decipher(v).map((v) => toBuffer(v))),
         prefix.slice(2),
       ),
     );

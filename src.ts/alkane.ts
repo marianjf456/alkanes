@@ -9,6 +9,11 @@ export function lebEncodeU128(inputs: u128[]): Buffer {
   return Buffer.concat(lebEncoded);
 }
 
+export type AlkaneTransfer = {
+  id: AlkaneId;
+  value: bigint;
+};
+
 export class AlkaneId {
   public block: u128;
   public tx: u128;

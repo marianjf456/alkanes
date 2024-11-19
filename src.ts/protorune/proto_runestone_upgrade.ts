@@ -42,6 +42,15 @@ export const MAX_SPACERS = 0b00000111_11111111_11111111_11111111;
 
 export type RunestoneTx = { vout: { scriptPubKey: { hex: string } }[] };
 
+export type ProtoruneEdict = {
+  id: {
+    block: bigint;
+    tx: bigint;
+  };
+  amount: bigint;
+  output: number;
+};
+
 type Payload = Buffer | Flaw;
 
 export function isValidPayload(payload: Payload): payload is Buffer {
@@ -86,24 +95,17 @@ export function encodeProtostone(values: u128[]): Buffer {
 export type RunestoneProtostoneSpec = {
   mint?: {
     block: bigint;
-    tx: number;
+    tx: bigint;
   };
   pointer?: number;
   etching?: RuneEtchingSpec;
-  edicts?: {
-    id: {
-      block: bigint;
-      tx: number;
-    };
-    amount: bigint;
-    output: number;
-  }[];
+  edicts?: ProtoruneEdict[];
   protostones?: ProtoStone[];
 };
 
 export class RunestoneProtostoneUpgrade {
   constructor(
-    readonly mint: Option<RuneId>,
+    readonly mint: Option<ProtoruneRuneId>,
     readonly pointer: Option<u32>,
     readonly edicts: Edict[],
     readonly etching: Option<Etching>,
@@ -205,7 +207,7 @@ export class RunestoneProtostoneUpgrade {
         Number(x.id.block - y.id.block || x.id.tx - y.id.tx)
       );
 
-      let previous = new RuneId(u64(0), u32(0));
+      let previous = new ProtoruneRuneId(BigInt(0), Bigint(0));
       for (const edict of edicts) {
         const [block, tx] = previous.delta(edict.id).unwrap();
 
@@ -279,8 +281,8 @@ export function encodeRunestoneProtostone(runestone: RunestoneProtostoneSpec): {
   const mint = runestone.mint
     ? Some(
         new RuneId(
-          u64Strict(runestone.mint.block),
-          u32Strict(runestone.mint.tx)
+          BigInt(u64Strict(BigInt(runestone.mint.block))),
+          BigInt(u32Strict(BigInt(runestone.mint.tx)))
         )
       )
     : None;
@@ -291,7 +293,7 @@ export function encodeRunestoneProtostone(runestone: RunestoneProtostoneSpec): {
       : None;
 
   const edicts = (runestone.edicts ?? []).map((edict) => ({
-    id: new RuneId(u64Strict(edict.id.block), u32Strict(edict.id.tx)),
+    id: new RuneId(u64Strict(BigInt(edict.id.block)), u32Strict(BigInt(edict.id.tx))),
     amount: u128Strict(edict.amount),
     output: u32Strict(edict.output),
   }));

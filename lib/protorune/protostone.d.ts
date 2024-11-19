@@ -10,13 +10,7 @@ export type ProtoMessage = {
     pointer: Option<u32>;
     refundPointer: Option<u32>;
 };
-export declare const padLeft: (s: any) => any;
 export declare const toBuffer: (n: any) => Buffer;
-export declare function readULEB128(v: any): {
-    value: string;
-    tail: any;
-};
-export declare function decodeList(v: any): any[];
 export declare class ProtoStone {
     burn?: ProtoBurn;
     message?: ProtoMessage;

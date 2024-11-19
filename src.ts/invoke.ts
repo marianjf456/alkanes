@@ -1,4 +1,4 @@
-import { Cellpack } from "./alkane";
+import { encipher } from "./bytes";
 import {
   SimulateResponse,
   MessageContextParcel,
@@ -20,7 +20,7 @@ export function encodeSimulateRequest({
   alkanes: AlkaneTransfer[];
   transaction: string;
   block: bigint;
-  tx: string;
+  tx: bigint;
   inputs: bigint[];
   height: bigint;
   txindex: number;
@@ -34,7 +34,7 @@ export function encodeSimulateRequest({
     transaction: Uint8Array.from(Buffer.from(transaction, "hex")),
     block,
     height,
-    calldata: new Cellpack(block, tx, inputs).serializeToCalldata(),
+    calldata: encipher([block, tx, ...inputs]),
     txindex,
     vout,
     pointer,

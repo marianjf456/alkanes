@@ -6,6 +6,7 @@ import {
 } from "./proto/protorune";
 import { stripHexPrefix } from "./utils";
 import leb128 from "leb128";
+import { toBuffer } from "./bytes";
 
 /**
  * Encodes the protocolTag in LEB128 format
@@ -13,7 +14,7 @@ import leb128 from "leb128";
  * @returns the protocolTag in LEB128 format
  */
 function encodeProtocolTag(protocolTag: bigint): Uint8Array {
-  const buf = Buffer.from(leb128.unsigned.encode(protocolTag));
+  const buf = toBuffer(protocolTag);
   return Uint8Array.from(buf);
 }
 

@@ -14,6 +14,14 @@ export type RunestoneTx = {
         };
     }[];
 };
+export type ProtoruneEdict = {
+    id: {
+        block: bigint;
+        tx: bigint;
+    };
+    amount: bigint;
+    output: number;
+};
 type Payload = Buffer | Flaw;
 export declare function isValidPayload(payload: Payload): payload is Buffer;
 export declare const MAX_LEB128_BYTES_IN_U128 = 18;
@@ -22,18 +30,11 @@ export declare function encodeProtostone(values: u128[]): Buffer;
 export type RunestoneProtostoneSpec = {
     mint?: {
         block: bigint;
-        tx: number;
+        tx: bigint;
     };
     pointer?: number;
     etching?: RuneEtchingSpec;
-    edicts?: {
-        id: {
-            block: bigint;
-            tx: number;
-        };
-        amount: bigint;
-        output: number;
-    }[];
+    edicts?: ProtoruneEdict[];
     protostones?: ProtoStone[];
 };
 export declare class RunestoneProtostoneUpgrade {
