@@ -1,4 +1,4 @@
-import { INIT_OPTIONS, REGTEST_FAUCET, RANDOM_ADDRESS } from "./constants";
+import { INIT_OPTIONS, REGTEST_FAUCET, RANDOM_ADDRESS } from "../lib/constants";
 import { timeout } from "./utils";
 import bitcoin from "bitcoinjs-lib";
 

@@ -1,4 +1,4 @@
-import { Client } from "./client";
+import { Client } from "../lib/client";
 
 export async function init() {
   let client = new Client("regtest");

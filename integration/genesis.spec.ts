@@ -1,11 +1,11 @@
-import * as envelope from "../../lib/esm/index.js";
+import * as envelope from "../lib/esm/index.js";
 import fs from "fs-extra";
 import path from "path";
 import { hex } from "@scure/base";
 import * as btc from "@scure/btc-signer";
-import { encodeRunestoneProtostone } from "../../lib/esm/protorune/proto_runestone_upgrade.js";
-import { encipher } from "../../lib/esm/bytes.js";
-import { ProtoStone } from "../../lib/esm/protorune/protostone.js";
+import { encodeRunestoneProtostone } from "../lib/esm/protorune/proto_runestone_upgrade.js";
+import { encipher } from "../lib/esm/bytes.js";
+import { ProtoStone } from "../lib/esm/protorune/protostone.js";
 import crypto from "node:crypto";
 import { schnorr as secp256k1_schnorr } from "@noble/curves/secp256k1";
 import { TEST_NETWORK } from "@scure/btc-signer";
@@ -15,7 +15,7 @@ import { promisify } from "node:util";
 const gzip = promisify(_gzip);
 
 export async function deployGenesis(): Promise<void> {
-  const binary = new Uint8Array(Array.from(await fs.readFile(path.join(__dirname, '..', '..', 'vendor', 'alkanes_std_genesis_alkane.wasm'))));
+  const binary = new Uint8Array(Array.from(await fs.readFile(path.join(__dirname, '..', 'vendor', 'alkanes_std_genesis_alkane.wasm'))));
   const privKey = hex.decode('0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a');
   const pubKey = secp256k1_schnorr.getPublicKey(privKey);
     // We need this to enable custom scripts outside
