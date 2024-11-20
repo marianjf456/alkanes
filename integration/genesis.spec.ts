@@ -61,7 +61,7 @@ export async function deployGenesis(): Promise<void> {
   const fee = 500n;
   const decoded = BitcoinBlock.decode(Buffer.from(block, 'hex'));
   const coinbase = decoded.tx[0];
-  const fundingTransaction = new btc.Transaction();
+  const fundingTransaction = new btc.Transaction({ allowLegacyWitnessUtxo: true, allowUnknownOutputs: true });
   fundingTransaction.addInput({
     txid: coinbase.txid,
     nonWitnessUtxo: {
@@ -77,6 +77,7 @@ export async function deployGenesis(): Promise<void> {
       witnesses: [],
       lockTime: 0xffffffff
     },
+    sighashType: btc.SigHash.NONE_ANYONECANPAY,
     index: 0
   });
   const funding = BigInt(coinbase.vout[0].value) - fee;
@@ -84,9 +85,12 @@ export async function deployGenesis(): Promise<void> {
     script: revealPayment.script,
     amount: funding
   });
-  console.log(fundingTransaction);
-  fundingTransaction.sign(faucetPrivate.privateKey, [0])//, undefined, new Uint9Array(32));
+  fundingTransaction.sign(faucetPrivate.privateKey, [ btc.SigHash.NONE_ANYONECANPAY ], new Uint8Array([]))//, undefined, new Uint9Array(32));
+  fundingTransaction.finalize();
+
   const fundingTransactionHex = hex.encode(fundingTransaction.extract());
+  console.log(fundingTransactionHex);
+  process.exit(0);
   const txid = await client.call('sendrawtransaction', fundingTransactionHex);
   const changeAddr = revealPayment.address; // can be different
   const revealAmount = 2000n;
