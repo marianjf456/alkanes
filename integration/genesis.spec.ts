@@ -89,15 +89,13 @@ export async function deployGenesis(): Promise<void> {
   fundingTransaction.finalize();
 
   const fundingTransactionHex = hex.encode(fundingTransaction.extract());
-  console.log(fundingTransactionHex);
-  process.exit(0);
   const txid = await client.call('sendrawtransaction', fundingTransactionHex);
   const changeAddr = revealPayment.address; // can be different
   const revealAmount = 2000n;
   const tx = new btc.Transaction({ customScripts, allowUnknownOutputs: true });
   tx.addInput({
     ...revealPayment,
-    txid: crypto.randomBytes(32).toString('hex'),
+    txid: fundingTransaction.id,
     index: 0,
     witnessUtxo: { script: revealPayment.script, amount: revealAmount }
   });
