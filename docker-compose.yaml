@@ -45,6 +45,7 @@ services:
     image: metashrew/metashrew-view
     environment:
       REDIS_URL: redis://keydb:6379
+      HOST: 0.0.0.0
     ports:
-      - 3000:8080
+      - 8080:8080
     restart: unless-stopped
