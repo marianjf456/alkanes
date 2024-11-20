@@ -1,5 +1,5 @@
 import { None, Option, Some } from '@magiceden-oss/runestone-lib/dist/src/monads';
-import { u64, u32, u128 } from '@magiceden-oss/runestone-lib/dist/src/integer';
+import { u32, u128 } from '@magiceden-oss/runestone-lib/dist/src/integer';
 import { ProtoruneRuneId } from './protoruneruneid';
 
 export type ProtoruneEdict = {

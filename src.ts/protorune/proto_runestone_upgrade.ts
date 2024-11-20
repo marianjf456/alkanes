@@ -6,11 +6,9 @@ import {
   MAX_SCRIPT_ELEMENT_SIZE,
   OP_RETURN,
 } from "@magiceden-oss/runestone-lib/dist/src/constants";
-import { Edict } from "@magiceden-oss/runestone-lib/dist/src/edict";
 import { ProtoruneRuneId } from "./protoruneruneid";
 import { ProtoruneEdict } from "./protoruneedict";
 import { Etching } from "@magiceden-oss/runestone-lib/dist/src/etching";
-import { SeekBuffer } from "@magiceden-oss/runestone-lib/dist/src/seekbuffer";
 import { Tag } from "@magiceden-oss/runestone-lib/dist/src/tag";
 import { Tag as ProtoTag } from "./tag";
 import {
@@ -24,20 +22,15 @@ import {
   Some,
   None,
 } from "@magiceden-oss/runestone-lib/dist/src/monads";
-import { Rune } from "@magiceden-oss/runestone-lib/dist/src/rune";
 import { Flag } from "@magiceden-oss/runestone-lib/dist/src/flag";
-import { Instruction } from "@magiceden-oss/runestone-lib/dist/src/utils";
 import { script } from "@magiceden-oss/runestone-lib/dist/src/script";
-import { Message } from "@magiceden-oss/runestone-lib/dist/src/message";
-import { Artifact } from "@magiceden-oss/runestone-lib/dist/src/artifact";
 import { Flaw } from "@magiceden-oss/runestone-lib/dist/src/flaw";
-import { Cenotaph } from "@magiceden-oss/runestone-lib/dist/src/cenotaph";
 import { RuneEtchingSpec } from "@magiceden-oss/runestone-lib/dist/src/indexer";
 import { SpacedRune } from "@magiceden-oss/runestone-lib/dist/src/spacedrune";
 import { Terms } from "@magiceden-oss/runestone-lib/dist/src/terms";
 import { ProtoStone } from "./protostone";
-import leb128 from "leb128";
-import chunk from "lodash/chunk";
+import { chunk } from "lodash";
+import { fromBuffer, encodeVarInt } from "../bytes";
 
 export const MAX_SPACERS = 0b00000111_11111111_11111111_11111111;
 
@@ -57,22 +50,6 @@ export const MAX_LEB128_BYTES_IN_U128 = 18;
 // Downside is we miss out on 6 bits of storage before we have to push another tag
 export const MAX_U128_BYTES_COMPAT_W_RUNES = 15;
 
-// Note: little endian seekBuffer
-function rawBytesToU128(seekBuffer: SeekBuffer): u128 {
-  let result = u128(0);
-  for (let i = 0; i <= 16; i++) {
-    const byte = seekBuffer.readUInt8();
-    if (byte === undefined) {
-      // done reading
-      return result;
-    }
-
-    const value = u128(byte);
-    result = u128(result | (value << u128(8 * i)));
-  }
-
-  return result;
-}
 
 export function encodeProtostone(values: u128[]): Buffer {
   return Buffer.concat(
@@ -178,7 +155,7 @@ export class RunestoneProtostoneUpgrade {
         (r: Buffer, v: Buffer) =>
           Buffer.from(
             (Array.from(r) as any).concat(
-              Array.from(leb128.unsigned.encode(v as any) as any) as any
+              Array.from(encodeVarInt(fromBuffer(v)))
             )
           ),
         Buffer.from([])
@@ -186,7 +163,7 @@ export class RunestoneProtostoneUpgrade {
       const u128s: u128[] = chunk(
         Array.from(packed),
         MAX_U128_BYTES_COMPAT_W_RUNES
-      ).map((v) => u128(BigInt("0x" + Buffer.from(v).toString("hex"))));
+      ).map((v: number[]) => u128(BigInt("0x" + Buffer.from(v).toString("hex"))));
 
       payloads.push(encodeProtostone(u128s));
     }
@@ -216,7 +193,6 @@ export class RunestoneProtostoneUpgrade {
     stack.push(MAGIC_NUMBER);
 
     const payload = Buffer.concat(payloads);
-    let i = 0;
     for (let i = 0; i < payload.length; i += MAX_SCRIPT_ELEMENT_SIZE) {
       stack.push(payload.subarray(i, i + MAX_SCRIPT_ELEMENT_SIZE));
     }

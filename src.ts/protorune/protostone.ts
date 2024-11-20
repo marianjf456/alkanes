@@ -3,7 +3,6 @@ import { Tag } from "./tag";
 import { Some, Option } from "@magiceden-oss/runestone-lib/dist/src/monads";
 import { RuneId } from "@magiceden-oss/runestone-lib/dist/src/runeid";
 import { Edict } from "@magiceden-oss/runestone-lib/dist/src/edict";
-import leb128 from "leb128";
 
 export type ProtoBurn = {
   pointer: Option<u32>;
@@ -19,7 +18,7 @@ export type ProtoMessage = {
 import { decipher, leftPadByte } from "../bytes";
 
 
-const toBuffer = (n) => Buffer.from(leftPadByte(n.toString(16)), "hex");
+const toBuffer = (n: any): Buffer => Buffer.from(leftPadByte(n.toString(16)), "hex");
 
 export class ProtoStone {
   burn?: ProtoBurn;
