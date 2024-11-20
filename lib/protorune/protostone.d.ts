@@ -10,7 +10,6 @@ export type ProtoMessage = {
     pointer: Option<u32>;
     refundPointer: Option<u32>;
 };
-export declare const toBuffer: (n: any) => Buffer;
 export declare class ProtoStone {
     burn?: ProtoBurn;
     message?: ProtoMessage;

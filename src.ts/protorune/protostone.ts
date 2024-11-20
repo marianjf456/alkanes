@@ -19,7 +19,7 @@ export type ProtoMessage = {
 import { decipher, leftPadByte } from "../bytes";
 
 
-export const toBuffer = (n) => Buffer.from(leftPadByte(n.toString(16)), "hex");
+const toBuffer = (n) => Buffer.from(leftPadByte(n.toString(16)), "hex");
 
 export class ProtoStone {
   burn?: ProtoBurn;
