@@ -50,6 +50,11 @@ export function leftPadByte(v: string): string {
   }
   return v;
 }
+
+export function leftPad16(v: string): string {
+  if (v.length > 16) throw Error("varint in encoding cannot exceed 15 bytes");
+  return "0".repeat(32 - v.length) + v;
+}
 export function encodeVarInt(value: bigint): Buffer {
   const v: number[] = [];
   while (value >> 7n > 0n) {
@@ -66,7 +71,7 @@ export function encipher(values: bigint[]): Buffer {
 }
 
 export const toBuffer = (v: number | bigint) => {
-  return Buffer.from(Array.from(Buffer.from(leftPadByte(v.toString(16)), 'hex')).reverse());
+  return Buffer.from(Array.from(Buffer.from(leftPad16(v.toString(16)), 'hex')).reverse());
 }
 
 export const fromBuffer = (v: Buffer): bigint => {
