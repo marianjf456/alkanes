@@ -46,6 +46,9 @@ export const NESTED_SEGWIT_HD_PATH_TESTNET = "m/49'/1'/0'/0";
 export const SEGWIT_HD_PATH_TESTNET = "m/84'/1'/0'/0";
 export const TAPROOT_HD_PATH_TESTNET = "m/86'/1'/0'/0";
 
+export const REGTEST_PARAMS = { bech32: 'bcrt', pubKeyHash: 0, scriptHash: 5, wif: 128 };
+
+
 export const HDPATH = {
   mainnet: {
     legacy: "m/44'/0'/0'/0",

@@ -8,7 +8,7 @@ import { encipher } from "../lib/esm/bytes.js";
 import { ProtoStone } from "../lib/esm/protorune/protostone.js";
 import crypto from "node:crypto";
 import { schnorr as secp256k1_schnorr } from "@noble/curves/secp256k1";
-import { TEST_NETWORK } from "@scure/btc-signer";
+import { REGTEST_PARAMS } from "./lib/constants";
 import { gzip as _gzip } from "node:zlib";
 import { promisify } from "node:util";
 import { Client } from "./lib/client";
@@ -25,7 +25,7 @@ const client = new Client("regtest");
 
 const gzip = promisify(_gzip);
 
-const getAddress = async (node) => {
+const getAddress = (node) => {
   return bitcoin.payments.p2wpkh({ pubkey: node.publicKey, network: bitcoin.networks.regtest }).address;
 };
 
@@ -51,47 +51,40 @@ export async function deployGenesis(): Promise<void> {
   const revealPayment = btc.p2tr(
     undefined,
     envelope.p2tr_ord_reveal(pubKey, [payload]),
-    TEST_NETWORK,
+    REGTEST_PARAMS,
     false,
     customScripts
   );
-  await client.call('generatetoaddress', 1, faucetAddress);
-  const count = (await client.call('getblockcount')).data.result;
+  const blockHash = await client.call('generatetoaddress', 200, faucetAddress);
+  //console.log(blockHash)
+  const blockDetails = await client.call('getblock', blockHash.data.result[0], 0)
+  const count = (await client.call('getblockcount')).data.result - 101;
   const block = (await client.call('getblock', (await client.call('getblockhash', count)).data.result, 0 )).data.result;
-  const fee = 500n;
-  const decoded = BitcoinBlock.decode(Buffer.from(block, 'hex'));
+  const fee = 20000n;
+  const decoded = BitcoinBlock.decode(Buffer.from(blockDetails.data.result, 'hex'));
   const coinbase = decoded.tx[0];
   const fundingTransaction = new btc.Transaction({ allowLegacyWitnessUtxo: true, allowUnknownOutputs: true });
+  const coinbaseTxid = Buffer.from(Array.from(Buffer.from(coinbase.txid)).reverse()).toString('hex');
+  const coinbaseTransaction = btc.Transaction.fromRaw(new Uint8Array(Array.from(Buffer.from((await client.call('getrawtransaction', coinbaseTxid)).data.result, 'hex'))), { allowUnknownOutputs: true });
   fundingTransaction.addInput({
-    txid: coinbase.txid,
-    nonWitnessUtxo: {
-      outputs: [{ script: new Uint8Array(Array.from(coinbase.vout[0].scriptPubKey)), amount: BigInt(coinbase.vout[0].value) }],
-      version: 1,
-      inputs: [{
-        txid: coinbase.txid,
-	finalScriptSig: new Uint8Array([]),
-        sequence: 0xffffffff,
-	index: 0
-      }],
-      segwitFlag: false,
-      witnesses: [],
-      lockTime: 0xffffffff
-    },
-    sighashType: btc.SigHash.NONE_ANYONECANPAY,
+    witnessUtxo: (coinbaseTransaction as any).outputs[0],
+    txid: coinbaseTransaction.id,
+    sighashType: btc.SigHash.ALL,
     index: 0
   });
-  const funding = BigInt(coinbase.vout[0].value) - fee;
+  let revealAmount = (coinbaseTransaction as any).outputs[0].amount - fee;
+  const funding = revealAmount;
   fundingTransaction.addOutput({
     script: revealPayment.script,
     amount: funding
   });
-  fundingTransaction.sign(faucetPrivate.privateKey, [ btc.SigHash.NONE_ANYONECANPAY ], new Uint8Array([]))//, undefined, new Uint9Array(32));
+  fundingTransaction.sign(faucetPrivate.privateKey, [ btc.SigHash.ALL ], new Uint8Array(0x20));//, undefined, new Uint9Array(32));
   fundingTransaction.finalize();
 
   const fundingTransactionHex = hex.encode(fundingTransaction.extract());
-  const txid = await client.call('sendrawtransaction', fundingTransactionHex);
+  const sendHex = await client.call('sendrawtransaction', fundingTransactionHex);
+  const txid = new Uint8Array(Array.from(Buffer.from(sendHex.data.result, 'hex')));
   const changeAddr = revealPayment.address; // can be different
-  const revealAmount = 2000n;
   const tx = new btc.Transaction({ customScripts, allowUnknownOutputs: true });
   tx.addInput({
     ...revealPayment,
@@ -99,7 +92,7 @@ export async function deployGenesis(): Promise<void> {
     index: 0,
     witnessUtxo: { script: revealPayment.script, amount: revealAmount }
   });
-  tx.addOutputAddress(changeAddr, revealAmount - fee, TEST_NETWORK);
+  tx.addOutputAddress(changeAddr, revealAmount - fee, REGTEST_PARAMS);
   tx.addOutput({
     script: encodeRunestoneProtostone({
       protostones: [ProtoStone.message({
@@ -115,7 +108,7 @@ export async function deployGenesis(): Promise<void> {
   tx.sign(privKey, undefined, new Uint8Array(32));
   tx.finalize();
   const txHex = hex.encode(tx.extract());
-  console.log(await client.call('sendrawtransaction', txHex));
+  console.log((await client.call('sendrawtransaction', txHex)).data.result);
 }
 
 (async () => {
