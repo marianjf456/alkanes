@@ -20,6 +20,8 @@ import bitcoin = require("bitcoinjs-lib");
 import * as ecc from "tiny-secp256k1";
 import { AlkanesRpc } from "../lib/rpc";
 
+const timeout = async (n) => await new Promise((resolve) => setTimeout(resolve, n));
+
 const bip32 = BIP32Factory(ecc);
 
 const client = new Client("regtest");
@@ -114,9 +116,12 @@ export async function deployGenesis(): Promise<void> {
   const txHex = hex.encode(tx.extract());
   const rpc = new AlkanesRpc({ baseUrl: 'http://localhost:8080', blockTag: 'latest' });
   const revealTxSend = await client.call('sendrawtransaction', txHex);
-  console.log(revealTxSend);
+  console.log('waiting 30s ...');
   const revealTxid = revealTxSend.data.result;
   console.log(revealTxid);
+  await timeout(30000);
+ // console.log(revealTxSend);
+//  const revealTxidReversed = Buffer.from(Array.from(Buffer.from(revealTxid, 'hex')).reverse()).toString('hex');
   console.log(await rpc.protorunesbyoutpoint({ protocolTag: 1n, txid: revealTxid, vout: 0 }));
 }
 
