@@ -57,16 +57,17 @@ export async function deployGenesis(): Promise<void> {
     customScripts
   );
   const blockHash = await client.call('generatetoaddress', 200, faucetAddress);
-  //console.log(blockHash)
+  console.log(blockHash)
   const blockDetails = await client.call('getblock', blockHash.data.result[0], 0)
   const count = (await client.call('getblockcount')).data.result - 101;
-  const block = (await client.call('getblock', (await client.call('getblockhash', count)).data.result, 0 )).data.result;
+  const block = (await client.call('getblock', (await client.call('getblockhash', count)).data.result - 101, 0 )).data.result;
   const fee = 20000n;
   const decoded = BitcoinBlock.decode(Buffer.from(blockDetails.data.result, 'hex'));
   const coinbase = decoded.tx[0];
   const fundingTransaction = new btc.Transaction({ allowLegacyWitnessUtxo: true, allowUnknownOutputs: true });
   const coinbaseTxid = Buffer.from(Array.from(Buffer.from(coinbase.txid)).reverse()).toString('hex');
   const coinbaseTransaction = btc.Transaction.fromRaw(new Uint8Array(Array.from(Buffer.from((await client.call('getrawtransaction', coinbaseTxid)).data.result, 'hex'))), { allowUnknownOutputs: true });
+  console.log(coinbaseTransaction);
   fundingTransaction.addInput({
     witnessUtxo: (coinbaseTransaction as any).outputs[0],
     txid: coinbaseTransaction.id,
@@ -74,6 +75,7 @@ export async function deployGenesis(): Promise<void> {
     index: 0
   });
   let revealAmount = (coinbaseTransaction as any).outputs[0].amount - fee;
+  console.log(revealAmount);
   const funding = revealAmount;
   fundingTransaction.addOutput({
     script: revealPayment.script,
@@ -84,6 +86,7 @@ export async function deployGenesis(): Promise<void> {
 
   const fundingTransactionHex = hex.encode(fundingTransaction.extract());
   const sendHex = await client.call('sendrawtransaction', fundingTransactionHex);
+  console.log(sendHex);
   const txid = new Uint8Array(Array.from(Buffer.from(sendHex.data.result, 'hex')));
   const changeAddr = revealPayment.address; // can be different
   const tx = new btc.Transaction({ customScripts, allowUnknownOutputs: true });
@@ -110,7 +113,9 @@ export async function deployGenesis(): Promise<void> {
   tx.finalize();
   const txHex = hex.encode(tx.extract());
   const rpc = new AlkanesRpc({ baseUrl: 'http://localhost:8080', blockTag: 'latest' });
-  const revealTxid = (await client.call('sendrawtransaction', txHex)).data.result;
+  const revealTxSend = await client.call('sendrawtransaction', txHex);
+  console.log(revealTxSend);
+  const revealTxid = revealTxSend.data.result;
   console.log(revealTxid);
   console.log(await rpc.protorunesbyoutpoint({ protocolTag: 1n, txid: revealTxid, vout: 0 }));
 }
