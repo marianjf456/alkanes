@@ -18,6 +18,7 @@ import bip39 = require("bip39");
 import BIP32Factory from "bip32";
 import bitcoin = require("bitcoinjs-lib");
 import * as ecc from "tiny-secp256k1";
+import { AlkanesRpc } from "../lib/rpc";
 
 const bip32 = BIP32Factory(ecc);
 
@@ -108,7 +109,10 @@ export async function deployGenesis(): Promise<void> {
   tx.sign(privKey, undefined, new Uint8Array(32));
   tx.finalize();
   const txHex = hex.encode(tx.extract());
-  console.log((await client.call('sendrawtransaction', txHex)).data.result);
+  const rpc = new AlkanesRpc({ baseUrl: 'http://localhost:8080', blockTag: 'latest' });
+  const revealTxid = (await client.call('sendrawtransaction', txHex)).data.result;
+  console.log(revealTxid);
+  console.log(await rpc.protorunesbyoutpoint({ protocolTag: 1n, txid: revealTxid, vout: 0 }));
 }
 
 (async () => {
