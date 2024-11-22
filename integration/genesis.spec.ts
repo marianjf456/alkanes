@@ -120,9 +120,9 @@ export async function deployGenesis(): Promise<void> {
   const revealTxid = revealTxSend.data.result;
   console.log(revealTxid);
   await timeout(30000);
- // console.log(revealTxSend);
-//  const revealTxidReversed = Buffer.from(Array.from(Buffer.from(revealTxid, 'hex')).reverse()).toString('hex');
-  console.log(await rpc.protorunesbyoutpoint({ protocolTag: 1n, txid: revealTxid, vout: 0 }));
+  console.log(revealTxSend);
+  const revealTxidReversed = Buffer.from(Array.from(Buffer.from(revealTxid, 'hex')).reverse()).toString('hex');
+  console.log(await rpc.protorunesbyoutpoint({ protocolTag: 1n, txid: revealTxidReversed, vout: 0 }));
 }
 
 (async () => {
