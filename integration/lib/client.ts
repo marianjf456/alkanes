@@ -29,13 +29,22 @@ export class Client {
     };
     return await fetch(this.rpcUrl, {
       headers: {
-        Authorization: 'Basic ' + Buffer.from('bitcoinrpc:bitcoinrpc').toString('base64')
+        Authorization:
+          "Basic " + Buffer.from("bitcoinrpc:bitcoinrpc").toString("base64"),
       },
       method: "POST",
       body: JSON.stringify(body),
     }).then(async (res) => ({ data: await res.json() }));
   }
-
+  async generateBlock() {
+    await timeout(5000);
+    const mempool = await this.call("getrawmempool", true);
+    console.log(mempool.data);
+    const keys = Object.keys(mempool);
+    const blockHash = await this.call("generateblock", RANDOM_ADDRESS, keys);
+    await timeout(5000);
+    return { mempool: keys, blockHash };
+  }
   async init(addresses: any[]) {
     const blockCount = await this.call("getblockcount");
     if (blockCount.data.result > 250) return blockCount.data.result;
