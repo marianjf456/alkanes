@@ -8,7 +8,7 @@ import {
 
 export enum Tag {
   BODY = 0,
-  PROTOSTONE = 2 ** 14 - 1,
+  PROTOCOL = 2 ** 14 - 1,
 
   // PROTOTAGS
   MESSAGE = 81,

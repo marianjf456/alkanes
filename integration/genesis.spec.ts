@@ -148,18 +148,20 @@ export async function deployGenesis(): Promise<void> {
     witnessUtxo: { script: revealPayment.script, amount: revealAmount },
   });
   tx.addOutputAddress(changeAddr, revealAmount - fee, REGTEST_PARAMS);
-  tx.addOutput({
-    script: encodeRunestoneProtostone({
+  const script = encodeRunestoneProtostone({
       protostones: [
         ProtoStone.message({
           protocolTag: 1n,
           edicts: [],
-          pointer: 1,
-          refund_pointer: 1,
-          message: encipher([1n, 0n, 0n]),
+          pointer: 0,
+          refundPointer: 0,
+          calldata: encipher([1n, 0n, 0n]),
         }),
       ],
-    }).encodedRunestone,
+    }).encodedRunestone;
+  console.log(script);
+  tx.addOutput({
+    script,
     amount: 0n,
   });
   tx.sign(privKey, undefined, new Uint8Array(32));
@@ -187,7 +189,7 @@ export async function deployGenesis(): Promise<void> {
   );
   console.log('reveal Tx');
   console.log(revealTransactionFromRegtest);
-  await timeout(30000);
+  await timeout(10000);
   console.log(revealTxSend);
   const revealTxidReversed = Buffer.from(
     Array.from(Buffer.from(revealTxid, "hex")).reverse(),

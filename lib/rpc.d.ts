@@ -1,7 +1,7 @@
 import { OutPoint, RuneOutput } from "./outpoint";
 import { MetashrewRunes } from "metashrew-runes/lib/src.ts/rpc";
-import { Edict } from "@magiceden-oss/runestone-lib/dist/src/edict.js";
 import { AlkaneTransfer } from "./alkane";
+import { ProtoruneEdict } from "./protorune/protoruneedict";
 export declare class AlkanesRpc extends MetashrewRunes {
     protorunesbyaddress({ address, protocolTag }: any): Promise<{
         outpoints: OutPoint[];
@@ -32,6 +32,6 @@ export declare class AlkanesRpc extends MetashrewRunes {
         cellpack: Buffer;
         pointer: number;
         refundPointer: number;
-        edicts: Edict[];
+        edicts: ProtoruneEdict[];
     }): Promise<any>;
 }

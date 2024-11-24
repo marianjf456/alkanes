@@ -1,8 +1,9 @@
-import { u128, u32, u64 } from "@magiceden-oss/runestone-lib/dist/src/integer";
+import { u128, u32 } from "@magiceden-oss/runestone-lib/dist/src/integer";
 import { Tag } from "./tag";
 import { Some, Option } from "@magiceden-oss/runestone-lib/dist/src/monads";
-import { RuneId } from "@magiceden-oss/runestone-lib/dist/src/runeid";
-import { Edict } from "@magiceden-oss/runestone-lib/dist/src/edict";
+import { ProtoruneRuneId } from "./protoruneruneid";
+import { ProtoruneEdict } from "./protoruneedict";
+import { unpack } from "../bytes";
 
 export type ProtoBurn = {
   pointer: Option<u32>;
@@ -10,22 +11,18 @@ export type ProtoBurn = {
 };
 
 export type ProtoMessage = {
-  calldata: u128[];
+  calldata: Buffer;
   pointer: Option<u32>;
   refundPointer: Option<u32>;
 };
 
-import { decipher, leftPadByte } from "../bytes";
-
-
-const toBuffer = (n: any): Buffer => Buffer.from(leftPadByte(n.toString(16)), "hex");
 
 export class ProtoStone {
   burn?: ProtoBurn;
   message?: ProtoMessage;
   protocolTag: u128;
 
-  edicts?: Edict[];
+  edicts?: ProtoruneEdict[];
 
   constructor({
     burn,
@@ -44,7 +41,7 @@ export class ProtoStone {
       pointer: number;
       refundPointer: number;
     };
-    edicts?: Edict[];
+    edicts?: ProtoruneEdict[];
   }) {
     this.protocolTag = u128(protocolTag);
     this.edicts = edicts;
@@ -54,22 +51,9 @@ export class ProtoStone {
         from: burn.from
       };
     }
-    if (message && message.calldata) {
-      const ary = Uint8Array.from(message.calldata);
-      const res: u128[] = [];
-
-      for (let i = 0; i < ary.byteLength; i += 16) {
-        const last = i + 16;
-        res.push(
-          u128(
-            BigInt(
-              `0x${Buffer.from(ary.slice(i, last > ary.byteLength ? ary.byteLength : last)).toString("hex")}`,
-            ),
-          ),
-        );
-      }
+    if (message) {
       this.message = {
-        calldata: res,
+        calldata: message.calldata,
         pointer: Some<u32>(u32(message.pointer)),
         refundPointer: Some<u32>(u32(message.refundPointer)),
       };
@@ -115,70 +99,60 @@ export class ProtoStone {
   //   return script.compile(stack);
   // }
 
-  encipher_payloads(): Buffer[] {
-    let payloads: Buffer[] = [];
+  encipher_payloads(): bigint[] {
+    let payloads: bigint[] = [];
     if (this.burn) {
       payloads.push(
-        Tag.encodeOptionInt(Tag.POINTER, this.burn.pointer.map(u128)),
+        u128(Tag.POINTER)
       );
+      payloads.push(this.burn.pointer.map(u128).unwrap());
       if (this.burn.from) {
         payloads.push(
-          Tag.encode(Tag.FROM, this.burn.from.map(u128)),
+          u128(Tag.FROM)
         );
+        payloads.push(this.burn.from.map(u128)[0]);
       }
-
-      payloads.push(
-        Tag.encodeOptionInt(Tag.BURN, Some<u128>(this.protocolTag)),
-      );
     } else if (this.message) {
       // payloads.push(u128.encodeVarInt(this.protocolTag));
-      payloads.push(
-        Tag.encodeOptionInt(Tag.POINTER, this.message.pointer.map(u128)),
-      );
-      payloads.push(
-        Tag.encodeOptionInt(Tag.REFUND, this.message.refundPointer.map(u128)),
-      );
-      payloads.push(Tag.encode(Tag.MESSAGE, this.message.calldata));
+      if (this.message.pointer.isSome()) {
+        payloads.push(u128(Tag.POINTER));
+        payloads.push(u128(this.message.pointer.map(u128).unwrap()));
+      }
+      if (this.message.refundPointer.isSome()) {
+        payloads.push(u128(Tag.REFUND));
+	payloads.push(u128(this.message.refundPointer.map(u128).unwrap()));
+      }
+      if (this.message.calldata.length) {
+        unpack(this.message.calldata).forEach((v) => {
+          payloads.push(u128(Tag.MESSAGE));
+	  payloads.push(u128(v));
+	});
+      }
     }
-    if (this.edicts) {
-      payloads.push(u128.encodeVarInt(u128(Tag.BODY)));
+    if (this.edicts && this.edicts.length) {
+      payloads.push(u128(Tag.BODY));
 
       const edicts = [...this.edicts].sort((x, y) =>
         Number(x.id.block - y.id.block || x.id.tx - y.id.tx),
       );
 
-      let previous = new RuneId(u64(0), u32(0));
+      let previous = new ProtoruneRuneId(u128(0), u128(0));
       for (const edict of edicts) {
         const [block, tx] = previous.delta(edict.id).unwrap();
 
-        payloads.push(u128.encodeVarInt(block));
-        payloads.push(u128.encodeVarInt(tx));
-        payloads.push(u128.encodeVarInt(edict.amount));
-        payloads.push(u128.encodeVarInt(u128(edict.output)));
+        payloads.push(block);
+        payloads.push(tx);
+        payloads.push(edict.amount);
+        payloads.push(u128(edict.output));
         previous = edict.id;
       }
     }
 
     // pushing the protocol_id and len first as per the spec
-    const length_payload = payloads.reduce(
-      (r, v) => r + decipher(v).length,
-      0,
-    );
-    const prefix = [
-      toBuffer(
-        payloads.reduce((r, v) => r || decipher(v)[0] === 83n, false)
-          ? u128(13)
-          : u128(this.protocolTag),
-      ),
-      toBuffer(u128(length_payload)),
-    ];
-    const result = prefix.concat(
-      payloads.reduce(
-        (r, v) => r.concat(decipher(v).map((v) => toBuffer(v))),
-        prefix.slice(2),
-      ),
-    );
-    return result;
+    const length_payload = payloads.length;
+    payloads.unshift(u128(length_payload));
+    payloads.unshift(u128(this.protocolTag));
+    return payloads;
   }
 
   static burn({
@@ -189,7 +163,7 @@ export class ProtoStone {
     protocolTag: bigint;
     pointer: number;
     from?: Array<u32>;
-    edicts?: Edict[];
+    edicts?: ProtoruneEdict[];
   }): ProtoStone {
     return new ProtoStone({ burn, protocolTag, edicts });
   }
@@ -203,7 +177,7 @@ export class ProtoStone {
     protocolTag: bigint;
     pointer: number;
     refundPointer: number;
-    edicts?: Edict[];
+    edicts?: ProtoruneEdict[];
   }): ProtoStone {
     return new ProtoStone({ message, protocolTag, edicts });
   }
@@ -212,7 +186,7 @@ export class ProtoStone {
     protocolTag,
     edicts,
   }: {
-    edicts?: Edict[];
+    edicts?: ProtoruneEdict[];
     protocolTag: bigint;
   }): ProtoStone {
     return new ProtoStone({ edicts, protocolTag });

@@ -1,7 +1,7 @@
 import { ProtoruneRuneId } from "./protoruneruneid";
 import { ProtoruneEdict } from "./protoruneedict";
 import { Etching } from "@magiceden-oss/runestone-lib/dist/src/etching";
-import { u128, u32 } from "@magiceden-oss/runestone-lib/dist/src/integer";
+import { u32 } from "@magiceden-oss/runestone-lib/dist/src/integer";
 import { Option } from "@magiceden-oss/runestone-lib/dist/src/monads";
 import { Flaw } from "@magiceden-oss/runestone-lib/dist/src/flaw";
 import { RuneEtchingSpec } from "@magiceden-oss/runestone-lib/dist/src/indexer";
@@ -16,9 +16,9 @@ export type RunestoneTx = {
 };
 type Payload = Buffer | Flaw;
 export declare function isValidPayload(payload: Payload): payload is Buffer;
+export declare function encodeOptionInt(payloads: Array<any>, tag: any, opt: Option<any>): void;
 export declare const MAX_LEB128_BYTES_IN_U128 = 18;
 export declare const MAX_U128_BYTES_COMPAT_W_RUNES = 15;
-export declare function encodeProtostone(values: u128[]): Buffer;
 export type RunestoneProtostoneSpec = {
     mint?: {
         block: bigint;

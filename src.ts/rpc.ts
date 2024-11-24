@@ -147,7 +147,7 @@ export class AlkanesRpc extends MetashrewRunes {
     cellpack: Buffer;
     pointer: number;
     refundPointer: number;
-    edicts: Edict[];
+    edicts: ProtoruneEdict[];
   }): Promise<any> {
     const protostone = new ProtoStone({
       message: {

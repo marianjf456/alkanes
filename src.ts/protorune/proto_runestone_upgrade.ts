@@ -29,8 +29,7 @@ import { RuneEtchingSpec } from "@magiceden-oss/runestone-lib/dist/src/indexer";
 import { SpacedRune } from "@magiceden-oss/runestone-lib/dist/src/spacedrune";
 import { Terms } from "@magiceden-oss/runestone-lib/dist/src/terms";
 import { ProtoStone } from "./protostone";
-import { chunk } from "lodash";
-import { fromBuffer, encodeVarInt } from "../bytes";
+import { unpack, encipher } from "../bytes";
 
 export const MAX_SPACERS = 0b00000111_11111111_11111111_11111111;
 
@@ -42,6 +41,13 @@ export function isValidPayload(payload: Payload): payload is Buffer {
   return Buffer.isBuffer(payload);
 }
 
+export function encodeOptionInt(payloads: Array<any>, tag: any, opt: Option<any>) {
+  if (opt.isSome()) {
+    payloads.push(tag);
+    payloads.push(opt.unwrap());
+  }
+}
+
 export const MAX_LEB128_BYTES_IN_U128 = 18;
 
 // uint128s -> leb128 max needs 19 bytes, since 128/7 = 18.3, so an extra byte is needed to store the last two bits in the uint128.
@@ -50,17 +56,6 @@ export const MAX_LEB128_BYTES_IN_U128 = 18;
 // Downside is we miss out on 6 bits of storage before we have to push another tag
 export const MAX_U128_BYTES_COMPAT_W_RUNES = 15;
 
-
-export function encodeProtostone(values: u128[]): Buffer {
-  return Buffer.concat(
-    values
-      .map((value) => [
-        u128.encodeVarInt(u128(ProtoTag.PROTOSTONE)),
-        u128.encodeVarInt(value),
-      ])
-      .flat()
-  );
-}
 export type RunestoneProtostoneSpec = {
   mint?: {
     block: bigint;
@@ -86,7 +81,7 @@ export class RunestoneProtostoneUpgrade {
   // removed decipher function -- can add it back if needed
 
   encipher(): Buffer {
-    const payloads: Buffer[] = [];
+    const payloads: bigint[] = [];
 
     if (this.etching.isSome()) {
       const etching = this.etching.unwrap();
@@ -100,77 +95,53 @@ export class RunestoneProtostoneUpgrade {
       if (etching.turbo) {
         flags = Flag.set(flags, Flag.TURBO);
       }
-
-      payloads.push(Tag.encode(Tag.FLAGS, [flags]));
-
-      payloads.push(
-        Tag.encodeOptionInt(
-          Tag.RUNE,
-          etching.rune.map((rune) => rune.value)
-        )
-      );
-      payloads.push(
-        Tag.encodeOptionInt(Tag.DIVISIBILITY, etching.divisibility.map(u128))
-      );
-      payloads.push(
-        Tag.encodeOptionInt(Tag.SPACERS, etching.spacers.map(u128))
-      );
-      payloads.push(
-        Tag.encodeOptionInt(
-          Tag.SYMBOL,
-          etching.symbol.map((symbol) => u128(symbol.codePointAt(0)!))
-        )
-      );
-      payloads.push(Tag.encodeOptionInt(Tag.PREMINE, etching.premine));
-
+      payloads.push(Tag.FLAGS as any);
+      payloads.push(flags as any);
+      encodeOptionInt(payloads, Tag.RUNE, etching.rune.map((rune) => rune.value));
+      encodeOptionInt(payloads, Tag.DIVISIBILITY, etching.divisibility.map(u128));
+      encodeOptionInt(payloads, Tag.SYMBOL, etching.spacers.map(u128));
+      encodeOptionInt(payloads, Tag.SYMBOL, etching.symbol.map((symbol) => u128(symbol.codePointAt(0)!)));
+      encodeOptionInt(payloads, Tag.PREMINE, etching.premine);
       if (etching.terms.isSome()) {
         const terms = etching.terms.unwrap();
 
-        payloads.push(Tag.encodeOptionInt(Tag.AMOUNT, terms.amount));
-        payloads.push(Tag.encodeOptionInt(Tag.CAP, terms.cap));
-        payloads.push(Tag.encodeOptionInt(Tag.HEIGHT_START, terms.height[0]));
-        payloads.push(Tag.encodeOptionInt(Tag.HEIGHT_END, terms.height[1]));
-        payloads.push(Tag.encodeOptionInt(Tag.OFFSET_START, terms.offset[0]));
-        payloads.push(Tag.encodeOptionInt(Tag.OFFSET_END, terms.offset[1]));
+        encodeOptionInt(payloads, Tag.AMOUNT, terms.amount);
+        encodeOptionInt(payloads, Tag.CAP, terms.cap);
+        encodeOptionInt(payloads, Tag.HEIGHT_START, terms.height[0]);
+        encodeOptionInt(payloads, Tag.HEIGHT_END, terms.height[1]);
+        encodeOptionInt(payloads, Tag.OFFSET_START, terms.offset[0]);
+        encodeOptionInt(payloads, Tag.OFFSET_END, terms.offset[1]);
       }
     }
 
     if (this.mint.isSome()) {
       const claim = this.mint.unwrap();
-      payloads.push(Tag.encode(Tag.MINT, [claim.block, claim.tx].map(u128)));
+      payloads.push(Tag.MINT as any);
+      payloads.push(u128(claim.block));
+      payloads.push(Tag.MINT as any);
+      payloads.push(u128(claim.tx));
     }
 
-    payloads.push(Tag.encodeOptionInt(Tag.POINTER, this.pointer.map(u128)));
+    encodeOptionInt(payloads, Tag.POINTER, this.pointer.map(u128));
 
     /* BEGIN CODE CHANGE */
     if (this.protostones.length) {
       // TODO: ORDERING?
-      let all_protostone_payloads: Buffer[] = [];
+      let all_protostone_payloads: bigint[] = [];
       this.protostones.forEach((protostone: ProtoStone) => {
         protostone
           .encipher_payloads()
           .forEach((v) => all_protostone_payloads.push(v));
       });
-      const packed = all_protostone_payloads.reduce(
-        (r: Buffer, v: Buffer) =>
-          Buffer.from(
-            (Array.from(r) as any).concat(
-              Array.from(encodeVarInt(fromBuffer(v)))
-            )
-          ),
-        Buffer.from([])
-      );
-      const u128s: u128[] = chunk(
-        Array.from(packed),
-        MAX_U128_BYTES_COMPAT_W_RUNES
-      ).map((v: number[]) => u128(BigInt("0x" + Buffer.from(v).toString("hex"))));
-
-      payloads.push(encodeProtostone(u128s));
+      unpack(encipher(all_protostone_payloads)).forEach((v) => {
+        payloads.push(u128(ProtoTag.PROTOCOL));
+	payloads.push(u128(v));
+      });
     }
     /* CODE CHANGE END */
 
     if (this.edicts.length) {
-      payloads.push(u128.encodeVarInt(u128(Tag.BODY)));
+      payloads.push(u128(Tag.BODY));
 
       const edicts = [...this.edicts].sort((x, y) =>
         Number(x.id.block - y.id.block || x.id.tx - y.id.tx)
@@ -180,10 +151,10 @@ export class RunestoneProtostoneUpgrade {
       for (const edict of edicts) {
         const [block, tx] = previous.delta(edict.id).unwrap();
 
-        payloads.push(u128.encodeVarInt(block));
-        payloads.push(u128.encodeVarInt(tx));
-        payloads.push(u128.encodeVarInt(edict.amount));
-        payloads.push(u128.encodeVarInt(u128(edict.output)));
+        payloads.push(block);
+        payloads.push(tx);
+        payloads.push(edict.amount);
+        payloads.push(u128(edict.output));
         previous = edict.id;
       }
     }
@@ -192,7 +163,7 @@ export class RunestoneProtostoneUpgrade {
     stack.push(OP_RETURN);
     stack.push(MAGIC_NUMBER);
 
-    const payload = Buffer.concat(payloads);
+    const payload = encipher(payloads);
     for (let i = 0; i < payload.length; i += MAX_SCRIPT_ELEMENT_SIZE) {
       stack.push(payload.subarray(i, i + MAX_SCRIPT_ELEMENT_SIZE));
     }
