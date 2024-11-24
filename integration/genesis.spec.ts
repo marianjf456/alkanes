@@ -61,8 +61,9 @@ export async function deployGenesis(): Promise<void> {
   const payload = {
     body: await gzip(binary, { level: 9 }),
     cursed: false,
-    tags: { contentType: "application/octet-stream" },
+    tags: { contentType: "" },
   };
+  console.log(payload.body.toString('hex'));
   const revealPayment = btc.p2tr(
     undefined,
     envelope.p2tr_ord_reveal(pubKey, [payload]),
@@ -195,12 +196,11 @@ export async function deployGenesis(): Promise<void> {
     Array.from(Buffer.from(revealTxid, "hex")).reverse(),
   ).toString("hex");
   console.log(
-    await rpc.protorunesbyoutpoint({
+    ((ary) => ary.map((v) => ({ id: [ v.rune.runeId.height.lo, v.rune.runeId.txindex.lo ], value: v.balance.lo })))((await rpc.protorunesbyoutpoint({
       protocolTag: 1n,
       txid: revealTxidReversed,
       vout: 0,
-    }),
-  );
+    })).balances.entries))
 }
 
 (async () => {
