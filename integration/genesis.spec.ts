@@ -195,7 +195,7 @@ export async function deployGenesis(): Promise<void> {
   console.log(
     await rpc.protorunesbyoutpoint({
       protocolTag: 1n,
-      txid: revealTxid,
+      txid: revealTxidReversed,
       vout: 0,
     }),
   );
