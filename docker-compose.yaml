@@ -13,6 +13,8 @@ services:
       RPCPASSWORD: bitcoinrpc
     restart: unless-stopped
   keydb:
+    ports:
+      - 7777:6379
     image: eqalpha/keydb:unstable
     command:
       [

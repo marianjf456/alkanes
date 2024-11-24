@@ -55,6 +55,20 @@ export function leftPad16(v: string): string {
   if (v.length > 16) throw Error("varint in encoding cannot exceed 15 bytes");
   return "0".repeat(32 - v.length) + v;
 }
+export function leftPad8(v: string): string {
+  if (v.length > 16) throw Error("varint in encoding cannot exceed 15 bytes");
+  return "0".repeat(16 - v.length) + v;
+}
+
+export function toUint128(v: bigint): { hi: bigint, lo: bigint } {
+  let hex = leftPad16(v.toString(16));
+  return { hi: BigInt('0x' + hex.substr(0, 16)), lo: BigInt('0x' + hex.substr(16, 32)) };
+}
+
+export function u128ToBuffer(v: { hi: bigint, lo: bigint }): bigint {
+  return BigInt('0x' + Buffer.from(leftPad8(v.hi.toString(16)) + leftPad8(v.lo.toString(16)), 'hex').toString('hex'));
+}
+
 export function encodeVarInt(value: bigint): Buffer {
   const v: number[] = [];
   while (value >> 7n > 0n) {

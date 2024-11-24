@@ -11,6 +11,15 @@ import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 /**
+ * @generated from protobuf message protorune.BlockHeightInput
+ */
+export interface BlockHeightInput {
+    /**
+     * @generated from protobuf field: uint32 height = 1;
+     */
+    height: number;
+}
+/**
  * @generated from protobuf message protorune.RuneId
  */
 export interface RuneId {
@@ -24,13 +33,26 @@ export interface RuneId {
     txindex: number;
 }
 /**
+ * @generated from protobuf message protorune.ProtoruneRuneId
+ */
+export interface ProtoruneRuneId {
+    /**
+     * @generated from protobuf field: protorune.uint128 height = 1;
+     */
+    height?: uint128;
+    /**
+     * @generated from protobuf field: protorune.uint128 txindex = 2;
+     */
+    txindex?: uint128;
+}
+/**
  * @generated from protobuf message protorune.Rune
  */
 export interface Rune {
     /**
-     * @generated from protobuf field: protorune.RuneId runeId = 1;
+     * @generated from protobuf field: protorune.ProtoruneRuneId runeId = 1;
      */
-    runeId?: RuneId;
+    runeId?: ProtoruneRuneId;
     /**
      * @generated from protobuf field: bytes name = 2;
      */
@@ -57,9 +79,9 @@ export interface BalanceSheetItem {
      */
     rune?: Rune;
     /**
-     * @generated from protobuf field: bytes balance = 2;
+     * @generated from protobuf field: protorune.uint128 balance = 2;
      */
-    balance: Uint8Array;
+    balance?: uint128;
 }
 /**
  * @generated from protobuf message protorune.BalanceSheet
@@ -96,9 +118,9 @@ export interface OutpointWithProtocol {
      */
     vout: number;
     /**
-     * @generated from protobuf field: bytes protocol = 3;
+     * @generated from protobuf field: protorune.uint128 protocol = 3;
      */
-    protocol: Uint8Array;
+    protocol?: uint128;
 }
 /**
  * @generated from protobuf message protorune.Output
@@ -182,9 +204,18 @@ export interface ProtorunesWalletRequest {
      */
     wallet: Uint8Array;
     /**
-     * @generated from protobuf field: bytes protocol_tag = 2;
+     * @generated from protobuf field: protorune.uint128 protocol_tag = 2;
      */
-    protocolTag: Uint8Array;
+    protocolTag?: uint128;
+}
+/**
+ * @generated from protobuf message protorune.RunesByHeightRequest
+ */
+export interface RunesByHeightRequest {
+    /**
+     * @generated from protobuf field: uint64 height = 1;
+     */
+    height: bigint;
 }
 /**
  * @generated from protobuf message protorune.RunesResponse
@@ -200,9 +231,9 @@ export interface RunesResponse {
  */
 export interface ProtoBurn {
     /**
-     * @generated from protobuf field: bytes protocol_tag = 1;
+     * @generated from protobuf field: protorune.uint128 protocol_tag = 1;
      */
-    protocolTag: Uint8Array;
+    protocolTag?: uint128;
     /**
      * @generated from protobuf field: uint32 pointer = 2;
      */
@@ -226,9 +257,9 @@ export interface uint128 {
  */
 export interface Clause {
     /**
-     * @generated from protobuf field: protorune.RuneId rune = 1;
+     * @generated from protobuf field: protorune.ProtoruneRuneId rune = 1;
      */
-    rune?: RuneId;
+    rune?: ProtoruneRuneId;
     /**
      * @generated from protobuf field: protorune.uint128 amount = 2;
      */
@@ -269,9 +300,9 @@ export interface ProtoMessage {
  */
 export interface RuntimeInput {
     /**
-     * @generated from protobuf field: bytes protocol_tag = 1;
+     * @generated from protobuf field: protorune.uint128 protocol_tag = 1;
      */
-    protocolTag: Uint8Array;
+    protocolTag?: uint128;
 }
 /**
  * @generated from protobuf message protorune.Runtime
@@ -282,6 +313,53 @@ export interface Runtime {
      */
     balances?: BalanceSheet;
 }
+// @generated message type with reflection information, may provide speed optimized methods
+class BlockHeightInput$Type extends MessageType<BlockHeightInput> {
+    constructor() {
+        super("protorune.BlockHeightInput", [
+            { no: 1, name: "height", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<BlockHeightInput>): BlockHeightInput {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.height = 0;
+        if (value !== undefined)
+            reflectionMergePartial<BlockHeightInput>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: BlockHeightInput): BlockHeightInput {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* uint32 height */ 1:
+                    message.height = reader.uint32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: BlockHeightInput, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* uint32 height = 1; */
+        if (message.height !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.height);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message protorune.BlockHeightInput
+ */
+export const BlockHeightInput = new BlockHeightInput$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class RuneId$Type extends MessageType<RuneId> {
     constructor() {
@@ -338,10 +416,63 @@ class RuneId$Type extends MessageType<RuneId> {
  */
 export const RuneId = new RuneId$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class ProtoruneRuneId$Type extends MessageType<ProtoruneRuneId> {
+    constructor() {
+        super("protorune.ProtoruneRuneId", [
+            { no: 1, name: "height", kind: "message", T: () => uint128 },
+            { no: 2, name: "txindex", kind: "message", T: () => uint128 }
+        ]);
+    }
+    create(value?: PartialMessage<ProtoruneRuneId>): ProtoruneRuneId {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<ProtoruneRuneId>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ProtoruneRuneId): ProtoruneRuneId {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* protorune.uint128 height */ 1:
+                    message.height = uint128.internalBinaryRead(reader, reader.uint32(), options, message.height);
+                    break;
+                case /* protorune.uint128 txindex */ 2:
+                    message.txindex = uint128.internalBinaryRead(reader, reader.uint32(), options, message.txindex);
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ProtoruneRuneId, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* protorune.uint128 height = 1; */
+        if (message.height)
+            uint128.internalBinaryWrite(message.height, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* protorune.uint128 txindex = 2; */
+        if (message.txindex)
+            uint128.internalBinaryWrite(message.txindex, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message protorune.ProtoruneRuneId
+ */
+export const ProtoruneRuneId = new ProtoruneRuneId$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class Rune$Type extends MessageType<Rune> {
     constructor() {
         super("protorune.Rune", [
-            { no: 1, name: "runeId", kind: "message", T: () => RuneId },
+            { no: 1, name: "runeId", kind: "message", T: () => ProtoruneRuneId },
             { no: 2, name: "name", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
             { no: 3, name: "divisibility", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
             { no: 4, name: "spacers", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
@@ -363,8 +494,8 @@ class Rune$Type extends MessageType<Rune> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* protorune.RuneId runeId */ 1:
-                    message.runeId = RuneId.internalBinaryRead(reader, reader.uint32(), options, message.runeId);
+                case /* protorune.ProtoruneRuneId runeId */ 1:
+                    message.runeId = ProtoruneRuneId.internalBinaryRead(reader, reader.uint32(), options, message.runeId);
                     break;
                 case /* bytes name */ 2:
                     message.name = reader.bytes();
@@ -390,9 +521,9 @@ class Rune$Type extends MessageType<Rune> {
         return message;
     }
     internalBinaryWrite(message: Rune, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* protorune.RuneId runeId = 1; */
+        /* protorune.ProtoruneRuneId runeId = 1; */
         if (message.runeId)
-            RuneId.internalBinaryWrite(message.runeId, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+            ProtoruneRuneId.internalBinaryWrite(message.runeId, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
         /* bytes name = 2; */
         if (message.name.length)
             writer.tag(2, WireType.LengthDelimited).bytes(message.name);
@@ -420,12 +551,11 @@ class BalanceSheetItem$Type extends MessageType<BalanceSheetItem> {
     constructor() {
         super("protorune.BalanceSheetItem", [
             { no: 1, name: "rune", kind: "message", T: () => Rune },
-            { no: 2, name: "balance", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
+            { no: 2, name: "balance", kind: "message", T: () => uint128 }
         ]);
     }
     create(value?: PartialMessage<BalanceSheetItem>): BalanceSheetItem {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.balance = new Uint8Array(0);
         if (value !== undefined)
             reflectionMergePartial<BalanceSheetItem>(this, message, value);
         return message;
@@ -438,8 +568,8 @@ class BalanceSheetItem$Type extends MessageType<BalanceSheetItem> {
                 case /* protorune.Rune rune */ 1:
                     message.rune = Rune.internalBinaryRead(reader, reader.uint32(), options, message.rune);
                     break;
-                case /* bytes balance */ 2:
-                    message.balance = reader.bytes();
+                case /* protorune.uint128 balance */ 2:
+                    message.balance = uint128.internalBinaryRead(reader, reader.uint32(), options, message.balance);
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -456,9 +586,9 @@ class BalanceSheetItem$Type extends MessageType<BalanceSheetItem> {
         /* protorune.Rune rune = 1; */
         if (message.rune)
             Rune.internalBinaryWrite(message.rune, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
-        /* bytes balance = 2; */
-        if (message.balance.length)
-            writer.tag(2, WireType.LengthDelimited).bytes(message.balance);
+        /* protorune.uint128 balance = 2; */
+        if (message.balance)
+            uint128.internalBinaryWrite(message.balance, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -577,14 +707,13 @@ class OutpointWithProtocol$Type extends MessageType<OutpointWithProtocol> {
         super("protorune.OutpointWithProtocol", [
             { no: 1, name: "txid", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
             { no: 2, name: "vout", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
-            { no: 3, name: "protocol", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
+            { no: 3, name: "protocol", kind: "message", T: () => uint128 }
         ]);
     }
     create(value?: PartialMessage<OutpointWithProtocol>): OutpointWithProtocol {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.txid = new Uint8Array(0);
         message.vout = 0;
-        message.protocol = new Uint8Array(0);
         if (value !== undefined)
             reflectionMergePartial<OutpointWithProtocol>(this, message, value);
         return message;
@@ -600,8 +729,8 @@ class OutpointWithProtocol$Type extends MessageType<OutpointWithProtocol> {
                 case /* uint32 vout */ 2:
                     message.vout = reader.uint32();
                     break;
-                case /* bytes protocol */ 3:
-                    message.protocol = reader.bytes();
+                case /* protorune.uint128 protocol */ 3:
+                    message.protocol = uint128.internalBinaryRead(reader, reader.uint32(), options, message.protocol);
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -621,9 +750,9 @@ class OutpointWithProtocol$Type extends MessageType<OutpointWithProtocol> {
         /* uint32 vout = 2; */
         if (message.vout !== 0)
             writer.tag(2, WireType.Varint).uint32(message.vout);
-        /* bytes protocol = 3; */
-        if (message.protocol.length)
-            writer.tag(3, WireType.LengthDelimited).bytes(message.protocol);
+        /* protorune.uint128 protocol = 3; */
+        if (message.protocol)
+            uint128.internalBinaryWrite(message.protocol, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -926,13 +1055,12 @@ class ProtorunesWalletRequest$Type extends MessageType<ProtorunesWalletRequest> 
     constructor() {
         super("protorune.ProtorunesWalletRequest", [
             { no: 1, name: "wallet", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
-            { no: 2, name: "protocol_tag", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
+            { no: 2, name: "protocol_tag", kind: "message", T: () => uint128 }
         ]);
     }
     create(value?: PartialMessage<ProtorunesWalletRequest>): ProtorunesWalletRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.wallet = new Uint8Array(0);
-        message.protocolTag = new Uint8Array(0);
         if (value !== undefined)
             reflectionMergePartial<ProtorunesWalletRequest>(this, message, value);
         return message;
@@ -945,8 +1073,8 @@ class ProtorunesWalletRequest$Type extends MessageType<ProtorunesWalletRequest> 
                 case /* bytes wallet */ 1:
                     message.wallet = reader.bytes();
                     break;
-                case /* bytes protocol_tag */ 2:
-                    message.protocolTag = reader.bytes();
+                case /* protorune.uint128 protocol_tag */ 2:
+                    message.protocolTag = uint128.internalBinaryRead(reader, reader.uint32(), options, message.protocolTag);
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -963,9 +1091,9 @@ class ProtorunesWalletRequest$Type extends MessageType<ProtorunesWalletRequest> 
         /* bytes wallet = 1; */
         if (message.wallet.length)
             writer.tag(1, WireType.LengthDelimited).bytes(message.wallet);
-        /* bytes protocol_tag = 2; */
-        if (message.protocolTag.length)
-            writer.tag(2, WireType.LengthDelimited).bytes(message.protocolTag);
+        /* protorune.uint128 protocol_tag = 2; */
+        if (message.protocolTag)
+            uint128.internalBinaryWrite(message.protocolTag, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -976,6 +1104,53 @@ class ProtorunesWalletRequest$Type extends MessageType<ProtorunesWalletRequest> 
  * @generated MessageType for protobuf message protorune.ProtorunesWalletRequest
  */
 export const ProtorunesWalletRequest = new ProtorunesWalletRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class RunesByHeightRequest$Type extends MessageType<RunesByHeightRequest> {
+    constructor() {
+        super("protorune.RunesByHeightRequest", [
+            { no: 1, name: "height", kind: "scalar", T: 4 /*ScalarType.UINT64*/, L: 0 /*LongType.BIGINT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<RunesByHeightRequest>): RunesByHeightRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.height = 0n;
+        if (value !== undefined)
+            reflectionMergePartial<RunesByHeightRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RunesByHeightRequest): RunesByHeightRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* uint64 height */ 1:
+                    message.height = reader.uint64().toBigInt();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: RunesByHeightRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* uint64 height = 1; */
+        if (message.height !== 0n)
+            writer.tag(1, WireType.Varint).uint64(message.height);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message protorune.RunesByHeightRequest
+ */
+export const RunesByHeightRequest = new RunesByHeightRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class RunesResponse$Type extends MessageType<RunesResponse> {
     constructor() {
@@ -1027,13 +1202,12 @@ export const RunesResponse = new RunesResponse$Type();
 class ProtoBurn$Type extends MessageType<ProtoBurn> {
     constructor() {
         super("protorune.ProtoBurn", [
-            { no: 1, name: "protocol_tag", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
+            { no: 1, name: "protocol_tag", kind: "message", T: () => uint128 },
             { no: 2, name: "pointer", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
         ]);
     }
     create(value?: PartialMessage<ProtoBurn>): ProtoBurn {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.protocolTag = new Uint8Array(0);
         message.pointer = 0;
         if (value !== undefined)
             reflectionMergePartial<ProtoBurn>(this, message, value);
@@ -1044,8 +1218,8 @@ class ProtoBurn$Type extends MessageType<ProtoBurn> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* bytes protocol_tag */ 1:
-                    message.protocolTag = reader.bytes();
+                case /* protorune.uint128 protocol_tag */ 1:
+                    message.protocolTag = uint128.internalBinaryRead(reader, reader.uint32(), options, message.protocolTag);
                     break;
                 case /* uint32 pointer */ 2:
                     message.pointer = reader.uint32();
@@ -1062,9 +1236,9 @@ class ProtoBurn$Type extends MessageType<ProtoBurn> {
         return message;
     }
     internalBinaryWrite(message: ProtoBurn, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* bytes protocol_tag = 1; */
-        if (message.protocolTag.length)
-            writer.tag(1, WireType.LengthDelimited).bytes(message.protocolTag);
+        /* protorune.uint128 protocol_tag = 1; */
+        if (message.protocolTag)
+            uint128.internalBinaryWrite(message.protocolTag, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
         /* uint32 pointer = 2; */
         if (message.pointer !== 0)
             writer.tag(2, WireType.Varint).uint32(message.pointer);
@@ -1137,7 +1311,7 @@ export const uint128 = new uint128$Type();
 class Clause$Type extends MessageType<Clause> {
     constructor() {
         super("protorune.Clause", [
-            { no: 1, name: "rune", kind: "message", T: () => RuneId },
+            { no: 1, name: "rune", kind: "message", T: () => ProtoruneRuneId },
             { no: 2, name: "amount", kind: "message", T: () => uint128 }
         ]);
     }
@@ -1152,8 +1326,8 @@ class Clause$Type extends MessageType<Clause> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* protorune.RuneId rune */ 1:
-                    message.rune = RuneId.internalBinaryRead(reader, reader.uint32(), options, message.rune);
+                case /* protorune.ProtoruneRuneId rune */ 1:
+                    message.rune = ProtoruneRuneId.internalBinaryRead(reader, reader.uint32(), options, message.rune);
                     break;
                 case /* protorune.uint128 amount */ 2:
                     message.amount = uint128.internalBinaryRead(reader, reader.uint32(), options, message.amount);
@@ -1170,9 +1344,9 @@ class Clause$Type extends MessageType<Clause> {
         return message;
     }
     internalBinaryWrite(message: Clause, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* protorune.RuneId rune = 1; */
+        /* protorune.ProtoruneRuneId rune = 1; */
         if (message.rune)
-            RuneId.internalBinaryWrite(message.rune, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+            ProtoruneRuneId.internalBinaryWrite(message.rune, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
         /* protorune.uint128 amount = 2; */
         if (message.amount)
             uint128.internalBinaryWrite(message.amount, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
@@ -1307,12 +1481,11 @@ export const ProtoMessage = new ProtoMessage$Type();
 class RuntimeInput$Type extends MessageType<RuntimeInput> {
     constructor() {
         super("protorune.RuntimeInput", [
-            { no: 1, name: "protocol_tag", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
+            { no: 1, name: "protocol_tag", kind: "message", T: () => uint128 }
         ]);
     }
     create(value?: PartialMessage<RuntimeInput>): RuntimeInput {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.protocolTag = new Uint8Array(0);
         if (value !== undefined)
             reflectionMergePartial<RuntimeInput>(this, message, value);
         return message;
@@ -1322,8 +1495,8 @@ class RuntimeInput$Type extends MessageType<RuntimeInput> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* bytes protocol_tag */ 1:
-                    message.protocolTag = reader.bytes();
+                case /* protorune.uint128 protocol_tag */ 1:
+                    message.protocolTag = uint128.internalBinaryRead(reader, reader.uint32(), options, message.protocolTag);
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1337,9 +1510,9 @@ class RuntimeInput$Type extends MessageType<RuntimeInput> {
         return message;
     }
     internalBinaryWrite(message: RuntimeInput, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* bytes protocol_tag = 1; */
-        if (message.protocolTag.length)
-            writer.tag(1, WireType.LengthDelimited).bytes(message.protocolTag);
+        /* protorune.uint128 protocol_tag = 1; */
+        if (message.protocolTag)
+            uint128.internalBinaryWrite(message.protocolTag, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

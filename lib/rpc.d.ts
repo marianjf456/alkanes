@@ -1,4 +1,4 @@
-import { OutPoint, RuneOutput } from "metashrew-runes/lib/src.ts/outpoint";
+import { OutPoint, RuneOutput } from "./outpoint";
 import { MetashrewRunes } from "metashrew-runes/lib/src.ts/rpc";
 import { Edict } from "@magiceden-oss/runestone-lib/dist/src/edict.js";
 import { AlkaneTransfer } from "./alkane";

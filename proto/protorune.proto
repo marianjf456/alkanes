@@ -2,13 +2,22 @@ syntax = "proto3";
 
 package protorune;
 
+message BlockHeightInput {
+  uint32 height = 1;
+}
+
 message RuneId {
   uint32 height = 1;
   uint32 txindex = 2;
 }
 
+message ProtoruneRuneId {
+  uint128 height = 1;
+  uint128 txindex = 2;
+}
+
 message Rune {
-  RuneId runeId = 1;
+  ProtoruneRuneId runeId = 1;
   bytes name = 2;
   uint32 divisibility = 3;
   uint32 spacers = 4;
@@ -17,7 +26,7 @@ message Rune {
 
 message BalanceSheetItem {
   Rune rune = 1;
-  bytes balance = 2;
+  uint128 balance = 2;
 }
 
 message BalanceSheet {
@@ -32,7 +41,7 @@ message Outpoint {
 message OutpointWithProtocol {
   bytes txid = 1;
   uint32 vout = 2;
-  bytes protocol = 3;
+  uint128 protocol = 3;
 }
 message Output {
   bytes script = 1;
@@ -63,14 +72,18 @@ message WalletResponse {
 
 message ProtorunesWalletRequest {
   bytes wallet = 1;
-  bytes protocol_tag = 2;
+  uint128 protocol_tag = 2;
+}
+
+message RunesByHeightRequest {
+  uint64 height = 1;
 }
 
 message RunesResponse {
   repeated Rune runes = 1;
 }
 message ProtoBurn {
-  bytes protocol_tag = 1;
+  uint128 protocol_tag = 1;
   uint32 pointer = 2;
 }
 
@@ -80,7 +93,7 @@ message uint128 {
 }
 
 message Clause {
-  RuneId rune = 1;
+  ProtoruneRuneId rune = 1;
   uint128 amount = 2;
 }
 
@@ -96,7 +109,7 @@ message ProtoMessage {
 }
 
 message RuntimeInput {
-  bytes protocol_tag = 1;
+  uint128 protocol_tag = 1;
 }
 
 message Runtime {

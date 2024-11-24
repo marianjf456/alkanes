@@ -174,6 +174,19 @@ export async function deployGenesis(): Promise<void> {
   console.log("waiting 30s ...");
   const revealTxid = revealTxSend.data.result;
   console.log(revealTxid);
+  const revealTransactionFromRegtest = btc.Transaction.fromRaw(
+    new Uint8Array(
+      Array.from(
+        Buffer.from(
+          (await client.call("getrawtransaction", revealTxid as string)).data.result,
+          "hex",
+        ),
+      ),
+    ),
+    { allowUnknownOutputs: true },
+  );
+  console.log('reveal Tx');
+  console.log(revealTransactionFromRegtest);
   await timeout(30000);
   console.log(revealTxSend);
   const revealTxidReversed = Buffer.from(
@@ -182,7 +195,7 @@ export async function deployGenesis(): Promise<void> {
   console.log(
     await rpc.protorunesbyoutpoint({
       protocolTag: 1n,
-      txid: revealTxidReversed,
+      txid: revealTxid,
       vout: 0,
     }),
   );

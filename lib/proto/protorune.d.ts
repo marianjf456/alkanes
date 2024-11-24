@@ -5,6 +5,15 @@ import type { IBinaryReader } from "@protobuf-ts/runtime";
 import type { PartialMessage } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 /**
+ * @generated from protobuf message protorune.BlockHeightInput
+ */
+export interface BlockHeightInput {
+    /**
+     * @generated from protobuf field: uint32 height = 1;
+     */
+    height: number;
+}
+/**
  * @generated from protobuf message protorune.RuneId
  */
 export interface RuneId {
@@ -18,13 +27,26 @@ export interface RuneId {
     txindex: number;
 }
 /**
+ * @generated from protobuf message protorune.ProtoruneRuneId
+ */
+export interface ProtoruneRuneId {
+    /**
+     * @generated from protobuf field: protorune.uint128 height = 1;
+     */
+    height?: uint128;
+    /**
+     * @generated from protobuf field: protorune.uint128 txindex = 2;
+     */
+    txindex?: uint128;
+}
+/**
  * @generated from protobuf message protorune.Rune
  */
 export interface Rune {
     /**
-     * @generated from protobuf field: protorune.RuneId runeId = 1;
+     * @generated from protobuf field: protorune.ProtoruneRuneId runeId = 1;
      */
-    runeId?: RuneId;
+    runeId?: ProtoruneRuneId;
     /**
      * @generated from protobuf field: bytes name = 2;
      */
@@ -51,9 +73,9 @@ export interface BalanceSheetItem {
      */
     rune?: Rune;
     /**
-     * @generated from protobuf field: bytes balance = 2;
+     * @generated from protobuf field: protorune.uint128 balance = 2;
      */
-    balance: Uint8Array;
+    balance?: uint128;
 }
 /**
  * @generated from protobuf message protorune.BalanceSheet
@@ -90,9 +112,9 @@ export interface OutpointWithProtocol {
      */
     vout: number;
     /**
-     * @generated from protobuf field: bytes protocol = 3;
+     * @generated from protobuf field: protorune.uint128 protocol = 3;
      */
-    protocol: Uint8Array;
+    protocol?: uint128;
 }
 /**
  * @generated from protobuf message protorune.Output
@@ -176,9 +198,18 @@ export interface ProtorunesWalletRequest {
      */
     wallet: Uint8Array;
     /**
-     * @generated from protobuf field: bytes protocol_tag = 2;
+     * @generated from protobuf field: protorune.uint128 protocol_tag = 2;
      */
-    protocolTag: Uint8Array;
+    protocolTag?: uint128;
+}
+/**
+ * @generated from protobuf message protorune.RunesByHeightRequest
+ */
+export interface RunesByHeightRequest {
+    /**
+     * @generated from protobuf field: uint64 height = 1;
+     */
+    height: bigint;
 }
 /**
  * @generated from protobuf message protorune.RunesResponse
@@ -194,9 +225,9 @@ export interface RunesResponse {
  */
 export interface ProtoBurn {
     /**
-     * @generated from protobuf field: bytes protocol_tag = 1;
+     * @generated from protobuf field: protorune.uint128 protocol_tag = 1;
      */
-    protocolTag: Uint8Array;
+    protocolTag?: uint128;
     /**
      * @generated from protobuf field: uint32 pointer = 2;
      */
@@ -220,9 +251,9 @@ export interface uint128 {
  */
 export interface Clause {
     /**
-     * @generated from protobuf field: protorune.RuneId rune = 1;
+     * @generated from protobuf field: protorune.ProtoruneRuneId rune = 1;
      */
-    rune?: RuneId;
+    rune?: ProtoruneRuneId;
     /**
      * @generated from protobuf field: protorune.uint128 amount = 2;
      */
@@ -263,9 +294,9 @@ export interface ProtoMessage {
  */
 export interface RuntimeInput {
     /**
-     * @generated from protobuf field: bytes protocol_tag = 1;
+     * @generated from protobuf field: protorune.uint128 protocol_tag = 1;
      */
-    protocolTag: Uint8Array;
+    protocolTag?: uint128;
 }
 /**
  * @generated from protobuf message protorune.Runtime
@@ -276,6 +307,16 @@ export interface Runtime {
      */
     balances?: BalanceSheet;
 }
+declare class BlockHeightInput$Type extends MessageType<BlockHeightInput> {
+    constructor();
+    create(value?: PartialMessage<BlockHeightInput>): BlockHeightInput;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: BlockHeightInput): BlockHeightInput;
+    internalBinaryWrite(message: BlockHeightInput, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message protorune.BlockHeightInput
+ */
+export declare const BlockHeightInput: BlockHeightInput$Type;
 declare class RuneId$Type extends MessageType<RuneId> {
     constructor();
     create(value?: PartialMessage<RuneId>): RuneId;
@@ -286,6 +327,16 @@ declare class RuneId$Type extends MessageType<RuneId> {
  * @generated MessageType for protobuf message protorune.RuneId
  */
 export declare const RuneId: RuneId$Type;
+declare class ProtoruneRuneId$Type extends MessageType<ProtoruneRuneId> {
+    constructor();
+    create(value?: PartialMessage<ProtoruneRuneId>): ProtoruneRuneId;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ProtoruneRuneId): ProtoruneRuneId;
+    internalBinaryWrite(message: ProtoruneRuneId, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message protorune.ProtoruneRuneId
+ */
+export declare const ProtoruneRuneId: ProtoruneRuneId$Type;
 declare class Rune$Type extends MessageType<Rune> {
     constructor();
     create(value?: PartialMessage<Rune>): Rune;
@@ -396,6 +447,16 @@ declare class ProtorunesWalletRequest$Type extends MessageType<ProtorunesWalletR
  * @generated MessageType for protobuf message protorune.ProtorunesWalletRequest
  */
 export declare const ProtorunesWalletRequest: ProtorunesWalletRequest$Type;
+declare class RunesByHeightRequest$Type extends MessageType<RunesByHeightRequest> {
+    constructor();
+    create(value?: PartialMessage<RunesByHeightRequest>): RunesByHeightRequest;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RunesByHeightRequest): RunesByHeightRequest;
+    internalBinaryWrite(message: RunesByHeightRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message protorune.RunesByHeightRequest
+ */
+export declare const RunesByHeightRequest: RunesByHeightRequest$Type;
 declare class RunesResponse$Type extends MessageType<RunesResponse> {
     constructor();
     create(value?: PartialMessage<RunesResponse>): RunesResponse;

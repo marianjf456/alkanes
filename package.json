@@ -5,7 +5,10 @@
   "bin": {
     "alkanes": "lib/esm/alkanes.js"
   },
-  "files": ["lib", "src.ts"],
+  "files": [
+    "lib",
+    "src.ts"
+  ],
   "main": "lib/index.js",
   "module": "lib/esm/index.js",
   "types": "lib/index.d.ts",
@@ -56,6 +59,7 @@
     "bitcoinjs-lib": "https://github.com/bitcoinjs/bitcoinjs-lib",
     "chai": "4",
     "fs-extra": "^11.2.0",
+    "ioredis": "^5.4.1",
     "leb128": "^0.0.5",
     "metashrew-as": "https://github.com/sandshrewmetaprotocols/metashrew-as",
     "metashrew-test": "https://github.com/sandshrewmetaprotocols/metashrew-test",

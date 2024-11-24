@@ -7,8 +7,8 @@ import {
   OutPoint,
   RuneOutput,
   decodeRunesResponse,
-  encodeBlockHeightInput,
-} from "metashrew-runes/lib/src.ts/outpoint";
+  encodeBlockHeightInput
+} from "./outpoint";
 import { MetashrewRunes } from "metashrew-runes/lib/src.ts/rpc";
 import * as protobuf from "./proto/protorune";
 import {
@@ -24,7 +24,7 @@ import { ProtoruneRuneId } from "./protorune/protoruneruneid";
 
 import { Psbt } from "bitcoinjs-lib";
 import { ProtoStone } from "./protorune/protostone";
-import { toBuffer, leftPadByte } from "./bytes";
+import { toUint128, toBuffer, leftPadByte } from "./bytes";
 
 const addHexPrefix = (s) => (s.substr(0, 2) === "0x" ? s : "0x" + s);
 
@@ -75,7 +75,7 @@ export class AlkanesRpc extends MetashrewRunes {
       "0x" +
       Buffer.from(
         protobuf.OutpointWithProtocol.toBinary({
-          protocol: toBuffer(protocolTag),
+          protocol: toUint128(protocolTag),
           txid: Buffer.from(txid, "hex"),
           vout,
         })

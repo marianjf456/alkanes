@@ -1,4 +1,4 @@
-import { decodeRunes } from "metashrew-runes/lib/src.ts/outpoint";
+import { decodeRunes } from "./outpoint";
 import {
   ProtorunesWalletRequest,
   RuntimeInput,
@@ -6,16 +6,15 @@ import {
 } from "./proto/protorune";
 import { stripHexPrefix } from "./utils";
 import leb128 from "leb128";
-import { toBuffer } from "./bytes";
+import { toBuffer, toUint128 } from "./bytes";
 
 /**
  * Encodes the protocolTag in LEB128 format
  * @param protocolTag
  * @returns the protocolTag in LEB128 format
  */
-function encodeProtocolTag(protocolTag: bigint): Uint8Array {
-  const buf = toBuffer(protocolTag);
-  return Uint8Array.from(buf);
+function encodeProtocolTag(protocolTag: bigint): { hi: bigint, lo: bigint } {
+  return toUint128(protocolTag);
 }
 
 /**

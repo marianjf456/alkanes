@@ -28,6 +28,15 @@ export declare function unpack(v: Buffer): bigint[];
 export declare function leftPad15(v: string): string;
 export declare function leftPadByte(v: string): string;
 export declare function leftPad16(v: string): string;
+export declare function leftPad8(v: string): string;
+export declare function toUint128(v: bigint): {
+    hi: bigint;
+    lo: bigint;
+};
+export declare function u128ToBuffer(v: {
+    hi: bigint;
+    lo: bigint;
+}): bigint;
 export declare function encodeVarInt(value: bigint): Buffer;
 export declare function encipher(values: bigint[]): Buffer;
 export declare const toBuffer: (v: number | bigint) => Buffer;
