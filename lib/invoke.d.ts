@@ -1,14 +1,15 @@
-import { SimulateResponse, AlkaneTransfer } from "./proto/alkanes";
-export declare function encodeSimulateRequest({ alkanes, transaction, height, block, tx, inputs, txindex, vout, pointer, refundPointer, }: {
+import { AlkaneTransfer, AlkaneId } from "./bytes";
+import { SimulateResponse } from "./proto/alkanes";
+export declare function encodeSimulateRequest({ alkanes, transaction, height, block, inputs, target, txindex, vout, pointer, refundPointer, }: {
     alkanes: AlkaneTransfer[];
     transaction: string;
-    block: bigint;
-    tx: bigint;
+    target: AlkaneId;
     inputs: bigint[];
-    height: bigint;
+    height: number;
+    block: string;
     txindex: number;
     vout: number;
     pointer: number;
     refundPointer: number;
 }): string;
-export declare function decodeSimulateRequest(request: string): SimulateResponse;
+export declare function decodeSimulateResponse(response: string): SimulateResponse;

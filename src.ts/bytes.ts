@@ -1,4 +1,12 @@
 import { SeekBuffer } from "./seekbuffer.js";
+import * as proto from "./proto/alkanes";
+
+export function toProtobufAlkaneTransfer(v: AlkaneTransfer): proto.AlkaneTransfer {
+  const result = proto.AlkaneTransfer.create();
+  result.id = { block: toUint128(v.id.block), tx: toUint128(v.id.tx) };
+  result.value = toUint128(v.value);
+  return result;
+}
 
 /**
  * A little utility type used for nominal typing.
@@ -15,6 +23,16 @@ type BigTypedNumber<T> = bigint & {
    * @type {undefined}
    */
   readonly __kind__: T;
+};
+
+export type AlkaneId = {
+  block: bigint;
+  tx: bigint;
+};
+
+export type AlkaneTransfer = {
+  id: AlkaneId;
+  value: bigint;
 };
 
 /**

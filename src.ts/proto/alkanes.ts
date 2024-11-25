@@ -11,17 +11,30 @@ import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 /**
+ * @generated from protobuf message alkanes.uint128
+ */
+export interface uint128 {
+    /**
+     * @generated from protobuf field: uint64 lo = 1;
+     */
+    lo: bigint;
+    /**
+     * @generated from protobuf field: uint64 hi = 2;
+     */
+    hi: bigint;
+}
+/**
  * @generated from protobuf message alkanes.AlkaneId
  */
 export interface AlkaneId {
     /**
-     * @generated from protobuf field: bytes block = 1;
+     * @generated from protobuf field: alkanes.uint128 block = 1;
      */
-    block: Uint8Array;
+    block?: uint128;
     /**
-     * @generated from protobuf field: bytes tx = 2;
+     * @generated from protobuf field: alkanes.uint128 tx = 2;
      */
-    tx: Uint8Array;
+    tx?: uint128;
 }
 /**
  * @generated from protobuf message alkanes.AlkaneTransfer
@@ -32,9 +45,9 @@ export interface AlkaneTransfer {
      */
     id?: AlkaneId;
     /**
-     * @generated from protobuf field: bytes value = 2;
+     * @generated from protobuf field: alkanes.uint128 value = 2;
      */
-    value: Uint8Array;
+    value?: uint128;
 }
 /**
  * @generated from protobuf message alkanes.MessageContextParcel
@@ -49,21 +62,21 @@ export interface MessageContextParcel {
      */
     transaction: Uint8Array;
     /**
-     * @generated from protobuf field: uint64 block = 3;
+     * @generated from protobuf field: bytes block = 3;
      */
-    block: bigint;
+    block: Uint8Array;
     /**
      * @generated from protobuf field: uint64 height = 4;
      */
     height: bigint;
     /**
-     * @generated from protobuf field: bytes calldata = 5;
-     */
-    calldata: Uint8Array;
-    /**
      * @generated from protobuf field: uint32 txindex = 6;
      */
     txindex: number;
+    /**
+     * @generated from protobuf field: bytes calldata = 5;
+     */
+    calldata: Uint8Array;
     /**
      * @generated from protobuf field: uint32 vout = 7;
      */
@@ -139,17 +152,70 @@ export interface AlkaneInventoryResponse {
     alkanes: AlkaneTransfer[];
 }
 // @generated message type with reflection information, may provide speed optimized methods
+class uint128$Type extends MessageType<uint128> {
+    constructor() {
+        super("alkanes.uint128", [
+            { no: 1, name: "lo", kind: "scalar", T: 4 /*ScalarType.UINT64*/, L: 0 /*LongType.BIGINT*/ },
+            { no: 2, name: "hi", kind: "scalar", T: 4 /*ScalarType.UINT64*/, L: 0 /*LongType.BIGINT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<uint128>): uint128 {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.lo = 0n;
+        message.hi = 0n;
+        if (value !== undefined)
+            reflectionMergePartial<uint128>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: uint128): uint128 {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* uint64 lo */ 1:
+                    message.lo = reader.uint64().toBigInt();
+                    break;
+                case /* uint64 hi */ 2:
+                    message.hi = reader.uint64().toBigInt();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: uint128, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* uint64 lo = 1; */
+        if (message.lo !== 0n)
+            writer.tag(1, WireType.Varint).uint64(message.lo);
+        /* uint64 hi = 2; */
+        if (message.hi !== 0n)
+            writer.tag(2, WireType.Varint).uint64(message.hi);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message alkanes.uint128
+ */
+export const uint128 = new uint128$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class AlkaneId$Type extends MessageType<AlkaneId> {
     constructor() {
         super("alkanes.AlkaneId", [
-            { no: 1, name: "block", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
-            { no: 2, name: "tx", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
+            { no: 1, name: "block", kind: "message", T: () => uint128 },
+            { no: 2, name: "tx", kind: "message", T: () => uint128 }
         ]);
     }
     create(value?: PartialMessage<AlkaneId>): AlkaneId {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.block = new Uint8Array(0);
-        message.tx = new Uint8Array(0);
         if (value !== undefined)
             reflectionMergePartial<AlkaneId>(this, message, value);
         return message;
@@ -159,11 +225,11 @@ class AlkaneId$Type extends MessageType<AlkaneId> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* bytes block */ 1:
-                    message.block = reader.bytes();
+                case /* alkanes.uint128 block */ 1:
+                    message.block = uint128.internalBinaryRead(reader, reader.uint32(), options, message.block);
                     break;
-                case /* bytes tx */ 2:
-                    message.tx = reader.bytes();
+                case /* alkanes.uint128 tx */ 2:
+                    message.tx = uint128.internalBinaryRead(reader, reader.uint32(), options, message.tx);
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -177,12 +243,12 @@ class AlkaneId$Type extends MessageType<AlkaneId> {
         return message;
     }
     internalBinaryWrite(message: AlkaneId, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* bytes block = 1; */
-        if (message.block.length)
-            writer.tag(1, WireType.LengthDelimited).bytes(message.block);
-        /* bytes tx = 2; */
-        if (message.tx.length)
-            writer.tag(2, WireType.LengthDelimited).bytes(message.tx);
+        /* alkanes.uint128 block = 1; */
+        if (message.block)
+            uint128.internalBinaryWrite(message.block, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* alkanes.uint128 tx = 2; */
+        if (message.tx)
+            uint128.internalBinaryWrite(message.tx, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -198,12 +264,11 @@ class AlkaneTransfer$Type extends MessageType<AlkaneTransfer> {
     constructor() {
         super("alkanes.AlkaneTransfer", [
             { no: 1, name: "id", kind: "message", T: () => AlkaneId },
-            { no: 2, name: "value", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
+            { no: 2, name: "value", kind: "message", T: () => uint128 }
         ]);
     }
     create(value?: PartialMessage<AlkaneTransfer>): AlkaneTransfer {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.value = new Uint8Array(0);
         if (value !== undefined)
             reflectionMergePartial<AlkaneTransfer>(this, message, value);
         return message;
@@ -216,8 +281,8 @@ class AlkaneTransfer$Type extends MessageType<AlkaneTransfer> {
                 case /* alkanes.AlkaneId id */ 1:
                     message.id = AlkaneId.internalBinaryRead(reader, reader.uint32(), options, message.id);
                     break;
-                case /* bytes value */ 2:
-                    message.value = reader.bytes();
+                case /* alkanes.uint128 value */ 2:
+                    message.value = uint128.internalBinaryRead(reader, reader.uint32(), options, message.value);
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -234,9 +299,9 @@ class AlkaneTransfer$Type extends MessageType<AlkaneTransfer> {
         /* alkanes.AlkaneId id = 1; */
         if (message.id)
             AlkaneId.internalBinaryWrite(message.id, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
-        /* bytes value = 2; */
-        if (message.value.length)
-            writer.tag(2, WireType.LengthDelimited).bytes(message.value);
+        /* alkanes.uint128 value = 2; */
+        if (message.value)
+            uint128.internalBinaryWrite(message.value, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -253,10 +318,10 @@ class MessageContextParcel$Type extends MessageType<MessageContextParcel> {
         super("alkanes.MessageContextParcel", [
             { no: 1, name: "alkanes", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => AlkaneTransfer },
             { no: 2, name: "transaction", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
-            { no: 3, name: "block", kind: "scalar", T: 4 /*ScalarType.UINT64*/, L: 0 /*LongType.BIGINT*/ },
+            { no: 3, name: "block", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
             { no: 4, name: "height", kind: "scalar", T: 4 /*ScalarType.UINT64*/, L: 0 /*LongType.BIGINT*/ },
-            { no: 5, name: "calldata", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
             { no: 6, name: "txindex", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 5, name: "calldata", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
             { no: 7, name: "vout", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
             { no: 8, name: "pointer", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
             { no: 9, name: "refund_pointer", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
@@ -266,10 +331,10 @@ class MessageContextParcel$Type extends MessageType<MessageContextParcel> {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.alkanes = [];
         message.transaction = new Uint8Array(0);
-        message.block = 0n;
+        message.block = new Uint8Array(0);
         message.height = 0n;
-        message.calldata = new Uint8Array(0);
         message.txindex = 0;
+        message.calldata = new Uint8Array(0);
         message.vout = 0;
         message.pointer = 0;
         message.refundPointer = 0;
@@ -288,17 +353,17 @@ class MessageContextParcel$Type extends MessageType<MessageContextParcel> {
                 case /* bytes transaction */ 2:
                     message.transaction = reader.bytes();
                     break;
-                case /* uint64 block */ 3:
-                    message.block = reader.uint64().toBigInt();
+                case /* bytes block */ 3:
+                    message.block = reader.bytes();
                     break;
                 case /* uint64 height */ 4:
                     message.height = reader.uint64().toBigInt();
                     break;
-                case /* bytes calldata */ 5:
-                    message.calldata = reader.bytes();
-                    break;
                 case /* uint32 txindex */ 6:
                     message.txindex = reader.uint32();
+                    break;
+                case /* bytes calldata */ 5:
+                    message.calldata = reader.bytes();
                     break;
                 case /* uint32 vout */ 7:
                     message.vout = reader.uint32();
@@ -327,18 +392,18 @@ class MessageContextParcel$Type extends MessageType<MessageContextParcel> {
         /* bytes transaction = 2; */
         if (message.transaction.length)
             writer.tag(2, WireType.LengthDelimited).bytes(message.transaction);
-        /* uint64 block = 3; */
-        if (message.block !== 0n)
-            writer.tag(3, WireType.Varint).uint64(message.block);
+        /* bytes block = 3; */
+        if (message.block.length)
+            writer.tag(3, WireType.LengthDelimited).bytes(message.block);
         /* uint64 height = 4; */
         if (message.height !== 0n)
             writer.tag(4, WireType.Varint).uint64(message.height);
-        /* bytes calldata = 5; */
-        if (message.calldata.length)
-            writer.tag(5, WireType.LengthDelimited).bytes(message.calldata);
         /* uint32 txindex = 6; */
         if (message.txindex !== 0)
             writer.tag(6, WireType.Varint).uint32(message.txindex);
+        /* bytes calldata = 5; */
+        if (message.calldata.length)
+            writer.tag(5, WireType.LengthDelimited).bytes(message.calldata);
         /* uint32 vout = 7; */
         if (message.vout !== 0)
             writer.tag(7, WireType.Varint).uint32(message.vout);

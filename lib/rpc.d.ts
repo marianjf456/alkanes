@@ -23,7 +23,7 @@ export declare class AlkanesRpc extends MetashrewRunes {
         }>;
     }>;
     protorunesbyoutpoint({ txid, vout, protocolTag }: any): Promise<any>;
-    simulate({ alkanes, transaction, height, block, inputs, tx, txindex, vout, pointer, refundPointer, }: any): Promise<any>;
+    simulate({ alkanes, transaction, height, block, txindex, target, inputs, vout, pointer, refundPointer, }: any): Promise<any>;
     runtime({ protocolTag }: any): Promise<{
         balances: RuneOutput[];
     }>;

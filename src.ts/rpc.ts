@@ -98,9 +98,9 @@ export class AlkanesRpc extends MetashrewRunes {
     transaction,
     height,
     block,
-    inputs,
-    tx,
     txindex,
+    target,
+    inputs,
     vout,
     pointer,
     refundPointer,
@@ -108,11 +108,11 @@ export class AlkanesRpc extends MetashrewRunes {
     const buffer = invoke.encodeSimulateRequest({
       alkanes,
       transaction,
-      block,
       height,
-      tx,
-      inputs,
       txindex,
+      target,
+      block,
+      inputs,
       vout,
       pointer,
       refundPointer,
@@ -121,7 +121,7 @@ export class AlkanesRpc extends MetashrewRunes {
       method: "simulate",
       input: buffer,
     });
-    const decoded = invoke.decodeSimulateRequest(byteString);
+    const decoded = invoke.decodeSimulateResponse(byteString);
     return decoded;
   }
   async runtime({ protocolTag }: any): Promise<{

@@ -1,8 +1,7 @@
-import { encipher } from "./bytes";
+import { toProtobufAlkaneTransfer, AlkaneTransfer, AlkaneId, toUint128, encipher } from "./bytes";
 import {
   SimulateResponse,
-  MessageContextParcel,
-  AlkaneTransfer,
+  MessageContextParcel
 } from "./proto/alkanes";
 
 export function encodeSimulateRequest({
@@ -10,8 +9,8 @@ export function encodeSimulateRequest({
   transaction,
   height,
   block,
-  tx,
   inputs,
+  target,
   txindex,
   vout,
   pointer,
@@ -19,10 +18,10 @@ export function encodeSimulateRequest({
 }: {
   alkanes: AlkaneTransfer[];
   transaction: string;
-  block: bigint;
-  tx: bigint;
+  target: AlkaneId;
   inputs: bigint[];
-  height: bigint;
+  height: number;
+  block: string;
   txindex: number;
   vout: number;
   pointer: number;
@@ -30,12 +29,12 @@ export function encodeSimulateRequest({
 }): string {
   let input: MessageContextParcel = MessageContextParcel.create();
   input = {
-    alkanes,
+    alkanes: alkanes.map((v) => toProtobufAlkaneTransfer(v)),
     transaction: Uint8Array.from(Buffer.from(transaction, "hex")),
-    block,
-    height,
-    calldata: encipher([block, tx, ...inputs]),
+    height: BigInt(height),
     txindex,
+    calldata: encipher([target.block, target.tx, ...inputs]),
+    block: Uint8Array.from(Buffer.from(block, 'hex')),
     vout,
     pointer,
     refundPointer,
@@ -46,7 +45,7 @@ export function encodeSimulateRequest({
   );
 }
 
-export function decodeSimulateRequest(request: string): SimulateResponse {
-  const res = SimulateResponse.fromBinary(Buffer.from(request, "hex"));
+export function decodeSimulateResponse(response: string): SimulateResponse {
+  const res = SimulateResponse.fromBinary(Buffer.from(response, "hex"));
   return res;
 }

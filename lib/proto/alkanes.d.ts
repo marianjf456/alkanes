@@ -5,17 +5,30 @@ import type { IBinaryReader } from "@protobuf-ts/runtime";
 import type { PartialMessage } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 /**
+ * @generated from protobuf message alkanes.uint128
+ */
+export interface uint128 {
+    /**
+     * @generated from protobuf field: uint64 lo = 1;
+     */
+    lo: bigint;
+    /**
+     * @generated from protobuf field: uint64 hi = 2;
+     */
+    hi: bigint;
+}
+/**
  * @generated from protobuf message alkanes.AlkaneId
  */
 export interface AlkaneId {
     /**
-     * @generated from protobuf field: bytes block = 1;
+     * @generated from protobuf field: alkanes.uint128 block = 1;
      */
-    block: Uint8Array;
+    block?: uint128;
     /**
-     * @generated from protobuf field: bytes tx = 2;
+     * @generated from protobuf field: alkanes.uint128 tx = 2;
      */
-    tx: Uint8Array;
+    tx?: uint128;
 }
 /**
  * @generated from protobuf message alkanes.AlkaneTransfer
@@ -26,9 +39,9 @@ export interface AlkaneTransfer {
      */
     id?: AlkaneId;
     /**
-     * @generated from protobuf field: bytes value = 2;
+     * @generated from protobuf field: alkanes.uint128 value = 2;
      */
-    value: Uint8Array;
+    value?: uint128;
 }
 /**
  * @generated from protobuf message alkanes.MessageContextParcel
@@ -43,21 +56,21 @@ export interface MessageContextParcel {
      */
     transaction: Uint8Array;
     /**
-     * @generated from protobuf field: uint64 block = 3;
+     * @generated from protobuf field: bytes block = 3;
      */
-    block: bigint;
+    block: Uint8Array;
     /**
      * @generated from protobuf field: uint64 height = 4;
      */
     height: bigint;
     /**
-     * @generated from protobuf field: bytes calldata = 5;
-     */
-    calldata: Uint8Array;
-    /**
      * @generated from protobuf field: uint32 txindex = 6;
      */
     txindex: number;
+    /**
+     * @generated from protobuf field: bytes calldata = 5;
+     */
+    calldata: Uint8Array;
     /**
      * @generated from protobuf field: uint32 vout = 7;
      */
@@ -132,6 +145,16 @@ export interface AlkaneInventoryResponse {
      */
     alkanes: AlkaneTransfer[];
 }
+declare class uint128$Type extends MessageType<uint128> {
+    constructor();
+    create(value?: PartialMessage<uint128>): uint128;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: uint128): uint128;
+    internalBinaryWrite(message: uint128, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message alkanes.uint128
+ */
+export declare const uint128: uint128$Type;
 declare class AlkaneId$Type extends MessageType<AlkaneId> {
     constructor();
     create(value?: PartialMessage<AlkaneId>): AlkaneId;
