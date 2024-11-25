@@ -3,6 +3,7 @@ import {
   SimulateResponse,
   MessageContextParcel
 } from "./proto/alkanes";
+import { stripHexPrefix } from "./utils";
 
 export function encodeSimulateRequest({
   alkanes,
@@ -46,6 +47,6 @@ export function encodeSimulateRequest({
 }
 
 export function decodeSimulateResponse(response: string): SimulateResponse {
-  const res = SimulateResponse.fromBinary(Buffer.from(response, "hex"));
+  const res = SimulateResponse.fromBinary(Buffer.from(stripHexPrefix(response), "hex"));
   return res;
 }

@@ -126,6 +126,10 @@ export interface SimulateResponse {
      * @generated from protobuf field: uint64 gas_used = 2;
      */
     gasUsed: bigint;
+    /**
+     * @generated from protobuf field: string error = 3;
+     */
+    error: string;
 }
 /**
  * @generated from protobuf message alkanes.AlkaneInventoryRequest

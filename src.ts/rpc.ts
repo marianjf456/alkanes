@@ -121,7 +121,6 @@ export class AlkanesRpc extends MetashrewRunes {
       method: "simulate",
       input: buffer,
     });
-    console.log(byteString);
     const decoded = invoke.decodeSimulateResponse(byteString);
     return decoded;
   }

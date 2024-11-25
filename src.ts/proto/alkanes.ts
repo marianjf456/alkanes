@@ -132,6 +132,10 @@ export interface SimulateResponse {
      * @generated from protobuf field: uint64 gas_used = 2;
      */
     gasUsed: bigint;
+    /**
+     * @generated from protobuf field: string error = 3;
+     */
+    error: string;
 }
 /**
  * @generated from protobuf message alkanes.AlkaneInventoryRequest
@@ -546,12 +550,14 @@ class SimulateResponse$Type extends MessageType<SimulateResponse> {
     constructor() {
         super("alkanes.SimulateResponse", [
             { no: 1, name: "execution", kind: "message", T: () => ExtendedCallResponse },
-            { no: 2, name: "gas_used", kind: "scalar", T: 4 /*ScalarType.UINT64*/, L: 0 /*LongType.BIGINT*/ }
+            { no: 2, name: "gas_used", kind: "scalar", T: 4 /*ScalarType.UINT64*/, L: 0 /*LongType.BIGINT*/ },
+            { no: 3, name: "error", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<SimulateResponse>): SimulateResponse {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.gasUsed = 0n;
+        message.error = "";
         if (value !== undefined)
             reflectionMergePartial<SimulateResponse>(this, message, value);
         return message;
@@ -566,6 +572,9 @@ class SimulateResponse$Type extends MessageType<SimulateResponse> {
                     break;
                 case /* uint64 gas_used */ 2:
                     message.gasUsed = reader.uint64().toBigInt();
+                    break;
+                case /* string error */ 3:
+                    message.error = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -585,6 +594,9 @@ class SimulateResponse$Type extends MessageType<SimulateResponse> {
         /* uint64 gas_used = 2; */
         if (message.gasUsed !== 0n)
             writer.tag(2, WireType.Varint).uint64(message.gasUsed);
+        /* string error = 3; */
+        if (message.error !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.error);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
