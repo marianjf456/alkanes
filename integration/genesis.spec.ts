@@ -202,8 +202,8 @@ export async function deployGenesis(): Promise<void> {
   })).balances.entries)
   console.log(await rpc.simulate({
     alkanes: [],
-    transaction: '00',
-    block: '00',
+    transaction: '',
+    block: '',
     height: 0n,
     txindex: 0,
     target: { block: BigInt(balances[0].id[0]), tx: BigInt(balances[0].id[1]) },
