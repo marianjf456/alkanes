@@ -46,7 +46,36 @@ export function encodeSimulateRequest({
   );
 }
 
-export function decodeSimulateResponse(response: string): SimulateResponse {
+class ExecutionStatus {
+  static SUCCESS: number = 0;
+  static REVERT: number = 1;
+  constructor() {}
+}
+
+export type ExecutionResult = {
+  error: null | string;
+  storage: any[];
+  alkanes: any[];
+  data: string;
+};
+
+export type DecodedSimulateResponse = {
+  status: number;
+  gasUsed: bigint;
+  execution: ExecutionResult
+};
+
+export function decodeSimulateResponse(response: string): DecodedSimulateResponse {
   const res = SimulateResponse.fromBinary(Buffer.from(stripHexPrefix(response), "hex"));
-  return res;
+  if (res.error) return { status: ExecutionStatus.REVERT, gasUsed: 0n, execution: { alkanes: [], storage: [], data: '0x', error: res.error } };
+  return {
+    status: ExecutionStatus.SUCCESS,
+    gasUsed: res.gasUsed,
+    execution: {
+      alkanes: res.execution.alkanes,
+      storage: res.execution.storage,
+      error: null,
+      data: '0x' + Buffer.from(res.execution.data).toString('hex')
+    }
+  };
 }
