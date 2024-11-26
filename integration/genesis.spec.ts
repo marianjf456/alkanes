@@ -195,11 +195,9 @@ export async function deployGenesis(): Promise<void> {
   const revealTxidReversed = Buffer.from(
     Array.from(Buffer.from(revealTxid, "hex")).reverse(),
   ).toString("hex");
-  const balances = ((ary) => ary.map((v) => ({ id: [ v.rune.runeId.height.lo, v.rune.runeId.txindex.lo ], value: v.balance.lo })))((await rpc.protorunesbyoutpoint({
-    protocolTag: 1n,
-    txid: revealTxidReversed,
-    vout: 0,
-  })).balances.entries)
+  const balancesProtobuf = (await rpc.protorunesbyoutpoint({ protocolTag: 1n, txid: revealTxidReversed, vout: 0 })).balances.entries;
+  console.log(balancesProtobuf);
+  const balances = ((ary) => ary.map((v) => ({ id: [ v.rune.runeId.height.lo, v.rune.runeId.txindex.lo ], value: v.balance.lo })))(balancesProtobuf);
   console.log(balances);
   console.log(await rpc.simulate({
     alkanes: [],
