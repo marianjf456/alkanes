@@ -3,7 +3,7 @@
 ![Tests](https://img.shields.io/github/actions/workflow/status/AssemblyScript/assemblyscript/test.yml?branch=main&label=test&logo=github)
 ![Publish](https://img.shields.io/github/actions/workflow/status/AssemblyScript/assemblyscript/publish.yml?branch=main&label=publish&logo=github)
 
-Repository for the ALKANES metaprotocol.
+TypeScript repository for ALKANES metaprotocol testing and development, within client side applications.
 
 **The ALKANES specification is hosted at** 👉🏻👉🏼👉🏽👉🏾👉🏿 [https://github.com/kungfuflex/alkanes/wiki](https://github.com/kungfuflex/alkanes/wiki)
 
@@ -11,29 +11,32 @@ Repository for the ALKANES metaprotocol.
 
 Protocol fees are accepted in terms of Bitcoin and compute is metered with the wasmi fuel implementation, for protection against DoS.
 
-## Building
+## Installation
 
-The ALKANES build script is invoked with the command:
+Install docker-ce with docker-compose. On Debian-based systems, a proper installation of docker-ce will include a docker-compose binary at /usr/libexec/docker/cli-plugins/docker-compose.
 
-```sh
-yarn build
-```
-
-This will compile the Rust sources for the runtime / wasmi exports to a WASM target, and it will also build the AssemblyScript sources. Finally, it will use binaryen wasm-merge to link the wasm32 binaries and merge them to a single binary.
-
-The ALKANES build is representative of the database it should construct against the host chain for which it processes block history.
-
-The ALKANES wasm build is output to build/alkanes.wasm and can be run in METASHREW and target any Bitcoin compatible network. Bitcoin forks or drivechains which use the Auxpow structure in the block header are now supported by merit of the inclusion of the most up to date metasrhew-as library. Supported networks thus include Dogecoin and Bellscoin.
-
-## Indexing
+A complete environment for alkanes development against a live web application can be initialized in one command, invoked at the root of the project:
 
 ```sh
-RUST_LOG=DEBUG ./metashrew/target/debug/metashrew-keydb --daemon-rpc-url http://localhost:8332 --indexer ./alkanes/build/alkanes.wasm --redis redis+unix:///$HOME/keydb --start-block 840000 --auth bitcoinrpc:bitcoinrpc
+docker-compose up -d
 ```
 
-## Metaprotocol
+This will launch a Bitcoin regtest instance, a keydb backend for a database, a metashrew process, and a metashrew-view process, preloaded with the `alkanes.wasm` binary produced from the Rust crate hosted at [https://github.com/kunguflex/alkanes-rs](https://github.com/kungfuflex/alkane-rs).
 
-ALKANES is a protorunes-compatible subprotocol enabling a programmable variant of runes, via a shared execution environment analogous to smart contracts. Alkanes themselves are assets that can be transacted with on the alkanes meteaprotocol. An alkane is a smart contract but also always a fungible asset. Protocol messages are Runestone compatible (per the runes protocol spec) but extended with the protorunes Protostone structure and, more specifically, the cellpack structure, which functions like a minimal transaction payload on OP_RETURN.
+## Usage
+
+A complete example of metaprotocol usage is demonstrated in the sources within `integration/`
+
+To run the live end-to-end tests, simply invoke the following commands with the docker orchestration running in the background.
+
+```sh
+ts-node integration/scripts/init.ts
+ts-node integration/genesis.spec.ts
+```
+
+This will deploy a supplementary copy of the DIESEL token and call a view function to read the total supply of the asset.
+
+The program flow in integration/genesis.spec.ts is the same set of logic and library usage that could be done against a mainnet Bitcoin application on ALKANES, or any other BTC compatible deployment, within a frontend application.
 
 
 ## Author
