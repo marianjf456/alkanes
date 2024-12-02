@@ -1,6 +1,6 @@
 import { u128 } from "@magiceden-oss/runestone-lib/dist/src/integer";
 import leb128 from "leb128";
-import { CalldataWrapper } from "protorune/lib/src.ts/calldata";
+import { CalldataWrapper } from "./calldata";
 
 export function lebEncodeU128(inputs: u128[]): Buffer {
   const lebEncoded = inputs.map((v) => {
