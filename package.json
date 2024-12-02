@@ -58,6 +58,7 @@
     "bitcoin-block": "^2.0.2",
     "bitcoinjs-lib": "https://github.com/bitcoinjs/bitcoinjs-lib",
     "chai": "4",
+    "chalk": "^5.3.0",
     "fs-extra": "^11.2.0",
     "ioredis": "^5.4.1",
     "leb128": "^0.0.5",
