@@ -41,7 +41,11 @@ export function isValidPayload(payload: Payload): payload is Buffer {
   return Buffer.isBuffer(payload);
 }
 
-export function encodeOptionInt(payloads: Array<any>, tag: any, opt: Option<any>) {
+export function encodeOptionInt(
+  payloads: Array<any>,
+  tag: any,
+  opt: Option<any>,
+) {
   if (opt.isSome()) {
     payloads.push(tag);
     payloads.push(opt.unwrap());
@@ -74,7 +78,7 @@ export class RunestoneProtostoneUpgrade {
     readonly edicts: ProtoruneEdict[],
     readonly etching: Option<Etching>,
     /* BEGIN CODE CHANGE */
-    readonly protostones: ProtoStone[]
+    readonly protostones: ProtoStone[],
     /* CODE CHANGE END */
   ) {}
 
@@ -97,10 +101,22 @@ export class RunestoneProtostoneUpgrade {
       }
       payloads.push(Tag.FLAGS as any);
       payloads.push(flags as any);
-      encodeOptionInt(payloads, Tag.RUNE, etching.rune.map((rune) => rune.value));
-      encodeOptionInt(payloads, Tag.DIVISIBILITY, etching.divisibility.map(u128));
+      encodeOptionInt(
+        payloads,
+        Tag.RUNE,
+        etching.rune.map((rune) => rune.value),
+      );
+      encodeOptionInt(
+        payloads,
+        Tag.DIVISIBILITY,
+        etching.divisibility.map(u128),
+      );
       encodeOptionInt(payloads, Tag.SYMBOL, etching.spacers.map(u128));
-      encodeOptionInt(payloads, Tag.SYMBOL, etching.symbol.map((symbol) => u128(symbol.codePointAt(0)!)));
+      encodeOptionInt(
+        payloads,
+        Tag.SYMBOL,
+        etching.symbol.map((symbol) => u128(symbol.codePointAt(0)!)),
+      );
       encodeOptionInt(payloads, Tag.PREMINE, etching.premine);
       if (etching.terms.isSome()) {
         const terms = etching.terms.unwrap();
@@ -135,7 +151,7 @@ export class RunestoneProtostoneUpgrade {
       });
       unpack(encipher(all_protostone_payloads)).forEach((v) => {
         payloads.push(u128(ProtoTag.PROTOCOL));
-	payloads.push(u128(v));
+        payloads.push(u128(v));
       });
     }
     /* CODE CHANGE END */
@@ -144,7 +160,7 @@ export class RunestoneProtostoneUpgrade {
       payloads.push(u128(Tag.BODY));
 
       const edicts = [...this.edicts].sort((x, y) =>
-        Number(x.id.block - y.id.block || x.id.tx - y.id.tx)
+        Number(x.id.block - y.id.block || x.id.tx - y.id.tx),
       );
 
       let previous = new ProtoruneRuneId(u128(0), u128(0));
@@ -221,8 +237,8 @@ export function encodeRunestoneProtostone(runestone: RunestoneProtostoneSpec): {
     ? Some(
         new ProtoruneRuneId(
           u128(runestone.mint.block),
-          u128(runestone.mint.tx)
-        )
+          u128(runestone.mint.tx),
+        ),
       )
     : None;
 
@@ -276,7 +292,7 @@ export function encodeRunestoneProtostone(runestone: RunestoneProtostoneSpec): {
 
     if (divisibility.isSome() && divisibility.unwrap() > MAX_DIVISIBILITY) {
       throw Error(
-        `Divisibility is greater than protocol max ${MAX_DIVISIBILITY}`
+        `Divisibility is greater than protocol max ${MAX_DIVISIBILITY}`,
       );
     }
 
@@ -327,7 +343,7 @@ export function encodeRunestoneProtostone(runestone: RunestoneProtostoneSpec): {
     const turbo = etchingSpec.turbo ?? false;
 
     etching = Some(
-      new Etching(divisibility, rune, spacers, symbol, terms, premine, turbo)
+      new Etching(divisibility, rune, spacers, symbol, terms, premine, turbo),
     );
     etchingCommitment = rune.isSome() ? rune.unwrap().commitment : undefined;
   }
@@ -338,7 +354,7 @@ export function encodeRunestoneProtostone(runestone: RunestoneProtostoneSpec): {
       pointer,
       edicts,
       etching,
-      protostones
+      protostones,
     ).encipher(),
     etchingCommitment,
   };

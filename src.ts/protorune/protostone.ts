@@ -16,7 +16,6 @@ export type ProtoMessage = {
   refundPointer: Option<u32>;
 };
 
-
 export class ProtoStone {
   burn?: ProtoBurn;
   message?: ProtoMessage;
@@ -48,7 +47,7 @@ export class ProtoStone {
     if (burn) {
       this.burn = {
         pointer: Some<u32>(u32(burn.pointer)),
-        from: burn.from
+        from: burn.from,
       };
     }
     if (message) {
@@ -102,14 +101,10 @@ export class ProtoStone {
   encipher_payloads(): bigint[] {
     let payloads: bigint[] = [];
     if (this.burn) {
-      payloads.push(
-        u128(Tag.POINTER)
-      );
+      payloads.push(u128(Tag.POINTER));
       payloads.push(this.burn.pointer.map(u128).unwrap());
       if (this.burn.from) {
-        payloads.push(
-          u128(Tag.FROM)
-        );
+        payloads.push(u128(Tag.FROM));
         payloads.push(this.burn.from.map(u128)[0]);
       }
     } else if (this.message) {
@@ -120,13 +115,13 @@ export class ProtoStone {
       }
       if (this.message.refundPointer.isSome()) {
         payloads.push(u128(Tag.REFUND));
-	payloads.push(u128(this.message.refundPointer.map(u128).unwrap()));
+        payloads.push(u128(this.message.refundPointer.map(u128).unwrap()));
       }
       if (this.message.calldata.length) {
         unpack(this.message.calldata).forEach((v) => {
           payloads.push(u128(Tag.MESSAGE));
-	  payloads.push(u128(v));
-	});
+          payloads.push(u128(v));
+        });
       }
     }
     if (this.edicts && this.edicts.length) {

@@ -23,3 +23,5 @@ export type DecodedSimulateResponse = {
     execution: ExecutionResult;
 };
 export declare function decodeSimulateResponse(response: string): DecodedSimulateResponse;
+export declare function outpointResponseToObject(v: any[]): any;
+export declare function decodeOutpointResponse(result: any): any;

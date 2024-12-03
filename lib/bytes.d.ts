@@ -43,6 +43,10 @@ export declare function toUint128(v: bigint): {
     hi: bigint;
     lo: bigint;
 };
+export declare function fromUint128(v: {
+    hi: bigint;
+    lo: bigint;
+}): bigint;
 export declare function u128ToBuffer(v: {
     hi: bigint;
     lo: bigint;

@@ -1,6 +1,10 @@
-import { None, Option, Some } from '@magiceden-oss/runestone-lib/dist/src/monads';
-import { u32, u128 } from '@magiceden-oss/runestone-lib/dist/src/integer';
-import { ProtoruneRuneId } from './protoruneruneid';
+import {
+  None,
+  Option,
+  Some,
+} from "@magiceden-oss/runestone-lib/dist/src/monads";
+import { u32, u128 } from "@magiceden-oss/runestone-lib/dist/src/integer";
+import { ProtoruneRuneId } from "./protoruneruneid";
 
 export type ProtoruneEdict = {
   id: ProtoruneRuneId;
@@ -13,7 +17,7 @@ export namespace ProtoruneEdict {
     numOutputs: number,
     id: ProtoruneRuneId,
     amount: u128,
-    output: u128
+    output: u128,
   ): Option<ProtoruneEdict> {
     if (id.block === 0n && id.tx > 0n) {
       return None;

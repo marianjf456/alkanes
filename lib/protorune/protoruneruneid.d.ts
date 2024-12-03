@@ -1,5 +1,5 @@
-import { Option } from '@magiceden-oss/runestone-lib/dist/src/monads';
-import { u128 } from '@magiceden-oss/runestone-lib/dist/src/integer';
+import { Option } from "@magiceden-oss/runestone-lib/dist/src/monads";
+import { u128 } from "@magiceden-oss/runestone-lib/dist/src/integer";
 export declare class ProtoruneRuneId {
     readonly block: u128;
     readonly tx: u128;

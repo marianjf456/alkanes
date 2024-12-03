@@ -80,17 +80,10 @@ export class AlkanesRpc extends MetashrewRunes {
           vout,
         })
       ).toString("hex");
-    return protobuf.OutpointResponse.fromBinary(
-      Buffer.from(
-        (
-          await this._call({
-            method: "protorunesbyoutpoint",
-            input: buffer,
-          })
-        ).substr(2),
-        "hex"
-      )
-    );
+    return invoke.decodeOutpointResponse(await this._call({
+      method: "protorunesbyoutpoint",
+      input: buffer,
+    }));
   }
 
   async simulate({

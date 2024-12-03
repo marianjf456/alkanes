@@ -1,9 +1,10 @@
-import { toProtobufAlkaneTransfer, AlkaneTransfer, AlkaneId, toUint128, encipher } from "./bytes";
+import { toProtobufAlkaneTransfer, AlkaneTransfer, AlkaneId, fromUint128, toUint128, encipher } from "./bytes";
 import {
   SimulateResponse,
   MessageContextParcel
 } from "./proto/alkanes";
 import { stripHexPrefix } from "./utils";
+import * as protobuf from "./proto/protorune";
 
 export function encodeSimulateRequest({
   alkanes,
@@ -78,4 +79,22 @@ export function decodeSimulateResponse(response: string): DecodedSimulateRespons
       data: '0x' + Buffer.from(res.execution.data).toString('hex')
     }
   };
+}
+
+export function outpointResponseToObject(v: any[]): any {
+  v.map((item) => ({
+    id: { block: fromUint128(item.rune.runeId.height), tx: fromUint128(item.rune.runeId.txindex) },
+    value: fromUint128(item.balance),
+  }));
+}
+
+export function decodeOutpointResponse(result: any): any {
+  return outpointResponseToObject(protobuf.OutpointResponse.fromBinary(
+      Buffer.from(
+        (
+          result
+        ).substr(2),
+        "hex"
+      )
+    ).balances.entries);
 }

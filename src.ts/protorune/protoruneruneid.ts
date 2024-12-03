@@ -1,8 +1,15 @@
-import { None, Option, Some } from '@magiceden-oss/runestone-lib/dist/src/monads';
-import { u128 } from '@magiceden-oss/runestone-lib/dist/src/integer';
+import {
+  None,
+  Option,
+  Some,
+} from "@magiceden-oss/runestone-lib/dist/src/monads";
+import { u128 } from "@magiceden-oss/runestone-lib/dist/src/integer";
 
 export class ProtoruneRuneId {
-  constructor(readonly block: u128, readonly tx: u128) {}
+  constructor(
+    readonly block: u128,
+    readonly tx: u128,
+  ) {}
 
   static new(block: u128, tx: u128): Option<ProtoruneRuneId> {
     const id = new ProtoruneRuneId(block, tx);
@@ -15,7 +22,9 @@ export class ProtoruneRuneId {
   }
 
   static sort(runeIds: ProtoruneRuneId[]): ProtoruneRuneId[] {
-    return [...runeIds].sort((x, y) => Number(x.block - y.block || x.tx - y.tx));
+    return [...runeIds].sort((x, y) =>
+      Number(x.block - y.block || x.tx - y.tx),
+    );
   }
 
   delta(next: ProtoruneRuneId): Option<[u128, u128]> {
@@ -75,7 +84,7 @@ export class ProtoruneRuneId {
   }
 
   static fromString(s: string) {
-    const parts = s.split(':');
+    const parts = s.split(":");
     if (parts.length !== 2) {
       throw new Error(`invalid rune ID: ${s}`);
     }
