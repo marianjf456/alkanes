@@ -82,7 +82,7 @@ export function decodeSimulateResponse(response: string): DecodedSimulateRespons
 }
 
 export function outpointResponseToObject(v: any[]): any {
-  v.map((item) => ({
+  return v.map((item) => ({
     id: { block: fromUint128(item.rune.runeId.height), tx: fromUint128(item.rune.runeId.txindex) },
     value: fromUint128(item.balance),
   }));
