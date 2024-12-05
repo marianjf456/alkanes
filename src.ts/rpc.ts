@@ -31,6 +31,10 @@ const addHexPrefix = (s) => (s.substr(0, 2) === "0x" ? s : "0x" + s);
 let id = 0;
 
 export class AlkanesRpc extends MetashrewRunes {
+  ln(v) {
+    console.log(v);
+    return v;
+  }
   async protorunesbyaddress({ address, protocolTag }: any): Promise<{
     outpoints: OutPoint[];
     balanceSheet: RuneOutput[];
@@ -39,10 +43,11 @@ export class AlkanesRpc extends MetashrewRunes {
       address,
       protocolTag
     );
-    const byteString = await this._call({
+    this.ln(buffer);
+    const byteString = this.ln(await this._call({
       method: "protorunesbyaddress",
       input: buffer,
-    });
+    }));
     const decoded = wallet.decodeWalletOutput(byteString);
     return decoded;
   }

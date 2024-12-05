@@ -3,6 +3,7 @@ import { MetashrewRunes } from "metashrew-runes/lib/src.ts/rpc";
 import { AlkaneTransfer } from "./alkane";
 import { ProtoruneEdict } from "./protorune/protoruneedict";
 export declare class AlkanesRpc extends MetashrewRunes {
+    ln(v: any): any;
     protorunesbyaddress({ address, protocolTag }: any): Promise<{
         outpoints: OutPoint[];
         balanceSheet: RuneOutput[];

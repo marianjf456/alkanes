@@ -210,7 +210,7 @@ export async function deployGenesis(): Promise<void> {
     refundPointer: 0,
     vout: 0
   }));
-  //console.log("changeaddr: ", await rpc.protorunesbyaddress({ address: changeAddr, protocolTag: 1n }));
+  console.log("changeaddr: ", require('util').inspect(await rpc.protorunesbyaddress({ address: changeAddr, protocolTag: 1n }), { colors: true, depth: 15 }));
 }
 
 (async () => {
