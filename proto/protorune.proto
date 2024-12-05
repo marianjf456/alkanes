@@ -2,10 +2,6 @@ syntax = "proto3";
 
 package protorune;
 
-message BlockHeightInput {
-  uint32 height = 1;
-}
-
 message RuneId {
   uint32 height = 1;
   uint32 txindex = 2;
@@ -18,10 +14,10 @@ message ProtoruneRuneId {
 
 message Rune {
   ProtoruneRuneId runeId = 1;
-  bytes name = 2;
+  string name = 2;
   uint32 divisibility = 3;
   uint32 spacers = 4;
-  uint32 symbol = 5;
+  string symbol = 5;
 }
 
 message BalanceSheetItem {

@@ -3,10 +3,10 @@ import {
   Outpoint,
   BalanceSheet,
   RunesResponse,
-  BlockHeightInput
+  RunesByHeightRequest
 } from "./proto/protorune";
 import { stripHexPrefix } from "./utils";
-import { u128ToBuffer } from "./bytes";
+import { fromUint128, u128ToBuffer } from "./bytes";
 
 
 export type Rune = {
@@ -48,13 +48,13 @@ export function encodeOutpointInput(txid: string, pos: number): string {
 export function decodeRunes(balances: BalanceSheet): RuneOutput[] {
   if (!balances) return [];
   return balances.entries.map((entry) => {
-    const balance = u128ToBuffer(entry.balance);
+    const balance = entry.balance;
     const d = entry.rune;
     const spacer = "•";
     const bitField = d.spacers.toString(2);
-    let name = Buffer.from(d.name).toString("utf-8");
+    let name = d.name;
     let spaced_name = name;
-    const symbol = String.fromCharCode(d.symbol);
+    const symbol = d.symbol;
     let x = 0;
     bitField
       .split("")
@@ -65,8 +65,11 @@ export function decodeRunes(balances: BalanceSheet): RuneOutput[] {
           x++;
         }
       });
-    const rune: Rune = {
-      id: `${d.runeId.height}:${d.runeId.txindex}`,
+    const rune: any = {
+      id: {
+        block: fromUint128(d.runeId.height),
+	tx: fromUint128(d.runeId.txindex)
+      },
       name,
       spacedName: spaced_name,
       divisibility: d.divisibility,
@@ -75,7 +78,7 @@ export function decodeRunes(balances: BalanceSheet): RuneOutput[] {
     };
     return {
       rune,
-      balance: BigInt("0x" + (Buffer as any).from(balance).toString("hex") as string),
+      balance: fromUint128(balance)
     };
   });
 }
@@ -127,7 +130,7 @@ export function decodeRunesResponse(hex: string): {
       name: Buffer.from(rune.name).toString('utf8'),
       divisibility: rune.divisibility,
       spacers: rune.spacers,
-      symbol: String.fromCharCode(rune.symbol)
+      symbol: rune.symbol
     }))
   };
 }
@@ -136,7 +139,6 @@ export function encodeBlockHeightInput(height: number): string {
   const input: any = {
     height: height
   };
-  console.log(input);
-  const str = Buffer.from(BlockHeightInput.toBinary(input)).toString("hex");
+  const str = Buffer.from(RunesByHeightRequest.toBinary(input)).toString("hex");
   return "0x" + str;
 }

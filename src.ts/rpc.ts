@@ -2,7 +2,6 @@
 
 import * as protowallet from "./wallet";
 import * as invoke from "./invoke";
-import * as wallet from "metashrew-runes/lib/src.ts/wallet";
 import {
   OutPoint,
   RuneOutput,
@@ -31,10 +30,6 @@ const addHexPrefix = (s) => (s.substr(0, 2) === "0x" ? s : "0x" + s);
 let id = 0;
 
 export class AlkanesRpc extends MetashrewRunes {
-  ln(v) {
-    console.log(v);
-    return v;
-  }
   async protorunesbyaddress({ address, protocolTag }: any): Promise<{
     outpoints: OutPoint[];
     balanceSheet: RuneOutput[];
@@ -43,12 +38,12 @@ export class AlkanesRpc extends MetashrewRunes {
       address,
       protocolTag
     );
-    this.ln(buffer);
-    const byteString = this.ln(await this._call({
+    const byteString = await this._call({
       method: "protorunesbyaddress",
       input: buffer,
-    }));
-    const decoded = wallet.decodeWalletOutput(byteString);
+    });
+    console.log(byteString);
+    const decoded = protowallet.decodeWalletOutput(byteString);
     return decoded;
   }
 
@@ -56,12 +51,12 @@ export class AlkanesRpc extends MetashrewRunes {
     outpoints: OutPoint[];
     balanceSheet: RuneOutput[];
   }> {
-    const buffer = wallet.encodeWalletInput(address);
+    const buffer = protowallet.encodeWalletInput(address);
     const byteString = await this._call({
       method: "runesbyaddress",
       input: buffer,
     });
-    const decoded = wallet.decodeWalletOutput(byteString);
+    const decoded = protowallet.decodeWalletOutput(byteString);
     return decoded;
   }
 

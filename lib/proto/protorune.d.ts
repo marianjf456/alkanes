@@ -5,15 +5,6 @@ import type { IBinaryReader } from "@protobuf-ts/runtime";
 import type { PartialMessage } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 /**
- * @generated from protobuf message protorune.BlockHeightInput
- */
-export interface BlockHeightInput {
-    /**
-     * @generated from protobuf field: uint32 height = 1;
-     */
-    height: number;
-}
-/**
  * @generated from protobuf message protorune.RuneId
  */
 export interface RuneId {
@@ -48,9 +39,9 @@ export interface Rune {
      */
     runeId?: ProtoruneRuneId;
     /**
-     * @generated from protobuf field: bytes name = 2;
+     * @generated from protobuf field: string name = 2;
      */
-    name: Uint8Array;
+    name: string;
     /**
      * @generated from protobuf field: uint32 divisibility = 3;
      */
@@ -60,9 +51,9 @@ export interface Rune {
      */
     spacers: number;
     /**
-     * @generated from protobuf field: uint32 symbol = 5;
+     * @generated from protobuf field: string symbol = 5;
      */
-    symbol: number;
+    symbol: string;
 }
 /**
  * @generated from protobuf message protorune.BalanceSheetItem
@@ -307,16 +298,6 @@ export interface Runtime {
      */
     balances?: BalanceSheet;
 }
-declare class BlockHeightInput$Type extends MessageType<BlockHeightInput> {
-    constructor();
-    create(value?: PartialMessage<BlockHeightInput>): BlockHeightInput;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: BlockHeightInput): BlockHeightInput;
-    internalBinaryWrite(message: BlockHeightInput, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
-}
-/**
- * @generated MessageType for protobuf message protorune.BlockHeightInput
- */
-export declare const BlockHeightInput: BlockHeightInput$Type;
 declare class RuneId$Type extends MessageType<RuneId> {
     constructor();
     create(value?: PartialMessage<RuneId>): RuneId;

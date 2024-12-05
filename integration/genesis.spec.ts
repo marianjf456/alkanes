@@ -204,7 +204,7 @@ export async function deployGenesis(): Promise<void> {
     block: '',
     height: 20000n,
     txindex: 0,
-    target: { block: balances[0].id.block, tx: balances[0].id.tx },
+    target: { block: balances[0].token.id.block, tx: balances[0].token.id.tx },
     inputs: [ 101n ],
     pointer: 0,
     refundPointer: 0,

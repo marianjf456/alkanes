@@ -1,9 +1,13 @@
 import { decodeRunes } from "./outpoint";
 import {
   ProtorunesWalletRequest,
+  WalletRequest,
+  WalletResponse,
   RuntimeInput,
   Runtime,
+  Outpoint,
 } from "./proto/protorune";
+import { decodeOutpointViewBase, OutPoint, RuneOutput } from "./outpoint";
 import { stripHexPrefix } from "./utils";
 import leb128 from "leb128";
 import { toBuffer, toUint128 } from "./bytes";
@@ -34,6 +38,29 @@ export function encodeProtorunesWalletInput(
   return (
     "0x" + Buffer.from(ProtorunesWalletRequest.toBinary(input)).toString("hex")
   );
+}
+
+export function encodeWalletInput(
+  address: string,
+) {
+  const input: WalletRequest = {
+    wallet: Uint8Array.from(Buffer.from(address, "utf-8")),
+  };
+  return (
+    "0x" + Buffer.from(WalletRequest.toBinary(input)).toString("hex")
+  );
+}
+
+export function decodeWalletOutput(hex: string): {
+  outpoints: OutPoint[];
+  balanceSheet: RuneOutput[];
+} {
+  const wo = WalletResponse.fromBinary(
+    (Uint8Array as any).from((Buffer as any).from(stripHexPrefix(hex), "hex") as Buffer) as Uint8Array);
+  return {
+    outpoints: wo.outpoints.map((op) => decodeOutpointViewBase(op)),
+    balanceSheet: decodeRunes(wo.balances),
+  };
 }
 
 export function encodeRuntimeInput(protocolTag: bigint) {
