@@ -69,7 +69,6 @@ export class AlkanesRpc extends MetashrewRunes {
     const decodedResponse = decodeRunesResponse(response);
     return decodedResponse;
   }
-
   async protorunesbyoutpoint({ txid, vout, protocolTag }: any): Promise<any> {
     const buffer =
       "0x" +

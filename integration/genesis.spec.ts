@@ -190,27 +190,27 @@ export async function deployGenesis(): Promise<void> {
   );
   console.log('reveal Tx');
   console.log(revealTransactionFromRegtest);
-  await timeout(10000);
+  await timeout(20000);
   console.log(revealTxSend);
   const revealTxidReversed = Buffer.from(
     Array.from(Buffer.from(revealTxid, "hex")).reverse(),
   ).toString("hex");
-  const balancesProtobuf = (await rpc.protorunesbyoutpoint({ protocolTag: 1n, txid: revealTxidReversed, vout: 0 })).balances.entries;
+  const balancesProtobuf = await rpc.protorunesbyoutpoint({ protocolTag: 1n, txid: revealTxidReversed, vout: 0 });
   console.log(balancesProtobuf);
-  const balances = ((ary) => ary.map((v) => ({ id: [ v.rune.runeId.height.lo, v.rune.runeId.txindex.lo ], value: v.balance.lo })))(balancesProtobuf);
-  console.log(balances);
+  const balances = balancesProtobuf;
   console.log(await rpc.simulate({
     alkanes: [],
     transaction: '',
     block: '',
     height: 20000n,
     txindex: 0,
-    target: { block: BigInt(balances[0].id[0]), tx: BigInt(balances[0].id[1]) },
+    target: { block: balances[0].id.block, tx: balances[0].id.tx },
     inputs: [ 101n ],
     pointer: 0,
     refundPointer: 0,
     vout: 0
   }));
+  //console.log("changeaddr: ", await rpc.protorunesbyaddress({ address: changeAddr, protocolTag: 1n }));
 }
 
 (async () => {
