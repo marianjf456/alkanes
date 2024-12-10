@@ -68,6 +68,7 @@ export type DecodedSimulateResponse = {
 
 export function decodeSimulateResponse(response: string): DecodedSimulateResponse {
   const res = SimulateResponse.fromBinary(Buffer.from(stripHexPrefix(response), "hex"));
+  console.log(res);
   if (res.error) return { status: ExecutionStatus.REVERT, gasUsed: 0n, execution: { alkanes: [], storage: [], data: '0x', error: res.error } };
   return {
     status: ExecutionStatus.SUCCESS,
