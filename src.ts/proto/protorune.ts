@@ -60,6 +60,10 @@ export interface Rune {
      * @generated from protobuf field: string symbol = 5;
      */
     symbol: string;
+    /**
+     * @generated from protobuf field: uint32 runes_symbol = 6;
+     */
+    runesSymbol: number;
 }
 /**
  * @generated from protobuf message protorune.BalanceSheetItem
@@ -420,7 +424,8 @@ class Rune$Type extends MessageType<Rune> {
             { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "divisibility", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
             { no: 4, name: "spacers", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
-            { no: 5, name: "symbol", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 5, name: "symbol", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "runes_symbol", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
         ]);
     }
     create(value?: PartialMessage<Rune>): Rune {
@@ -429,6 +434,7 @@ class Rune$Type extends MessageType<Rune> {
         message.divisibility = 0;
         message.spacers = 0;
         message.symbol = "";
+        message.runesSymbol = 0;
         if (value !== undefined)
             reflectionMergePartial<Rune>(this, message, value);
         return message;
@@ -452,6 +458,9 @@ class Rune$Type extends MessageType<Rune> {
                     break;
                 case /* string symbol */ 5:
                     message.symbol = reader.string();
+                    break;
+                case /* uint32 runes_symbol */ 6:
+                    message.runesSymbol = reader.uint32();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -480,6 +489,9 @@ class Rune$Type extends MessageType<Rune> {
         /* string symbol = 5; */
         if (message.symbol !== "")
             writer.tag(5, WireType.LengthDelimited).string(message.symbol);
+        /* uint32 runes_symbol = 6; */
+        if (message.runesSymbol !== 0)
+            writer.tag(6, WireType.Varint).uint32(message.runesSymbol);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

@@ -54,6 +54,10 @@ export interface Rune {
      * @generated from protobuf field: string symbol = 5;
      */
     symbol: string;
+    /**
+     * @generated from protobuf field: uint32 runes_symbol = 6;
+     */
+    runesSymbol: number;
 }
 /**
  * @generated from protobuf message protorune.BalanceSheetItem
