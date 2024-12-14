@@ -23,6 +23,8 @@ import { AlkanesRpc } from "../lib/rpc";
 const timeout = async (n) =>
   await new Promise((resolve) => setTimeout(resolve, n));
 
+const ln = (v) => ((console.log(v)), v);
+
 const bip32 = BIP32Factory(ecc);
 
 const client = new Client("regtest");
@@ -73,12 +75,14 @@ export async function deployGenesis(): Promise<void> {
   );
   const blockHash = await client.call("generatetoaddress", 200, faucetAddress);
   console.log(blockHash);
+  await timeout(2000);
   const blockDetails = await client.call(
     "getblock",
-    blockHash.data.result[0],
+    ln(blockHash).data.result[0],
     0,
   );
   const count = (await client.call("getblockcount")).data.result - 101;
+  ln(count);
   const block = (
     await client.call(
       "getblock",
@@ -86,6 +90,7 @@ export async function deployGenesis(): Promise<void> {
       0,
     )
   ).data.result;
+  ln(block);
   const fee = 20000n;
   const decoded = BitcoinBlock.decode(
     Buffer.from(blockDetails.data.result, "hex"),
@@ -102,7 +107,7 @@ export async function deployGenesis(): Promise<void> {
     new Uint8Array(
       Array.from(
         Buffer.from(
-          (await client.call("getrawtransaction", coinbaseTxid)).data.result,
+          ln(ln(await client.call("getrawtransaction", coinbaseTxid)).data.result),
           "hex",
         ),
       ),
