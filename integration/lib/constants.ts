@@ -100,7 +100,7 @@ export const INIT_OPTIONS = {
     network: bitcoin.networks.testnet,
   },
   regtest: {
-    url: "http://localhost:18444",
+    url: "http://localhost:18555",
     apiUrl: "https://staging-api.oyl.gg",
     version: "v1",
     projectId: "regtest",

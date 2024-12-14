@@ -7,7 +7,7 @@ services:
       ["-txindex", "-rpcbind=:18444", "-rpcallowip=0.0.0.0/0", "-regtest"]
     ports:
       - 18443:18443
-      - 18444:18444
+      - 18555:18444
     environment:
       RPCUSERNAME: bitcoinrpc
       RPCPASSWORD: bitcoinrpc
@@ -37,7 +37,7 @@ services:
       context: ./
     image: metashrew/metashrew
     environment:
-      DAEMON_RPC_ADDR: http://bitcoind:18444
+      DAEMON_RPC_ADDR: http://bitcoind:18555
       AUTH: bitcoinrpc:bitcoinrpc
       REDIS_URL: redis://keydb:6379
     restart: unless-stopped
