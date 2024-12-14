@@ -4,7 +4,7 @@ services:
     image: kylemanna/bitcoind
     entrypoint: ["btc_oneshot"]
     command:
-      ["-txindex", "-rpcbind=:18444", "-rpcallowip=0.0.0.0/0", "-regtest"]
+      ["-txindex", "-rpcallowip=0.0.0.0/0", "-regtest"]
     ports:
       - 18443:18443
       - 18555:18444
