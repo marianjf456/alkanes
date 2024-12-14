@@ -34,7 +34,7 @@ services:
       context: ./
     image: metashrew:alkanes
     environment:
-      DAEMON_RPC_ADDR: http://bitcoind:18555
+      DAEMON_RPC_ADDR: http://bitcoind:18443
       AUTH: bitcoinrpc:bitcoinrpc
       REDIS_URL: redis://keydb:6379
     restart: unless-stopped
