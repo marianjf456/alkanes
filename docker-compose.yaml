@@ -4,7 +4,7 @@ services:
     image: ruimarinho/bitcoin-core
 #    entrypoint: ["btc_oneshot"]
     command:
-      ["-regtest=1", "-printtoconsole", "-rpcallowip=172.17.0.0/16", "-rpcbind=0.0.0.0", "-rpcuser=bitcoinrpc", "-rpcpassword=bitcoinrpc"]
+      ["-regtest=1", "-printtoconsole", "-rpcallowip=0.0.0.0/0", "-rpcbind=0.0.0.0", "-rpcuser=bitcoinrpc", "-rpcpassword=bitcoinrpc"]
     ports:
       - 18555:18443
       - 18444:18444
