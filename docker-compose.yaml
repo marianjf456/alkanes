@@ -32,7 +32,7 @@ services:
     build:
       dockerfile: docker/Dockerfile.indexer
       context: ./
-    image: metashrew/metashrew
+    image: metashrew:alkanes
     environment:
       DAEMON_RPC_ADDR: http://bitcoind:18555
       AUTH: bitcoinrpc:bitcoinrpc
@@ -42,7 +42,7 @@ services:
     build:
       dockerfile: docker/Dockerfile.view
       context: ./
-    image: metashrew/metashrew-view
+    image: metashrew-view:alkanes
     environment:
       REDIS_URL: redis://keydb:6379
       HOST: 0.0.0.0
