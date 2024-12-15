@@ -19,11 +19,14 @@ import BIP32Factory from "bip32";
 import bitcoin = require("bitcoinjs-lib");
 import * as ecc from "tiny-secp256k1";
 import { AlkanesRpc } from "../lib/rpc";
+import { getLogger } from "./lib/logger";
+
+const logger = getLogger("alkanes:run");
 
 const timeout = async (n) =>
   await new Promise((resolve) => setTimeout(resolve, n));
 
-const ln = (v) => ((console.log(v)), v);
+const ln = (v) => (console.log(v), v);
 
 const bip32 = BIP32Factory(ecc);
 
@@ -65,7 +68,7 @@ export async function deployGenesis(): Promise<void> {
     cursed: false,
     tags: { contentType: "" },
   };
-  console.log(payload.body.toString('hex'));
+  logger.info(payload.body.toString("hex").substr(0, 20));
   const revealPayment = btc.p2tr(
     undefined,
     envelope.p2tr_ord_reveal(pubKey, [payload]),
@@ -74,15 +77,11 @@ export async function deployGenesis(): Promise<void> {
     customScripts,
   );
   const blockHash = await client.call("generatetoaddress", 200, faucetAddress);
-  console.log(blockHash);
+  const hash = blockHash.data.result[0];
+  logger.info("blockhash with payment: " + hash);
   await timeout(2000);
-  const blockDetails = await client.call(
-    "getblock",
-    ln(blockHash).data.result[0],
-    0,
-  );
+  const blockDetails = await client.call("getblock", hash, 0);
   const count = (await client.call("getblockcount")).data.result - 101;
-  ln(count);
   const block = (
     await client.call(
       "getblock",
@@ -90,7 +89,6 @@ export async function deployGenesis(): Promise<void> {
       0,
     )
   ).data.result;
-  ln(block);
   const fee = 20000n;
   const decoded = BitcoinBlock.decode(
     Buffer.from(blockDetails.data.result, "hex"),
@@ -103,18 +101,20 @@ export async function deployGenesis(): Promise<void> {
   const coinbaseTxid = Buffer.from(
     Array.from(Buffer.from(coinbase.txid)).reverse(),
   ).toString("hex");
+  logger.info('wait 5s');
+  await timeout(5000);
+  logger.info((await client.call("getrawtransaction", coinbaseTxid)).data.result);
   const coinbaseTransaction = btc.Transaction.fromRaw(
     new Uint8Array(
       Array.from(
-        Buffer.from(
-          ln(ln(await client.call("getrawtransaction", coinbaseTxid)).data.result),
-          "hex",
-        ),
-      ),
+        Buffer.from((await client.call("getrawtransaction", coinbaseTxid)).data
+          .result, "hex")
+      )
     ),
     { allowUnknownOutputs: true },
   );
-  console.log(coinbaseTransaction);
+  logger.info('coinbase:');
+  logger.info(coinbaseTransaction);
   fundingTransaction.addInput({
     witnessUtxo: (coinbaseTransaction as any).outputs[0],
     txid: coinbaseTransaction.id,
@@ -155,16 +155,16 @@ export async function deployGenesis(): Promise<void> {
   });
   tx.addOutputAddress(changeAddr, revealAmount - fee, REGTEST_PARAMS);
   const script = encodeRunestoneProtostone({
-      protostones: [
-        ProtoStone.message({
-          protocolTag: 1n,
-          edicts: [],
-          pointer: 0,
-          refundPointer: 0,
-          calldata: encipher([1n, 0n, 0n]),
-        }),
-      ],
-    }).encodedRunestone;
+    protostones: [
+      ProtoStone.message({
+        protocolTag: 1n,
+        edicts: [],
+        pointer: 0,
+        refundPointer: 0,
+        calldata: encipher([1n, 0n, 0n]),
+      }),
+    ],
+  }).encodedRunestone;
   console.log(script);
   tx.addOutput({
     script,
@@ -179,43 +179,60 @@ export async function deployGenesis(): Promise<void> {
   });
   const revealTxSend = await client.call("sendrawtransaction", txHex);
   await client.generateBlock();
-  console.log("waiting 30s ...");
   const revealTxid = revealTxSend.data.result;
-  console.log(revealTxid);
   const revealTransactionFromRegtest = btc.Transaction.fromRaw(
     new Uint8Array(
       Array.from(
         Buffer.from(
-          (await client.call("getrawtransaction", revealTxid as string)).data.result,
+          (await client.call("getrawtransaction", revealTxid as string)).data
+            .result,
           "hex",
         ),
       ),
     ),
     { allowUnknownOutputs: true },
   );
-  console.log('reveal Tx');
-  console.log(revealTransactionFromRegtest);
+  logger.info("reveal tx: " + revealTransactionFromRegtest);
   await timeout(20000);
-  console.log(revealTxSend);
   const revealTxidReversed = Buffer.from(
     Array.from(Buffer.from(revealTxid, "hex")).reverse(),
   ).toString("hex");
-  const balancesProtobuf = await rpc.protorunesbyoutpoint({ protocolTag: 1n, txid: revealTxidReversed, vout: 0 });
-  console.log(balancesProtobuf);
+  const balancesProtobuf = await rpc.protorunesbyoutpoint({
+    protocolTag: 1n,
+    txid: revealTxidReversed,
+    vout: 0,
+  });
+  logger.info("balance sheet on " + revealTxidReversed + ":" + String(0));
+  logger.info(balancesProtobuf);
   const balances = balancesProtobuf;
-  console.log(await rpc.simulate({
-    alkanes: [],
-    transaction: '',
-    block: '',
-    height: 20000n,
-    txindex: 0,
-    target: { block: balances[0].token.id.block, tx: balances[0].token.id.tx },
-    inputs: [ 101n ],
-    pointer: 0,
-    refundPointer: 0,
-    vout: 0
-  }));
-  console.log("changeaddr: ", require('util').inspect(await rpc.protorunesbyaddress({ address: changeAddr, protocolTag: 1n }), { colors: true, depth: 15 }));
+  logger.info(
+    "call view opcode 101 on " +
+      balances[0].token.id.block.toString(10) +
+      ":" +
+      balances[0].token.id.tx.toString(10),
+  );
+  logger.info(
+    await rpc.simulate({
+      alkanes: [],
+      transaction: "",
+      block: "",
+      height: 20000n,
+      txindex: 0,
+      target: {
+        block: balances[0].token.id.block,
+        tx: balances[0].token.id.tx,
+      },
+      inputs: [101n],
+      pointer: 0,
+      refundPointer: 0,
+      vout: 0,
+    }),
+  );
+  logger.info("protorunes on address " + changeAddr + ":");
+  logger.info(
+    await rpc.protorunesbyaddress({ address: changeAddr, protocolTag: 1n }),
+    { colors: true, depth: 15 },
+  );
 }
 
 (async () => {

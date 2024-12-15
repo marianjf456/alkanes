@@ -144,7 +144,6 @@ export async function buildRunesTransaction(
       }).output || Buffer.from(""),
     value: currentTotal - Math.ceil(fee) - 546 * 3,
   });
-  console.log("total inputs: ", currentTotal, ", fee: ", fee);
   tx.signAllInputs(pair);
   tx.finalizeAllInputs();
 

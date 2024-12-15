@@ -42,7 +42,6 @@ export class AlkanesRpc extends MetashrewRunes {
       method: "protorunesbyaddress",
       input: buffer,
     });
-    console.log(byteString);
     const decoded = protowallet.decodeWalletOutput(byteString);
     return decoded;
   }
