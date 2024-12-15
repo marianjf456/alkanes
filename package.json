@@ -20,7 +20,7 @@
     "metadce": "wasm-metadce build/combined-out.wasm --graph-file metadce/graph.json -o build/combined-metadce.wasm --all-features > /dev/null",
     "build": "npm-run-all build:protoc build:ts",
     "build:ts": "tsc && tsc -p tsconfig.esm.json",
-    "build:protoc": "protoc --proto_path=proto/ proto/*.proto --ts_out src.ts/proto --ts_opt ts_nocheck,long_type_bigint",
+    "build:protoc": "protoc --proto_path=proto/ proto/*.proto --ts_out src.ts/proto --ts_opt ts_nocheck",
     "build:release": "cd build; npm run build:release",
     "lint": "prettier --print-width 100 --single-quote --check src",
     "format": "prettier --print-width 100 --single-quote --write src",

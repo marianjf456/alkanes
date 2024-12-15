@@ -1,4 +1,66 @@
 import { AlkaneTransfer, AlkaneId } from "./bytes";
+export declare function toAlkaneTransfer(v: any): {
+    id: {
+        block: bigint;
+        tx: bigint;
+    };
+    value: bigint;
+};
+export declare function fromCallType(v: number): string;
+export declare function toAlkaneId(v: any): {
+    block: bigint;
+    tx: bigint;
+};
+export declare function toContext(v: any): {
+    myself: {
+        block: bigint;
+        tx: bigint;
+    };
+    caller: {
+        block: bigint;
+        tx: bigint;
+    };
+    incomingAlkanes: any;
+    vout: any;
+};
+export declare function toEvent(v: any): {
+    event: string;
+    data: {
+        block: bigint;
+        tx: bigint;
+    };
+} | {
+    event: string;
+    data: {
+        type: string;
+        context: {
+            myself: {
+                block: bigint;
+                tx: bigint;
+            };
+            caller: {
+                block: bigint;
+                tx: bigint;
+            };
+            incomingAlkanes: any;
+            vout: any;
+        };
+        fuel: any;
+        status?: undefined;
+        response?: undefined;
+        fuelUsed?: undefined;
+    };
+} | {
+    event: string;
+    data: {
+        status: string;
+        response: any;
+        fuelUsed: any;
+        type?: undefined;
+        context?: undefined;
+        fuel?: undefined;
+    };
+};
 export declare function encodeTraceRequest({ txid, vout }: {
     txid: string;
     vout: number;
@@ -9,7 +71,7 @@ export declare function encodeSimulateRequest({ alkanes, transaction, height, bl
     transaction: string;
     target: AlkaneId;
     inputs: bigint[];
-    height: number;
+    height: bigint;
     block: string;
     txindex: number;
     vout: number;

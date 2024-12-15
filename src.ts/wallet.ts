@@ -19,7 +19,7 @@ const {
  * @param protocolTag
  * @returns the protocolTag in LEB128 format
  */
-function encodeProtocolTag(protocolTag: bigint): { hi: bigint, lo: bigint } {
+function encodeProtocolTag(protocolTag: bigint): { hi: string, lo: string } {
   return toUint128(protocolTag);
 }
 

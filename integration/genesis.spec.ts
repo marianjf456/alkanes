@@ -233,6 +233,7 @@ export async function deployGenesis(): Promise<void> {
     await rpc.protorunesbyaddress({ address: changeAddr, protocolTag: 1n }),
     { colors: true, depth: 15 },
   );
+  logger.info(await rpc.trace({ txid: revealTxidReversed, vout: 3 }));
 }
 
 (async () => {

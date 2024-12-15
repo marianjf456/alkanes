@@ -18,8 +18,8 @@ export namespace alkanes {
     export class uint128 extends pb_1.Message {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {
-            lo?: number;
-            hi?: number;
+            lo?: string;
+            hi?: string;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -33,20 +33,20 @@ export namespace alkanes {
             }
         }
         get lo() {
-            return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
+            return pb_1.Message.getFieldWithDefault(this, 1, "0") as string;
         }
-        set lo(value: number) {
+        set lo(value: string) {
             pb_1.Message.setField(this, 1, value);
         }
         get hi() {
-            return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
+            return pb_1.Message.getFieldWithDefault(this, 2, "0") as string;
         }
-        set hi(value: number) {
+        set hi(value: string) {
             pb_1.Message.setField(this, 2, value);
         }
         static fromObject(data: {
-            lo?: number;
-            hi?: number;
+            lo?: string;
+            hi?: string;
         }): uint128 {
             const message = new uint128({});
             if (data.lo != null) {
@@ -59,8 +59,8 @@ export namespace alkanes {
         }
         toObject() {
             const data: {
-                lo?: number;
-                hi?: number;
+                lo?: string;
+                hi?: string;
             } = {};
             if (this.lo != null) {
                 data.lo = this.lo;
@@ -74,10 +74,10 @@ export namespace alkanes {
         serialize(w: pb_1.BinaryWriter): void;
         serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
             const writer = w || new pb_1.BinaryWriter();
-            if (this.lo != 0)
-                writer.writeUint64(1, this.lo);
-            if (this.hi != 0)
-                writer.writeUint64(2, this.hi);
+            if (this.lo != "0")
+                writer.writeUint64String(1, this.lo);
+            if (this.hi != "0")
+                writer.writeUint64String(2, this.hi);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -88,10 +88,10 @@ export namespace alkanes {
                     break;
                 switch (reader.getFieldNumber()) {
                     case 1:
-                        message.lo = reader.readUint64();
+                        message.lo = reader.readUint64String();
                         break;
                     case 2:
-                        message.hi = reader.readUint64();
+                        message.hi = reader.readUint64String();
                         break;
                     default: reader.skipField();
                 }

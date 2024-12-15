@@ -82,8 +82,8 @@ export function toUint128(
 ): any {
   let hex = leftPad16(v.toString(16));
   return new alkanes_protobuf.uint128({
-    hi: BigInt("0x" + hex.substr(0, 16)) as any,
-    lo: BigInt("0x" + hex.substr(16, 32)) as any,
+    hi: BigInt("0x" + hex.substr(0, 16)).toString(10),
+    lo: BigInt("0x" + hex.substr(16, 32)).toString(10)
   });
 }
 

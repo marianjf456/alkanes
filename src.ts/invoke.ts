@@ -8,6 +8,71 @@ const {
   AlkanesTrace
 } = alkanes_protobuf;
 
+export function toAlkaneTransfer(v) {
+  return {
+    id: toAlkaneId(v.id),
+    value: fromUint128(v.value)
+  };
+}
+
+export function fromCallType(v: number): string {
+  switch (v) {
+    case 1:
+      return 'call';
+    case 2:
+      return 'delegatecall';
+    case 3:
+      return 'staticcall';
+    default:
+      return 'unknowncall';
+  }
+}
+
+export function toAlkaneId(v) {
+  return {
+    block: fromUint128(v.block),
+    tx: fromUint128(v.tx)
+  };
+}
+
+export function toContext(v) {
+  return {
+    myself: toAlkaneId(v.myself),
+    caller: toAlkaneId(v.caller),
+    incomingAlkanes: v.incoming_alkanes.map((v) => toAlkaneTransfer(v)),
+    vout: v.vout
+  };
+}
+export function toEvent(v) {
+  let k = null;
+  switch (k = Object.keys(v)[0]) {
+    case 'create_alkane':
+      return {
+        event: 'create',
+        data: toAlkaneId(v[k].new_alkane)
+      };
+    case 'enter_context':
+      return {
+        event: 'extcall',
+        data: {
+          type: fromCallType(v[k].call_type),
+          context: toContext(v[k].context.inner),
+          fuel: v[k].context.fuel
+        }
+      };
+    case 'exit_context':
+      return {
+        event: 'return',
+        data: {
+          status: v[k].status == 0 ? 'revert': 'success',
+          response: v[k].response,
+          fuelUsed: v[k].fuel_used
+        }
+      };
+  }
+  
+}
+
 export function encodeTraceRequest({
   txid,
   vout
@@ -25,7 +90,7 @@ export function encodeTraceRequest({
 }
 
 export function decodeTraceResponse(hex: string): any {
-  return alkanes_protobuf.AlkanesTrace.deserializeBinary(Buffer.from(stripHexPrefix(hex), 'hex'));
+  return alkanes_protobuf.AlkanesTrace.deserializeBinary(Buffer.from(stripHexPrefix(hex), 'hex')).toObject().events.map((v) => toEvent(v));
 }
 
 export function encodeSimulateRequest({
@@ -44,7 +109,7 @@ export function encodeSimulateRequest({
   transaction: string;
   target: AlkaneId;
   inputs: bigint[];
-  height: number;
+  height: bigint;
   block: string;
   txindex: number;
   vout: number;
@@ -54,7 +119,7 @@ export function encodeSimulateRequest({
   const input = {
     alkanes: alkanes.map((v) => toProtobufAlkaneTransfer(v)),
     transaction: Uint8Array.from(Buffer.from(transaction, "hex")),
-    height: height,
+    height: Number(height),
     txindex,
     calldata: encipher([target.block, target.tx, ...inputs]),
     block: Uint8Array.from(Buffer.from(block, 'hex')),

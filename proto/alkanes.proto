@@ -1,8 +1,8 @@
 syntax = "proto3";
 package alkanes;
 message uint128 {
-  uint64 lo = 1;
-  uint64 hi = 2;
+  uint64 lo = 1 [jstype = JS_STRING];
+  uint64 hi = 2 [jstype = JS_STRING];
 }
 
 message AlkaneId {
