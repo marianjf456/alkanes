@@ -6,10 +6,10 @@ import {
   OutPoint,
   RuneOutput,
   decodeRunesResponse,
-  encodeBlockHeightInput
+  encodeBlockHeightInput,
 } from "./outpoint";
-import { MetashrewRunes } from "metashrew-runes/lib/src.ts/rpc";
-import * as protobuf from "./proto/protorune";
+import { BaseRpc } from "./base-rpc";
+import { protorune as protobuf } from "./proto/protorune";
 import {
   RunestoneProtostoneUpgrade,
   encodeRunestoneProtostone,
@@ -17,7 +17,7 @@ import {
 import { Edict } from "@magiceden-oss/runestone-lib/dist/src/edict.js";
 import { AlkaneTransfer } from "./alkane";
 import { Rune } from "@magiceden-oss/runestone-lib/dist/src/rune.js";
-import { u64, u32, u128 } from '@magiceden-oss/runestone-lib/dist/src/integer';
+import { u64, u32, u128 } from "@magiceden-oss/runestone-lib/dist/src/integer";
 import { ProtoruneEdict } from "./protorune/protoruneedict";
 import { ProtoruneRuneId } from "./protorune/protoruneruneid";
 
@@ -29,14 +29,14 @@ const addHexPrefix = (s) => (s.substr(0, 2) === "0x" ? s : "0x" + s);
 
 let id = 0;
 
-export class AlkanesRpc extends MetashrewRunes {
+export class AlkanesRpc extends BaseRpc {
   async protorunesbyaddress({ address, protocolTag }: any): Promise<{
     outpoints: OutPoint[];
     balanceSheet: RuneOutput[];
   }> {
     const buffer = protowallet.encodeProtorunesWalletInput(
       address,
-      protocolTag
+      protocolTag,
     );
     const byteString = await this._call({
       method: "protorunesbyaddress",
@@ -45,7 +45,6 @@ export class AlkanesRpc extends MetashrewRunes {
     const decoded = protowallet.decodeWalletOutput(byteString);
     return decoded;
   }
-
   async runesbyaddress({ address }: any): Promise<{
     outpoints: OutPoint[];
     balanceSheet: RuneOutput[];
@@ -68,22 +67,36 @@ export class AlkanesRpc extends MetashrewRunes {
     const decodedResponse = decodeRunesResponse(response);
     return decodedResponse;
   }
-  async protorunesbyoutpoint({ txid, vout, protocolTag }: any): Promise<any> {
+  async protorunesbyoutpoint({ txid, vout, protocolTag }) {
     const buffer =
       "0x" +
       Buffer.from(
-        protobuf.OutpointWithProtocol.toBinary({
+        new protobuf.OutpointWithProtocol({
           protocol: toUint128(protocolTag),
           txid: Buffer.from(txid, "hex"),
           vout,
-        })
+        }).serializeBinary(),
       ).toString("hex");
-    return invoke.decodeOutpointResponse(await this._call({
-      method: "protorunesbyoutpoint",
-      input: buffer,
-    }));
+    return invoke.decodeOutpointResponse(
+      await this._call({
+        method: "protorunesbyoutpoint",
+        input: buffer,
+      }),
+    );
   }
 
+  async trace({ txid, vout }: { txid: string; vout: number }): Promise<any> {
+    const buffer = invoke.encodeTraceRequest({
+      txid,
+      vout,
+    });
+    const byteString = await this._call({
+      method: "trace",
+      input: buffer,
+    });
+    const decoded = invoke.decodeTraceResponse(byteString);
+    return decoded;
+  }
   async simulate({
     alkanes,
     transaction,
@@ -150,7 +163,11 @@ export class AlkanesRpc extends MetashrewRunes {
       edicts,
     });
     return encodeRunestoneProtostone({
-      edicts: runes.map((r) => ({ id: new ProtoruneRuneId(u128(r.id.block), u128(r.id.tx)), output: u32(2), amount: u128(r.value) })),
+      edicts: runes.map((r) => ({
+        id: new ProtoruneRuneId(u128(r.id.block), u128(r.id.tx)),
+        output: u32(2),
+        amount: u128(r.value),
+      })),
       pointer: 3,
       protostones: [protostone],
     }).encodedRunestone;

@@ -3,6 +3,8 @@
         "allowUnusedLabels": true,
         "experimentalDecorators": true,
         "module": "commonjs",
+        "noUnusedParameters": false,
+        "noUnusedLocals": false,
         "moduleResolution": "node",
 	"resolveJsonModule": true,
         "target": "es2020",

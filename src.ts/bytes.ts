@@ -1,11 +1,10 @@
 import { SeekBuffer } from "./seekbuffer.js";
-import * as proto from "./proto/alkanes";
+import { alkanes as alkanes_protobuf } from "./proto/alkanes";
 
-export function toProtobufAlkaneTransfer(v: AlkaneTransfer): proto.AlkaneTransfer {
-  const result = proto.AlkaneTransfer.create();
-  result.id = { block: toUint128(v.id.block), tx: toUint128(v.id.tx) };
-  result.value = toUint128(v.value);
-  return result;
+export function toProtobufAlkaneTransfer(
+  v: AlkaneTransfer,
+): alkanes_protobuf.AlkaneTransfer {
+  return new alkanes_protobuf.AlkaneTransfer({ id: new alkanes_protobuf.AlkaneId({ block: toUint128(v.id.block), tx: toUint128(v.id.tx) }), value: toUint128(v.value) });
 }
 
 /**
@@ -78,17 +77,28 @@ export function leftPad8(v: string): string {
   return "0".repeat(16 - v.length) + v;
 }
 
-export function toUint128(v: bigint): { hi: bigint, lo: bigint } {
+export function toUint128(
+  v: bigint,
+): any {
   let hex = leftPad16(v.toString(16));
-  return { hi: BigInt('0x' + hex.substr(0, 16)), lo: BigInt('0x' + hex.substr(16, 32)) };
+  return new alkanes_protobuf.uint128({
+    hi: BigInt("0x" + hex.substr(0, 16)) as any,
+    lo: BigInt("0x" + hex.substr(16, 32)) as any,
+  });
 }
 
-export function fromUint128(v: { hi: bigint, lo: bigint }): bigint {
+export function fromUint128(v: { hi: bigint; lo: bigint }): bigint {
   return u128ToBuffer(v);
 }
 
-export function u128ToBuffer(v: { hi: bigint, lo: bigint }): bigint {
-  return BigInt('0x' + Buffer.from(leftPad8(v.hi.toString(16)) + leftPad8(v.lo.toString(16)), 'hex').toString('hex'));
+export function u128ToBuffer(v: { hi: bigint; lo: bigint }): bigint {
+  return BigInt(
+    "0x" +
+      Buffer.from(
+        leftPad8(v.hi.toString(16)) + leftPad8(v.lo.toString(16)),
+        "hex",
+      ).toString("hex"),
+  );
 }
 
 export function encodeVarInt(value: bigint): Buffer {
@@ -107,12 +117,14 @@ export function encipher(values: bigint[]): Buffer {
 }
 
 export const toBuffer = (v: number | bigint) => {
-  return Buffer.from(Array.from(Buffer.from(leftPad16(v.toString(16)), 'hex')).reverse());
-}
+  return Buffer.from(
+    Array.from(Buffer.from(leftPad16(v.toString(16)), "hex")).reverse(),
+  );
+};
 
 export const fromBuffer = (v: Buffer): bigint => {
-  return BigInt('0x' + Buffer.from(Array.from(v).reverse()).toString('hex'));
-}
+  return BigInt("0x" + Buffer.from(Array.from(v).reverse()).toString("hex"));
+};
 
 export function decipher(values: Buffer): bigint[] {
   let seekBuffer = new SeekBuffer(values);

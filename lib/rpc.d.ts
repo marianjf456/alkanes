@@ -1,8 +1,8 @@
 import { OutPoint, RuneOutput } from "./outpoint";
-import { MetashrewRunes } from "metashrew-runes/lib/src.ts/rpc";
+import { BaseRpc } from "./base-rpc";
 import { AlkaneTransfer } from "./alkane";
 import { ProtoruneEdict } from "./protorune/protoruneedict";
-export declare class AlkanesRpc extends MetashrewRunes {
+export declare class AlkanesRpc extends BaseRpc {
     protorunesbyaddress({ address, protocolTag }: any): Promise<{
         outpoints: OutPoint[];
         balanceSheet: RuneOutput[];
@@ -22,7 +22,15 @@ export declare class AlkanesRpc extends MetashrewRunes {
             symbol: string;
         }>;
     }>;
-    protorunesbyoutpoint({ txid, vout, protocolTag }: any): Promise<any>;
+    protorunesbyoutpoint({ txid, vout, protocolTag }: {
+        txid: any;
+        vout: any;
+        protocolTag: any;
+    }): Promise<any>;
+    trace({ txid, vout }: {
+        txid: string;
+        vout: number;
+    }): Promise<any>;
     simulate({ alkanes, transaction, height, block, txindex, target, inputs, vout, pointer, refundPointer, }: any): Promise<any>;
     runtime({ protocolTag }: any): Promise<{
         balances: RuneOutput[];

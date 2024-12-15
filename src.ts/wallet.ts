@@ -1,16 +1,18 @@
 import { decodeRunes } from "./outpoint";
-import {
+import { protorune as protobuf } from "./proto/protorune";
+import { decodeOutpointViewBase, OutPoint, RuneOutput } from "./outpoint";
+import { stripHexPrefix } from "./utils";
+import leb128 from "leb128";
+import { toBuffer, toUint128 } from "./bytes";
+
+const {
   ProtorunesWalletRequest,
   WalletRequest,
   WalletResponse,
   RuntimeInput,
   Runtime,
   Outpoint,
-} from "./proto/protorune";
-import { decodeOutpointViewBase, OutPoint, RuneOutput } from "./outpoint";
-import { stripHexPrefix } from "./utils";
-import leb128 from "leb128";
-import { toBuffer, toUint128 } from "./bytes";
+} = protobuf;
 
 /**
  * Encodes the protocolTag in LEB128 format
@@ -31,23 +33,23 @@ export function encodeProtorunesWalletInput(
   address: string,
   protocolTag: bigint
 ) {
-  const input: ProtorunesWalletRequest = {
+  const input: any = {
     wallet: Uint8Array.from(Buffer.from(address, "utf-8")),
     protocolTag: encodeProtocolTag(protocolTag),
   };
   return (
-    "0x" + Buffer.from(ProtorunesWalletRequest.toBinary(input)).toString("hex")
+    "0x" + Buffer.from(new ProtorunesWalletRequest(input).serializeBinary()).toString("hex")
   );
 }
 
 export function encodeWalletInput(
   address: string,
 ) {
-  const input: WalletRequest = {
+  const input: any = {
     wallet: Uint8Array.from(Buffer.from(address, "utf-8")),
   };
   return (
-    "0x" + Buffer.from(WalletRequest.toBinary(input)).toString("hex")
+    "0x" + Buffer.from(new WalletRequest(input).serializeBinary()).toString("hex")
   );
 }
 
@@ -55,7 +57,7 @@ export function decodeWalletOutput(hex: string): {
   outpoints: OutPoint[];
   balanceSheet: RuneOutput[];
 } {
-  const wo = WalletResponse.fromBinary(
+  const wo = WalletResponse.deserializeBinary(
     (Uint8Array as any).from((Buffer as any).from(stripHexPrefix(hex), "hex") as Buffer) as Uint8Array);
   return {
     outpoints: wo.outpoints.map((op) => decodeOutpointViewBase(op)),
@@ -64,14 +66,14 @@ export function decodeWalletOutput(hex: string): {
 }
 
 export function encodeRuntimeInput(protocolTag: bigint) {
-  const input: RuntimeInput = {
+  const input: any = {
     protocolTag: encodeProtocolTag(protocolTag),
   };
-  return "0x" + Buffer.from(RuntimeInput.toBinary(input)).toString("hex");
+  return "0x" + Buffer.from(new RuntimeInput(input).serializeBinary()).toString("hex");
 }
 
 export function decodeRuntimeOutput(hex: string) {
-  const runtime = Runtime.fromBinary(
+  const runtime = Runtime.deserializeBinary(
     Uint8Array.from(Buffer.from(stripHexPrefix(hex), "hex"))
   );
   const balances = decodeRunes(runtime.balances);

@@ -1,12 +1,13 @@
-import {
+import { protorune as protobuf } from "./proto/protorune";
+import { stripHexPrefix } from "./utils";
+import { fromUint128, u128ToBuffer } from "./bytes";
+const {
   OutpointResponse,
   Outpoint,
   BalanceSheet,
   RunesResponse,
   RunesByHeightRequest
-} from "./proto/protorune";
-import { stripHexPrefix } from "./utils";
-import { fromUint128, u128ToBuffer } from "./bytes";
+} = protobuf;
 
 
 export type Rune = {
@@ -41,11 +42,11 @@ export function encodeOutpointInput(txid: string, pos: number): string {
     txid: (Buffer as any).from(txid, "hex") as Buffer,
     vout: pos,
   };
-  const str = Buffer.from(Outpoint.toBinary(input)).toString("hex");
+  const str = Buffer.from(new Outpoint(input).serializeBinary()).toString("hex");
   return "0x" + str;
 }
 
-export function decodeRunes(balances: BalanceSheet): RuneOutput[] {
+export function decodeRunes(balances: any): RuneOutput[] {
   if (!balances) return [];
   return balances.entries.map((entry) => {
     const balance = entry.balance;
@@ -82,7 +83,7 @@ export function decodeRunes(balances: BalanceSheet): RuneOutput[] {
     };
   });
 }
-export function decodeOutpointViewBase(op: OutpointResponse): OutPoint {
+export function decodeOutpointViewBase(op: any): OutPoint {
   return {
     runes: decodeRunes(op.balances),
     outpoint: {
@@ -102,7 +103,7 @@ export function decodeOutpointViewBase(op: OutpointResponse): OutPoint {
 
 export function decodeOutpointView(hex: string): OutPoint {
   const bytes = (Uint8Array as any).from((Buffer as any).from(stripHexPrefix(hex), "hex") as Buffer) as Uint8Array;
-  const op = OutpointResponse.fromBinary(bytes);
+  const op = OutpointResponse.deserializeBinary(bytes);
   return decodeOutpointViewBase(op);
 }
 
@@ -122,7 +123,7 @@ export function decodeRunesResponse(hex: string): {
   if (buffer.length === 0) {
     return { runes: [] };
   }
-  const response = RunesResponse.fromBinary(buffer);
+  const response = RunesResponse.deserializeBinary(buffer);
   
   return {
     runes: response.runes.map(rune => ({
@@ -139,6 +140,6 @@ export function encodeBlockHeightInput(height: number): string {
   const input: any = {
     height: height
   };
-  const str = Buffer.from(RunesByHeightRequest.toBinary(input)).toString("hex");
+  const str = Buffer.from(new RunesByHeightRequest(input).serializeBinary()).toString("hex");
   return "0x" + str;
 }

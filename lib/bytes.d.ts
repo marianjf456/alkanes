@@ -1,6 +1,6 @@
 import { SeekBuffer } from "./seekbuffer.js";
-import * as proto from "./proto/alkanes";
-export declare function toProtobufAlkaneTransfer(v: AlkaneTransfer): proto.AlkaneTransfer;
+import { alkanes as alkanes_protobuf } from "./proto/alkanes";
+export declare function toProtobufAlkaneTransfer(v: AlkaneTransfer): alkanes_protobuf.AlkaneTransfer;
 /**
  * A little utility type used for nominal typing.
  *
@@ -39,10 +39,7 @@ export declare function leftPad15(v: string): string;
 export declare function leftPadByte(v: string): string;
 export declare function leftPad16(v: string): string;
 export declare function leftPad8(v: string): string;
-export declare function toUint128(v: bigint): {
-    hi: bigint;
-    lo: bigint;
-};
+export declare function toUint128(v: bigint): any;
 export declare function fromUint128(v: {
     hi: bigint;
     lo: bigint;

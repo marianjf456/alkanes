@@ -1,4 +1,3 @@
-import { OutpointResponse, BalanceSheet } from "./proto/protorune";
 export type Rune = {
     id: string;
     name: string;
@@ -25,8 +24,8 @@ export type OutPoint = {
     txindex: number;
 };
 export declare function encodeOutpointInput(txid: string, pos: number): string;
-export declare function decodeRunes(balances: BalanceSheet): RuneOutput[];
-export declare function decodeOutpointViewBase(op: OutpointResponse): OutPoint;
+export declare function decodeRunes(balances: any): RuneOutput[];
+export declare function decodeOutpointViewBase(op: any): OutPoint;
 export declare function decodeOutpointView(hex: string): OutPoint;
 export declare function decodeRunesResponse(hex: string): {
     runes: Array<{

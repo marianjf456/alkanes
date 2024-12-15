@@ -1,4 +1,9 @@
 import { AlkaneTransfer, AlkaneId } from "./bytes";
+export declare function encodeTraceRequest({ txid, vout }: {
+    txid: string;
+    vout: number;
+}): string;
+export declare function decodeTraceResponse(hex: string): any;
 export declare function encodeSimulateRequest({ alkanes, transaction, height, block, inputs, target, txindex, vout, pointer, refundPointer, }: {
     alkanes: AlkaneTransfer[];
     transaction: string;
@@ -19,7 +24,7 @@ export type ExecutionResult = {
 };
 export type DecodedSimulateResponse = {
     status: number;
-    gasUsed: bigint;
+    gasUsed: number;
     execution: ExecutionResult;
 };
 export declare function decodeSimulateResponse(response: string): DecodedSimulateResponse;

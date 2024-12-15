@@ -1,10 +1,32 @@
 import { toProtobufAlkaneTransfer, AlkaneTransfer, AlkaneId, fromUint128, toUint128, encipher } from "./bytes";
-import {
-  SimulateResponse,
-  MessageContextParcel
-} from "./proto/alkanes";
+import { alkanes as alkanes_protobuf } from "./proto/alkanes";
 import { stripHexPrefix } from "./utils";
-import * as protobuf from "./proto/protorune";
+import { protorune as protobuf } from "./proto/protorune";
+const {
+  SimulateResponse,
+  MessageContextParcel,
+  AlkanesTrace
+} = alkanes_protobuf;
+
+export function encodeTraceRequest({
+  txid,
+  vout
+}: {
+  txid: string;
+  vout: number;
+}): string {
+  const input = {
+    txid: Buffer.from(stripHexPrefix(txid), 'hex'),
+    vout: vout
+  };
+  return (
+    "0x" + Buffer.from(new protobuf.Outpoint(input).serializeBinary()).toString("hex")
+  );
+}
+
+export function decodeTraceResponse(hex: string): any {
+  return alkanes_protobuf.AlkanesTrace.deserializeBinary(Buffer.from(stripHexPrefix(hex), 'hex'));
+}
 
 export function encodeSimulateRequest({
   alkanes,
@@ -29,21 +51,20 @@ export function encodeSimulateRequest({
   pointer: number;
   refundPointer: number;
 }): string {
-  let input: MessageContextParcel = MessageContextParcel.create();
-  input = {
+  const input = {
     alkanes: alkanes.map((v) => toProtobufAlkaneTransfer(v)),
     transaction: Uint8Array.from(Buffer.from(transaction, "hex")),
-    height: BigInt(height),
+    height: height,
     txindex,
     calldata: encipher([target.block, target.tx, ...inputs]),
     block: Uint8Array.from(Buffer.from(block, 'hex')),
     vout,
     pointer,
-    refundPointer,
+    refund_pointer: refundPointer,
   };
 
   return (
-    "0x" + Buffer.from(MessageContextParcel.toBinary(input)).toString("hex")
+    "0x" + Buffer.from(new alkanes_protobuf.MessageContextParcel(input).serializeBinary()).toString("hex")
   );
 }
 
@@ -62,16 +83,16 @@ export type ExecutionResult = {
 
 export type DecodedSimulateResponse = {
   status: number;
-  gasUsed: bigint;
+  gasUsed: number;
   execution: ExecutionResult
 };
 
 export function decodeSimulateResponse(response: string): DecodedSimulateResponse {
-  const res = SimulateResponse.fromBinary(Buffer.from(stripHexPrefix(response), "hex"));
-  if (res.error || !res.execution) return { status: ExecutionStatus.REVERT, gasUsed: 0n, execution: { alkanes: [], storage: [], data: '0x', error: res.error } };
+  const res = alkanes_protobuf.SimulateResponse.deserializeBinary(Buffer.from(stripHexPrefix(response), "hex"));
+  if (res.error || !res.execution) return { status: ExecutionStatus.REVERT, gasUsed: 0, execution: { alkanes: [], storage: [], data: '0x', error: res.error } };
   return {
     status: ExecutionStatus.SUCCESS,
-    gasUsed: res.gasUsed,
+    gasUsed: res.gas_used,
     execution: {
       alkanes: res.execution.alkanes,
       storage: res.execution.storage,
@@ -93,7 +114,7 @@ export function outpointResponseToObject(v: any[]): any {
 }
 
 export function decodeOutpointResponse(result: any): any {
-  return outpointResponseToObject(protobuf.OutpointResponse.fromBinary(
+  return outpointResponseToObject(protobuf.OutpointResponse.deserializeBinary(
       Buffer.from(
         (
           result
