@@ -53,7 +53,7 @@ export function toEvent(v) {
       };
     case 'enter_context':
       return {
-        event: 'extcall',
+        event: 'invoke',
         data: {
           type: fromCallType(v[k].call_type),
           context: toContext(v[k].context.inner),
