@@ -424,20 +424,20 @@ export declare namespace protorune {
     class uint128 extends pb_1.Message {
         #private;
         constructor(data?: any[] | {
-            lo?: number;
-            hi?: number;
+            lo?: string;
+            hi?: string;
         });
-        get lo(): number;
-        set lo(value: number);
-        get hi(): number;
-        set hi(value: number);
+        get lo(): string;
+        set lo(value: string);
+        get hi(): string;
+        set hi(value: string);
         static fromObject(data: {
-            lo?: number;
-            hi?: number;
+            lo?: string;
+            hi?: string;
         }): uint128;
         toObject(): {
-            lo?: number;
-            hi?: number;
+            lo?: string;
+            hi?: string;
         };
         serialize(): Uint8Array;
         serialize(w: pb_1.BinaryWriter): void;

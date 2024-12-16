@@ -35,7 +35,7 @@ export function encodeProtorunesWalletInput(
 ) {
   const input: any = {
     wallet: Uint8Array.from(Buffer.from(address, "utf-8")),
-    protocolTag: encodeProtocolTag(protocolTag),
+    protocol_tag: encodeProtocolTag(protocolTag),
   };
   return (
     "0x" + Buffer.from(new ProtorunesWalletRequest(input).serializeBinary()).toString("hex")
