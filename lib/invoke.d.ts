@@ -1,4 +1,5 @@
 import { AlkaneTransfer, AlkaneId } from "./bytes";
+export declare function formatKey(v: any): string;
 export declare function toAlkaneTransfer(v: any): {
     id: {
         block: bigint;
@@ -11,6 +12,10 @@ export declare function toAlkaneId(v: any): {
     block: bigint;
     tx: bigint;
 };
+export declare function toStorageSlot(v: any): {
+    key: string;
+    value: string;
+};
 export declare function toContext(v: any): {
     myself: {
         block: bigint;
@@ -20,8 +25,14 @@ export declare function toContext(v: any): {
         block: bigint;
         tx: bigint;
     };
+    inputs: any;
     incomingAlkanes: any;
     vout: any;
+};
+export declare function toResponse(v: any): {
+    alkanes: any;
+    data: string;
+    storage: any;
 };
 export declare function toEvent(v: any): {
     event: string;
@@ -42,20 +53,23 @@ export declare function toEvent(v: any): {
                 block: bigint;
                 tx: bigint;
             };
+            inputs: any;
             incomingAlkanes: any;
             vout: any;
         };
         fuel: any;
         status?: undefined;
         response?: undefined;
-        fuelUsed?: undefined;
     };
 } | {
     event: string;
     data: {
         status: string;
-        response: any;
-        fuelUsed: any;
+        response: {
+            alkanes: any;
+            data: string;
+            storage: any;
+        };
         type?: undefined;
         context?: undefined;
         fuel?: undefined;

@@ -1,13 +1,15 @@
 import { Client } from "../lib/client";
+import { getLogger } from "../lib/logger";
+
+const logger = getLogger('alkanes:init');
 
 export async function init() {
   let client = new Client("regtest");
   let result = await client.init([]);
   if (typeof result == "number") {
-    console.log("At block number: ", result);
+    logger.error("At block number: ", result);
   } else {
-    console.log("Init local chain: ");
-    console.log(result);
+    logger.info("init local chain: complete");
   }
 }
 

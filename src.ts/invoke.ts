@@ -8,6 +8,25 @@ const {
   AlkanesTrace
 } = alkanes_protobuf;
 
+const SEP = '/'.charCodeAt(0);
+
+export function formatKey(v) {
+  return (Array.from(v).reduce((r: Array<Array<number>>, v: number) => {
+    if (v === SEP) {
+      r.push([]);
+      return r;
+    } else {
+      const last = r[r.length - 1];
+      last.push(v);
+      return r;
+    }
+  }, [[]]) as Array<Array<number>>).map((v) => {
+    const s = Buffer.from(v).toString('utf8');
+    if (/^\w+$/.test(s)) return s;
+    else return Buffer.from(v).toString('hex');
+  }).join('/');
+}
+
 export function toAlkaneTransfer(v) {
   return {
     id: toAlkaneId(v.id),
@@ -35,12 +54,28 @@ export function toAlkaneId(v) {
   };
 }
 
+export function toStorageSlot(v) {
+  return {
+    key: formatKey(v.key),
+    value: '0x' + Buffer.from(v.value).toString('hex')
+  };
+}
+
 export function toContext(v) {
   return {
     myself: toAlkaneId(v.myself),
     caller: toAlkaneId(v.caller),
+    inputs: v.inputs.map((v) => fromUint128(v)),
     incomingAlkanes: v.incoming_alkanes.map((v) => toAlkaneTransfer(v)),
     vout: v.vout
+  };
+}
+
+export function toResponse(v) {
+  return {
+    alkanes: v.alkanes.map((v) => toAlkaneTransfer(v)),
+    data: '0x' + Buffer.from(v.data).toString('hex'),
+    storage: v.storage.map((v) => toStorageSlot(v))
   };
 }
 export function toEvent(v) {
@@ -61,12 +96,13 @@ export function toEvent(v) {
         }
       };
     case 'exit_context':
+console.log(v[k].response);
       return {
         event: 'return',
         data: {
-          status: v[k].status == 0 ? 'revert': 'success',
-          response: v[k].response,
-          fuelUsed: v[k].fuel_used
+          status: v[k].status == 0 ? 'success': 'revert',
+          response: toResponse(v[k].response),
+          //fuelUsed: v[k].response.fuel_used
         }
       };
   }

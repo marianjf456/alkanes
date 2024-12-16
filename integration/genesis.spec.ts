@@ -26,7 +26,6 @@ const logger = getLogger("alkanes:run");
 const timeout = async (n) =>
   await new Promise((resolve) => setTimeout(resolve, n));
 
-const ln = (v) => (console.log(v), v);
 
 const bip32 = BIP32Factory(ecc);
 
@@ -101,19 +100,23 @@ export async function deployGenesis(): Promise<void> {
   const coinbaseTxid = Buffer.from(
     Array.from(Buffer.from(coinbase.txid)).reverse(),
   ).toString("hex");
-  logger.info('wait 5s');
+  logger.info("wait 5s");
   await timeout(5000);
-  logger.info((await client.call("getrawtransaction", coinbaseTxid)).data.result);
+  logger.info(
+    (await client.call("getrawtransaction", coinbaseTxid)).data.result,
+  );
   const coinbaseTransaction = btc.Transaction.fromRaw(
     new Uint8Array(
       Array.from(
-        Buffer.from((await client.call("getrawtransaction", coinbaseTxid)).data
-          .result, "hex")
-      )
+        Buffer.from(
+          (await client.call("getrawtransaction", coinbaseTxid)).data.result,
+          "hex",
+        ),
+      ),
     ),
     { allowUnknownOutputs: true },
   );
-  logger.info('coinbase:');
+  logger.info("coinbase:");
   logger.info(coinbaseTransaction);
   fundingTransaction.addInput({
     witnessUtxo: (coinbaseTransaction as any).outputs[0],
@@ -122,7 +125,6 @@ export async function deployGenesis(): Promise<void> {
     index: 0,
   });
   let revealAmount = (coinbaseTransaction as any).outputs[0].amount - fee;
-  console.log(revealAmount);
   const funding = revealAmount;
   fundingTransaction.addOutput({
     script: revealPayment.script,
@@ -141,7 +143,6 @@ export async function deployGenesis(): Promise<void> {
     fundingTransactionHex,
   );
   await client.generateBlock();
-  console.log(sendHex);
   const txid = new Uint8Array(
     Array.from(Buffer.from(sendHex.data.result, "hex")),
   );
@@ -165,7 +166,6 @@ export async function deployGenesis(): Promise<void> {
       }),
     ],
   }).encodedRunestone;
-  console.log(script);
   tx.addOutput({
     script,
     amount: 0n,
@@ -192,7 +192,9 @@ export async function deployGenesis(): Promise<void> {
     ),
     { allowUnknownOutputs: true },
   );
-  logger.info("reveal tx: " + revealTransactionFromRegtest);
+  logger.info("reveal tx:");
+  logger.info(revealTransactionFromRegtest);
+  logger.info("wait 20s...");
   await timeout(20000);
   const revealTxidReversed = Buffer.from(
     Array.from(Buffer.from(revealTxid, "hex")).reverse(),
