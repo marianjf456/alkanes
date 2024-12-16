@@ -215,12 +215,12 @@ export function outpointResponseToObject(v: any[]): any {
 }
 
 export function decodeOutpointResponse(result: any): any {
-  return outpointResponseToObject(protobuf.OutpointResponse.deserializeBinary(
+  return outpointResponseToObject(((protobuf.OutpointResponse.deserializeBinary(
       Buffer.from(
         (
           result
         ).substr(2),
         "hex"
       )
-    ).balances.entries);
+    ).toObject() || {}).balances || {}).entries || []);
 }
