@@ -8,9 +8,11 @@ const addHexPrefix = (s) => s.substr(0, 2) === '0x' ? s : '0x' + s;
 
 let id = 0;
 
+export type BlockTag = string
+
 export class BaseRpc {
   public baseUrl: string;
-  public blockTag: string;
+  public blockTag: BlockTag;
   constructor({
     baseUrl,
     blockTag
@@ -21,7 +23,7 @@ export class BaseRpc {
   async _call({
     method,
     input
-  }): Promise<string> {
+  }, blockTag: BlockTag = "latest"): Promise<string> {
     const response = (await (await fetch(url.format({
       ...url.parse(this.baseUrl),
       pathname: '/'
@@ -31,7 +33,7 @@ export class BaseRpc {
         id: id++,
 	jsonrpc: '2.0',
 	method: 'metashrew_view',
-	params: [ method, input, this.blockTag ]
+	params: [ method, input, blockTag || this.blockTag ]
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +45,7 @@ export class BaseRpc {
 
   async runesbyaddress({
     address: string
-  }: any): Promise<{
+  }: any, blockTag: BlockTag = "latest"): Promise<{
     outpoints: OutPoint[];
     balanceSheet: RuneOutput[];
   }> {
@@ -51,17 +53,17 @@ export class BaseRpc {
     const byteString = await this._call({
       method: 'runesbyaddress',
       input: buffer
-    });
+    }, blockTag);
     const decoded = wallet.decodeWalletOutput(byteString);
     return decoded;
   }
 
-  async runesbyheight ({height}: {height: number}) {
+  async runesbyheight ({height}: {height: number}, blockTag: BlockTag = "latest") {
     const payload = encodeBlockHeightInput(height);
     const response = await this._call({
       method: 'runesbyheight',
       input: payload
-    });
+    }, blockTag);
     const decodedResponse = decodeRunesResponse( response);
     return decodedResponse;
   };

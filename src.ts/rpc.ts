@@ -24,13 +24,14 @@ import { ProtoruneRuneId } from "./protorune/protoruneruneid";
 import { Psbt } from "bitcoinjs-lib";
 import { ProtoStone } from "./protorune/protostone";
 import { toUint128, toBuffer, leftPadByte } from "./bytes";
+import { BlockTag } from "./base-rpc";
 
 const addHexPrefix = (s) => (s.substr(0, 2) === "0x" ? s : "0x" + s);
 
 let id = 0;
 
 export class AlkanesRpc extends BaseRpc {
-  async protorunesbyaddress({ address, protocolTag }: any): Promise<{
+  async protorunesbyaddress({ address, protocolTag }: any, blockTag: BlockTag = "latest"): Promise<{
     outpoints: OutPoint[];
     balanceSheet: RuneOutput[];
   }> {
@@ -41,11 +42,11 @@ export class AlkanesRpc extends BaseRpc {
     const byteString = await this._call({
       method: "protorunesbyaddress",
       input: buffer,
-    });
+    }, blockTag);
     const decoded = protowallet.decodeWalletOutput(byteString);
     return decoded;
   }
-  async runesbyaddress({ address }: any): Promise<{
+  async runesbyaddress({ address }: any, blockTag: BlockTag = "latest"): Promise<{
     outpoints: OutPoint[];
     balanceSheet: RuneOutput[];
   }> {
@@ -53,21 +54,21 @@ export class AlkanesRpc extends BaseRpc {
     const byteString = await this._call({
       method: "runesbyaddress",
       input: buffer,
-    });
+    }, blockTag);
     const decoded = protowallet.decodeWalletOutput(byteString);
     return decoded;
   }
 
-  async runesbyheight({ height }: { height: number }) {
+  async runesbyheight({ height }: { height: number }, blockTag: BlockTag = "latest") {
     const payload = encodeBlockHeightInput(height);
     const response = await this._call({
       method: "runesbyheight",
       input: payload,
-    });
+    }, blockTag);
     const decodedResponse = decodeRunesResponse(response);
     return decodedResponse;
   }
-  async protorunesbyoutpoint({ txid, vout, protocolTag }) {
+  async protorunesbyoutpoint({ txid, vout, protocolTag }, blockTag: BlockTag = "latest") {
     const buffer =
       "0x" +
       Buffer.from(
@@ -81,11 +82,11 @@ export class AlkanesRpc extends BaseRpc {
       await this._call({
         method: "protorunesbyoutpoint",
         input: buffer,
-      }),
+      }, blockTag),
     );
   }
 
-  async trace({ txid, vout }: { txid: string; vout: number }): Promise<any> {
+  async trace({ txid, vout }: { txid: string; vout: number }, blockTag: BlockTag = "latest"): Promise<any> {
     const buffer = invoke.encodeTraceRequest({
       txid,
       vout,
@@ -93,7 +94,7 @@ export class AlkanesRpc extends BaseRpc {
     const byteString = await this._call({
       method: "trace",
       input: buffer,
-    });
+    }, blockTag);
     const decoded = invoke.decodeTraceResponse(byteString);
     return decoded;
   }
@@ -108,7 +109,7 @@ export class AlkanesRpc extends BaseRpc {
     vout,
     pointer,
     refundPointer,
-  }: any): Promise<any> {
+  }: any, blockTag: BlockTag = "latest"): Promise<any> {
     const buffer = invoke.encodeSimulateRequest({
       alkanes,
       transaction,
@@ -124,18 +125,18 @@ export class AlkanesRpc extends BaseRpc {
     const byteString = await this._call({
       method: "simulate",
       input: buffer,
-    });
+    }, blockTag);
     const decoded = invoke.decodeSimulateResponse(byteString);
     return decoded;
   }
-  async runtime({ protocolTag }: any): Promise<{
+  async runtime({ protocolTag }: any, blockTag: BlockTag = "latest"): Promise<{
     balances: RuneOutput[];
   }> {
     const buffer = protowallet.encodeRuntimeInput(protocolTag);
     const byteString = await this._call({
       method: "protorunesbyaddress",
       input: buffer,
-    });
+    }, blockTag);
     const decoded = protowallet.decodeRuntimeOutput(byteString);
     return decoded;
   }

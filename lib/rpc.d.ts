@@ -2,18 +2,19 @@ import { OutPoint, RuneOutput } from "./outpoint";
 import { BaseRpc } from "./base-rpc";
 import { AlkaneTransfer } from "./alkane";
 import { ProtoruneEdict } from "./protorune/protoruneedict";
+import { BlockTag } from "./base-rpc";
 export declare class AlkanesRpc extends BaseRpc {
-    protorunesbyaddress({ address, protocolTag }: any): Promise<{
+    protorunesbyaddress({ address, protocolTag }: any, blockTag?: BlockTag): Promise<{
         outpoints: OutPoint[];
         balanceSheet: RuneOutput[];
     }>;
-    runesbyaddress({ address }: any): Promise<{
+    runesbyaddress({ address }: any, blockTag?: BlockTag): Promise<{
         outpoints: OutPoint[];
         balanceSheet: RuneOutput[];
     }>;
     runesbyheight({ height }: {
         height: number;
-    }): Promise<{
+    }, blockTag?: BlockTag): Promise<{
         runes: Array<{
             runeId: string;
             name: string;
@@ -26,13 +27,13 @@ export declare class AlkanesRpc extends BaseRpc {
         txid: any;
         vout: any;
         protocolTag: any;
-    }): Promise<any>;
+    }, blockTag?: BlockTag): Promise<any>;
     trace({ txid, vout }: {
         txid: string;
         vout: number;
-    }): Promise<any>;
-    simulate({ alkanes, transaction, height, block, txindex, target, inputs, vout, pointer, refundPointer, }: any): Promise<any>;
-    runtime({ protocolTag }: any): Promise<{
+    }, blockTag?: BlockTag): Promise<any>;
+    simulate({ alkanes, transaction, height, block, txindex, target, inputs, vout, pointer, refundPointer, }: any, blockTag?: BlockTag): Promise<any>;
+    runtime({ protocolTag }: any, blockTag?: BlockTag): Promise<{
         balances: RuneOutput[];
     }>;
     pack({ runes, cellpack, pointer, refundPointer, edicts, }: {
