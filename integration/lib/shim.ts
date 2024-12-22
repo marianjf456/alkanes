@@ -18,9 +18,9 @@ function convertTypesJsonrpc(o) {
 export const rpc = new Proxy(client, {
   get(target, prop, receiver) {
     return async (...args) => {
-      const split = prop.split('_');
-      const method = split.length === 1 ? 'alkanes_' + split[split.length - 1] : prop;
-      return (await client.call(method, ...args.map((v) => convertTypesJsonrpc(v)))).data.result;
+      const split: string[] = (prop as string).split('_') as string[];
+      const method: string = (split.length === 1 ? 'alkanes_' + split[split.length - 1] : prop) as any;
+      return ((await client.call(method, ...args.map((v) => convertTypesJsonrpc(v)))).data as any).result;
     }
   }
 });

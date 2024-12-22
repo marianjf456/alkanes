@@ -29,6 +29,7 @@ const customColors = {
   custom: "blue"
 };
 
+/*
 const customFormatter = ({ level, message, label, timestamp }) => {
   return `${label}|${timestamp}|${level}|${
     typeof message === "string"
@@ -36,10 +37,11 @@ const customFormatter = ({ level, message, label, timestamp }) => {
       : util.inspect(message, { colors: true, depth: 15 })
   }`;
 };
+*/
 
-const createLogger = (proc?: string) => {
+const createLogger = (proc?: string): any => {
   addColors(customColors);
-  const logger = createWinstonLogger({
+  const logger: any = createWinstonLogger({
     defaultMeta: {
       service: proc || "alkanes"
     },
@@ -51,7 +53,7 @@ const createLogger = (proc?: string) => {
         format: format.combine(
           format.label({ label: proc }),
           format.timestamp(),
-          format.printf(customFormatter)
+//          format.printf(customFormatter)
         )
       })
     ]
@@ -62,4 +64,4 @@ const createLogger = (proc?: string) => {
 
 const logger = createLogger(require('../../package').name);
 
-export function getLogger() { return logger; }
+export function getLogger(proc: string): Logger { return createLogger(proc); }

@@ -20,7 +20,9 @@ import bitcoin = require("bitcoinjs-lib");
 import * as ecc from "tiny-secp256k1";
 import { AlkanesRpc } from "../lib/rpc";
 import { getLogger } from "./lib/logger";
-import { rpc } from "./lib/shim";
+import * as shim from "./lib/shim";
+
+const rpc: any = shim.rpc;
 
 const logger = getLogger("alkanes:run");
 
