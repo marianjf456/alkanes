@@ -4,3 +4,4 @@ export * from "./bytes.js";
 export * from "./protorune/proto_runestone_upgrade.js";
 export * from "./protorune/protostone.js";
 export * from "./jsonrpc/simple-jsonrpc.ts";
+export * from "./provider";
