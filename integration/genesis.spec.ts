@@ -20,6 +20,7 @@ import bitcoin = require("bitcoinjs-lib");
 import * as ecc from "tiny-secp256k1";
 import { AlkanesRpc } from "../lib/rpc";
 import { getLogger } from "./lib/logger";
+import { rpc } from "./lib/shim";
 
 const logger = getLogger("alkanes:run");
 
@@ -76,6 +77,7 @@ export async function deployGenesis(): Promise<void> {
     customScripts,
   );
   const blockHash = await client.call("generatetoaddress", 200, faucetAddress);
+  console.log(blockHash);
   const hash = blockHash.data.result[0];
   logger.info("blockhash with payment: " + hash);
   await timeout(2000);
@@ -173,10 +175,10 @@ export async function deployGenesis(): Promise<void> {
   tx.sign(privKey, undefined, new Uint8Array(32));
   tx.finalize();
   const txHex = hex.encode(tx.extract());
-  const rpc = new AlkanesRpc({
+  /*const rpc = new AlkanesRpc({
     baseUrl: "http://localhost:8080",
     blockTag: "latest",
-  });
+  }); */
   const revealTxSend = await client.call("sendrawtransaction", txHex);
   await client.generateBlock();
   const revealTxid = revealTxSend.data.result;

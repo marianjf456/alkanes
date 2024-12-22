@@ -1,0 +1,13 @@
+FROM debian:bookworm-slim as builder
+
+WORKDIR /usr/src
+
+RUN apt-get update && apt-get install -y git libssl-dev build-essential libclang-dev clang pkg-config bash
+
+RUN cargo build --bin ord --release
+RUN ln -sf /usr/src/ord/target/release/ord /usr/local/bin/ord
+
+ENV RUST_BACKTRACE=1
+ENV RUST_LOG=info
+
+CMD ["/docker-entrypoint.sh"}

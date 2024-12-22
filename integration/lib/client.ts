@@ -1,4 +1,4 @@
-import { INIT_OPTIONS, REGTEST_FAUCET, RANDOM_ADDRESS } from "../lib/constants";
+import { INIT_OPTIONS, REGTEST_FAUCET, RANDOM_ADDRESS } from "./constants";
 import { timeout } from "./utils";
 import bitcoin from "bitcoinjs-lib";
 
@@ -31,6 +31,7 @@ export class Client {
       headers: {
         Authorization:
           "Basic " + Buffer.from("bitcoinrpc:bitcoinrpc").toString("base64"),
+        'Content-Type': 'application/json'
       },
       method: "POST",
       body: JSON.stringify(body),

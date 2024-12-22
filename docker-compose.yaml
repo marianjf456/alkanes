@@ -37,6 +37,23 @@ services:
       DAEMON_RPC_ADDR: http://bitcoind:18443
       AUTH: bitcoinrpc:bitcoinrpc
       REDIS_URL: redis://keydb:6379
+      LOG_FILTERS: none,metashrew_keydb=debug
+    restart: unless-stopped
+  jsonrpc:
+    build:
+      dockerfile: docker/Dockerfile.jsonrpc
+      context: ./
+    image: jsonrpc:alkanes
+    environment:
+      HOST: 0.0.0.0
+      RPCUSER: bitcoinrpc
+      RPCPASSWORD: bitcoinrpc
+      DAEMON_RPC_ADDR: bitcoind:18443
+      ORD_HOST: ord
+      ORD_PORT: 8090
+      PORT: 18888
+    ports:
+      - 18888:18888
     restart: unless-stopped
   metashrew-view:
     build:
@@ -46,6 +63,7 @@ services:
     environment:
       REDIS_URL: redis://keydb:6379
       HOST: 0.0.0.0
+      LOG_FILTERS: none,metashrew_keydb_view=debug
     ports:
       - 8080:8080
     restart: unless-stopped

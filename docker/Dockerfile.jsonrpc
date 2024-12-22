@@ -1,0 +1,8 @@
+FROM node:lts
+WORKDIR /app
+COPY lib lib
+COPY package.json package.json
+COPY yarn.lock yarn.lock
+COPY jsonrpc jsonrpc
+RUN yarn
+CMD ["yarn", "start"]
