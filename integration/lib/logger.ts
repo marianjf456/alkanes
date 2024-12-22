@@ -29,7 +29,6 @@ const customColors = {
   custom: "blue"
 };
 
-/*
 const customFormatter = ({ level, message, label, timestamp }) => {
   return `${label}|${timestamp}|${level}|${
     typeof message === "string"
@@ -37,7 +36,6 @@ const customFormatter = ({ level, message, label, timestamp }) => {
       : util.inspect(message, { colors: true, depth: 15 })
   }`;
 };
-*/
 
 const createLogger = (proc?: string): any => {
   addColors(customColors);
@@ -53,7 +51,7 @@ const createLogger = (proc?: string): any => {
         format: format.combine(
           format.label({ label: proc }),
           format.timestamp(),
-//          format.printf(customFormatter)
+          format.printf(customFormatter as any)
         )
       })
     ]
