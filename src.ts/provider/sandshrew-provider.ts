@@ -64,7 +64,7 @@ export class SandshrewProvider extends AbstractProvider {
   }): Promise<any> {
     return await this.call('ord_output', [`${txid}:${vout}`]);
   }
-  async getBTCOnlyUTXOs(address: string): Promise<any> {
+  async getBTCOnlyUTXOs(address: string): Promise<GetUTXOsResponse> {
     const utxos = await this.getUTXOs(address);
     const { inscriptions } = await this.call('ord_address', [ address ]);
     const map = zipObject(inscriptions, inscriptions);

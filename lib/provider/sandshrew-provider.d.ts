@@ -32,6 +32,6 @@ export declare class SandshrewProvider extends AbstractProvider {
         vout: number;
         txid: string;
     }): Promise<any>;
-    getBTCOnlyUTXOs(address: string): Promise<any>;
+    getBTCOnlyUTXOs(address: string): Promise<GetUTXOsResponse>;
     getUTXOs(address: string): Promise<GetUTXOsResponse>;
 }
