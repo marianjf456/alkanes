@@ -62,7 +62,7 @@ export class SandshrewProvider extends AbstractProvider {
     vout: number,
     txid: string
   }): Promise<any> {
-    return await this.call('ord_output', [`${txid}:$${vout}`]);
+    return await this.call('ord_output', [`${txid}:${vout}`]);
   }
   async getBTCOnlyUTXOs(address: string): Promise<any> {
     const utxos = await this.getUTXOs(address);
