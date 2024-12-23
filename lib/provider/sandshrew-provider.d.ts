@@ -23,10 +23,7 @@ export type BalanceSheetItem = {
     rune: RuneResponse;
     balance: bigint | number;
 };
-export type GetUTXOsResponse = {
-    balanceSheet: BalanceSheetItem[];
-    outpoints: OutPointResponse[];
-};
+export type GetUTXOsResponse = OutPointResponse[];
 export declare class SandshrewProvider extends AbstractProvider {
     url: string;
     constructor(url: string);

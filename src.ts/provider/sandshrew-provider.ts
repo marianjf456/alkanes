@@ -32,10 +32,7 @@ export type BalanceSheetItem = {
   balance: bigint | number;
 };
 
-export type GetUTXOsResponse = {
-  balanceSheet: BalanceSheetItem[];
-  outpoints: OutPointResponse[];
-};
+export type GetUTXOsResponse = OutPointResponse[];
 
 export class SandshrewProvider extends AbstractProvider {
   public url: string;
@@ -71,9 +68,9 @@ export class SandshrewProvider extends AbstractProvider {
     const utxos = await this.getUTXOs(address);
     const { inscriptions } = await this.call('ord_address', [ address ]);
     const map = zipObject(inscriptions, inscriptions);
-    return utxos.outpoints.filter((v) => !map[`${v.outpoint.txid}:${v.outpoint.vout}`] && v.runes.length === 0);
+    return utxos.filter((v) => !map[`${v.outpoint.txid}:${v.outpoint.vout}`] && v.runes.length === 0);
   }
   async getUTXOs(address: string): Promise<GetUTXOsResponse> {
-    return await this.call('alkanes_protorunesbyaddress', [{ address, protocolTag: '1' }]);
+    return (await this.call('alkanes_protorunesbyaddress', [{ address, protocolTag: '1' }])).outpoints;
   }
 }
