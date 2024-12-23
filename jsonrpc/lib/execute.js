@@ -91,7 +91,7 @@ async function executeRPC(req, res) {
             case "ord":
                 const response = await fetch(node_url_1.default.format({
                     protocol: "http:",
-                    hostname: "localhost",
+                    hostname: params_1.ORD_HOST,
                     port: params_1.ORD_PORT,
                     pathname: node_path_1.default.join("/", ...[
                         ...methodSplit[1]

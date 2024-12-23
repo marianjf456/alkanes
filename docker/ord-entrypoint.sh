@@ -11,4 +11,4 @@ do
   mkdir -p /bitcoin/${i}
   echo "${_RPCUSER}:${_RPCPASSWORD}" > /bitcoin/${i}/.cookie
 done
-ord --index-transactions --index-addresses --index-sats --index-runes --chain $_CHAIN --bitcoin-rpc-username $_RPCUSER --bitcoin-rpc-password bitcoinrpc --bitcoin-data-dir /bitcoin server --http-port $_PORT
+ord --index-transactions --index-addresses --index-sats --index-runes --chain $_CHAIN --bitcoin-rpc-url ${DAEMON_RPC_ADDR} --bitcoin-rpc-username $_RPCUSER --bitcoin-rpc-password bitcoinrpc --bitcoin-data-dir /bitcoin server --http-port $_PORT

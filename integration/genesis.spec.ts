@@ -150,7 +150,7 @@ export async function deployGenesis(): Promise<void> {
   const txid = new Uint8Array(
     Array.from(Buffer.from(sendHex.data.result, "hex")),
   );
-  const changeAddr = revealPayment.address; // can be different
+  const changeAddr = faucetAddress;
   const tx = new btc.Transaction({ customScripts, allowUnknownOutputs: true });
   tx.addInput({
     ...revealPayment,

@@ -55,6 +55,19 @@ services:
     ports:
       - 18888:18888
     restart: unless-stopped
+  ord:
+    build:
+      dockerfile: docker/Dockerfile.ord
+      context: ./
+    image: ord:alkanes
+    environment:
+      CHAIN: regtest
+      RPCUSER: bitcoinrpc
+      RPCPASSWORD: bitcoinrpc
+      PORT: 8090
+      DAEMON_RPC_ADDR: bitcoind:18443
+    ports:
+      - 8090:8090
   metashrew-view:
     build:
       dockerfile: docker/Dockerfile.view

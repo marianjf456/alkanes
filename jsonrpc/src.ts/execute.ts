@@ -114,7 +114,7 @@ export async function executeRPC(req, res) {
         const response = await fetch(
           url.format({
             protocol: "http:",
-            hostname: "localhost",
+            hostname: ORD_HOST,
             port: ORD_PORT,
             pathname: path.join(
               "/",

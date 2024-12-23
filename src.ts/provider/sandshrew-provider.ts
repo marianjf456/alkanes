@@ -1,6 +1,41 @@
 import { AbstractProvider } from "./abstract-provider";
+import { zipObject } from "lodash";
 
 let id = 0;
+
+export type OutPointResponseOutPoint = {
+  txid: string;
+  vout: number;
+};
+
+export type OutPointResponseOutput = {
+  script: string;
+  value: number;
+};
+
+export type RuneResponse = {
+  name: string;
+  symbol: string;
+  balance: bigint | number;
+};
+
+export type OutPointResponse = {
+  runes: RuneResponse[];
+  outpoint: OutPointResponseOutPoint;
+  output: OutPointResponseOutput;
+  height: number;
+  txindex: number;
+};
+
+export type BalanceSheetItem = {
+  rune: RuneResponse;
+  balance: bigint | number;
+};
+
+export type GetUTXOsResponse = {
+  balanceSheet: BalanceSheetItem[];
+  outpoints: OutPointResponse[];
+};
 
 export class SandshrewProvider extends AbstractProvider {
   public url: string;
@@ -34,10 +69,11 @@ export class SandshrewProvider extends AbstractProvider {
   }
   async getBTCOnlyUTXOs(address: string): Promise<any> {
     const utxos = await this.getUTXOs(address);
-    console.log(utxos);
-    return utxos;
+    const { inscriptions } = await this.call('ord_address', [ address ]);
+    const map = zipObject(inscriptions, inscriptions);
+    return utxos.outpoints.filter((v) => !map[`${v.outpoint.txid}:${v.outpoint.vout}`] && v.runes.length === 0);
   }
-  async getUTXOs(address: string): Promise<any> {
+  async getUTXOs(address: string): Promise<GetUTXOsResponse> {
     return await this.call('alkanes_protorunesbyaddress', [{ address, protocolTag: '1' }]);
   }
 }
