@@ -47,6 +47,21 @@ export class AlkanesRpc extends BaseRpc {
     const decoded = protowallet.decodeWalletOutput(byteString);
     return decoded;
   }
+  async spendablesbyaddress({ address, protocolTag }: any, blockTag: BlockTag = "latest"): Promise<{
+    outpoints: OutPoint[];
+    balanceSheet: RuneOutput[];
+  }> {
+    const buffer = protowallet.encodeProtorunesWalletInput(
+      address,
+      protocolTag,
+    );
+    const byteString = await this._call({
+      method: "spendablesbyaddress",
+      input: buffer,
+    }, blockTag);
+    const decoded = protowallet.decodeWalletOutput(byteString);
+    return decoded;
+  }
   async runesbyaddress({ address }: any, blockTag: BlockTag = "latest"): Promise<{
     outpoints: OutPoint[];
     balanceSheet: RuneOutput[];
