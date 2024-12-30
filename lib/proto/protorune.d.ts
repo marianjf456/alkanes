@@ -565,4 +565,29 @@ export declare namespace protorune {
         serializeBinary(): Uint8Array;
         static deserializeBinary(bytes: Uint8Array): Runtime;
     }
+    class ProtorunesByHeightRequest extends pb_1.Message {
+        #private;
+        constructor(data?: any[] | {
+            height?: number;
+            protocol_tag?: uint128;
+        });
+        get height(): number;
+        set height(value: number);
+        get protocol_tag(): uint128;
+        set protocol_tag(value: uint128);
+        get has_protocol_tag(): boolean;
+        static fromObject(data: {
+            height?: number;
+            protocol_tag?: ReturnType<typeof uint128.prototype.toObject>;
+        }): ProtorunesByHeightRequest;
+        toObject(): {
+            height?: number;
+            protocol_tag?: ReturnType<typeof uint128.prototype.toObject>;
+        };
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtorunesByHeightRequest;
+        serializeBinary(): Uint8Array;
+        static deserializeBinary(bytes: Uint8Array): ProtorunesByHeightRequest;
+    }
 }

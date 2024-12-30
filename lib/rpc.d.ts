@@ -23,6 +23,18 @@ export declare class AlkanesRpc extends BaseRpc {
             symbol: string;
         }>;
     }>;
+    protorunesbyheight({ height, protocolTag }: {
+        height: number;
+        protocolTag: bigint;
+    }, blockTag?: BlockTag): Promise<{
+        runes: Array<{
+            runeId: string;
+            name: string;
+            divisibility: number;
+            spacers: number;
+            symbol: string;
+        }>;
+    }>;
     protorunesbyoutpoint({ txid, vout, protocolTag }: {
         txid: any;
         vout: any;

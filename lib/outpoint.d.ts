@@ -37,3 +37,4 @@ export declare function decodeRunesResponse(hex: string): {
     }>;
 };
 export declare function encodeBlockHeightInput(height: number): string;
+export declare function encodeProtorunesByHeightInput(height: number, protocolTag: bigint): string;

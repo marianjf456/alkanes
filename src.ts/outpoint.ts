@@ -1,11 +1,12 @@
 import { protorune as protobuf } from "./proto/protorune";
 import { stripHexPrefix } from "./utils";
-import { fromUint128, u128ToBuffer } from "./bytes";
+import { toUint128, fromUint128, u128ToBuffer } from "./bytes";
 const {
   OutpointResponse,
   Outpoint,
   BalanceSheet,
   RunesResponse,
+  ProtorunesByHeightRequest,
   RunesByHeightRequest
 } = protobuf;
 
@@ -141,5 +142,14 @@ export function encodeBlockHeightInput(height: number): string {
     height: height
   };
   const str = Buffer.from(new RunesByHeightRequest(input).serializeBinary()).toString("hex");
+  return "0x" + str;
+}
+
+export function encodeProtorunesByHeightInput(height: number, protocolTag: bigint): string {
+  const input: any = {
+    height: height,
+    protocol_tag: toUint128(protocolTag)
+  };
+  const str = Buffer.from(new ProtorunesByHeightRequest(input).serializeBinary()).toString("hex");
   return "0x" + str;
 }

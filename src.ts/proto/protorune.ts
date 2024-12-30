@@ -2105,4 +2105,97 @@ export namespace protorune {
             return Runtime.deserialize(bytes);
         }
     }
+    export class ProtorunesByHeightRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            height?: number;
+            protocol_tag?: uint128;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("height" in data && data.height != undefined) {
+                    this.height = data.height;
+                }
+                if ("protocol_tag" in data && data.protocol_tag != undefined) {
+                    this.protocol_tag = data.protocol_tag;
+                }
+            }
+        }
+        get height() {
+            return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
+        }
+        set height(value: number) {
+            pb_1.Message.setField(this, 1, value);
+        }
+        get protocol_tag() {
+            return pb_1.Message.getWrapperField(this, uint128, 2) as uint128;
+        }
+        set protocol_tag(value: uint128) {
+            pb_1.Message.setWrapperField(this, 2, value);
+        }
+        get has_protocol_tag() {
+            return pb_1.Message.getField(this, 2) != null;
+        }
+        static fromObject(data: {
+            height?: number;
+            protocol_tag?: ReturnType<typeof uint128.prototype.toObject>;
+        }): ProtorunesByHeightRequest {
+            const message = new ProtorunesByHeightRequest({});
+            if (data.height != null) {
+                message.height = data.height;
+            }
+            if (data.protocol_tag != null) {
+                message.protocol_tag = uint128.fromObject(data.protocol_tag);
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                height?: number;
+                protocol_tag?: ReturnType<typeof uint128.prototype.toObject>;
+            } = {};
+            if (this.height != null) {
+                data.height = this.height;
+            }
+            if (this.protocol_tag != null) {
+                data.protocol_tag = this.protocol_tag.toObject();
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.height != 0)
+                writer.writeUint64(1, this.height);
+            if (this.has_protocol_tag)
+                writer.writeMessage(2, this.protocol_tag, () => this.protocol_tag.serialize(writer));
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ProtorunesByHeightRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ProtorunesByHeightRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.height = reader.readUint64();
+                        break;
+                    case 2:
+                        reader.readMessage(message.protocol_tag, () => message.protocol_tag = uint128.deserialize(reader));
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): ProtorunesByHeightRequest {
+            return ProtorunesByHeightRequest.deserialize(bytes);
+        }
+    }
 }

@@ -112,3 +112,7 @@ message RuntimeInput {
 message Runtime {
   BalanceSheet balances = 1;
 }
+message ProtorunesByHeightRequest {
+  uint64 height = 1;
+  uint128 protocol_tag = 2;
+}

@@ -7,6 +7,7 @@ import {
   RuneOutput,
   decodeRunesResponse,
   encodeBlockHeightInput,
+  encodeProtorunesByHeightInput
 } from "./outpoint";
 import { BaseRpc } from "./base-rpc";
 import { protorune as protobuf } from "./proto/protorune";
@@ -63,6 +64,15 @@ export class AlkanesRpc extends BaseRpc {
     const payload = encodeBlockHeightInput(height);
     const response = await this._call({
       method: "runesbyheight",
+      input: payload,
+    }, blockTag);
+    const decodedResponse = decodeRunesResponse(response);
+    return decodedResponse;
+  }
+  async protorunesbyheight({ height, protocolTag }: { height: number; protocolTag: bigint }, blockTag: BlockTag = "latest") {
+    const payload = encodeProtorunesByHeightInput(height, protocolTag);
+    const response = await this._call({
+      method: "protorunesbyheight",
       input: payload,
     }, blockTag);
     const decodedResponse = decodeRunesResponse(response);
