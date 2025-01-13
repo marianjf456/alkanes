@@ -68,6 +68,7 @@ services:
       DAEMON_RPC_ADDR: bitcoind:18443
     ports:
       - 8090:8090
+    restart: unless-stopped
   metashrew-view:
     build:
       dockerfile: docker/Dockerfile.view
