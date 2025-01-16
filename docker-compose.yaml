@@ -1,8 +1,14 @@
 version: "3.3"
+volumes:
+  bitcoin-data:
 services:
   bitcoind:
-    image: ruimarinho/bitcoin-core
-#    entrypoint: ["btc_oneshot"]
+    image: bitcoind:alkanes
+    build:
+      dockerfile: docker/Dockerfile.bitcoind
+      context: ./
+    volumes:
+      - bitcoin-data:/root/.bitcoin
     command:
       ["-txindex", "-regtest=1", "-printtoconsole", "-rpcallowip=0.0.0.0/0", "-rpcbind=0.0.0.0", "-rpcuser=bitcoinrpc", "-rpcpassword=bitcoinrpc"]
     ports:
@@ -12,7 +18,10 @@ services:
   keydb:
     ports:
       - 7777:6379
-    image: eqalpha/keydb:unstable
+    image: keydb:alkanes
+    build:
+      dockerfile: docker/Dockerfile.keydb
+      context: ./
     command:
       [
         "keydb-server",
@@ -37,7 +46,7 @@ services:
       DAEMON_RPC_ADDR: http://bitcoind:18443
       AUTH: bitcoinrpc:bitcoinrpc
       REDIS_URL: redis://keydb:6379
-      LOG_FILTERS: none,metashrew_keydb=debug
+#      LOG_FILTERS: none,metashrew_keydb=debug
     restart: unless-stopped
   jsonrpc:
     build:
@@ -51,6 +60,8 @@ services:
       DAEMON_RPC_ADDR: bitcoind:18443
       ORD_HOST: ord
       ORD_PORT: 8090
+      ESPLORA_HOST: esplora
+      ESPLORA_PORT: 50010
       PORT: 18888
     ports:
       - 18888:18888
@@ -80,4 +91,19 @@ services:
       LOG_FILTERS: none,metashrew_keydb_view=debug
     ports:
       - 8080:8080
+    restart: unless-stopped
+  esplora:
+    build:
+      dockerfile: docker/Dockerfile.electrs
+      context: ./
+    image: esplora:alkanes
+    volumes:
+      - bitcoin-data:/data/bitcoin
+    environment:
+      ELECTRS_AUTH: bitcoinrpc:bitcoinrpc
+      ELECTRS_NETWORK: regtest
+      ELECTRS_DAEMON_RPC_ADDR: bitcoind:18443
+      ELECTRS_HTTP_ADDR: 0.0.0.0:50010
+      ELECTRS_DB_DIR: /data/electrs
+      ELECTRS_DAEMON_DIR: /data/bitcoin
     restart: unless-stopped

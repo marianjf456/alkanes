@@ -1,0 +1,6 @@
+{
+  "name": "jsonrpc",
+  "scripts": {
+    "build": "tsc"
+  }
+}
