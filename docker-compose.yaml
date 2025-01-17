@@ -63,9 +63,10 @@ services:
       context: ./
     image: rockshrew-view:alkanes
     environment:
+      DB_PATH: /data/metashrew
       SECONDARY_PATH: /data/secondary
       HOST: 0.0.0.0
-      LOG_FILTERS: none,metashrew_keydb_view=debug
+      LOG_FILTERS: none,rockshrew_view=debug
     volumes:
       - secondary-data:/data/secondary
       - metashrew-data:/data/metashrew
