@@ -15,7 +15,6 @@ async function executeRPC(req, res) {
     try {
         const methodSplit = req.body.method.split("_");
         const namespace = methodSplit[0];
-        console.log(namespace);
         if (req.body.method === "ord_content") {
             const bytes = await (await (await fetch(node_url_1.default.format({
                 protocol: "http:",
@@ -76,6 +75,7 @@ async function executeRPC(req, res) {
                 }
                 break;
             case "metashrew":
+                console.log(req.body);
                 const metashrewResponse = await (await fetch(params_1.METASHREW_URI, {
                     method: "POST",
                     headers: {

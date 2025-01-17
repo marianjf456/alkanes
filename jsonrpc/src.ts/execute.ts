@@ -97,6 +97,7 @@ export async function executeRPC(req, res) {
         }
         break;
       case "metashrew":
+        console.log(req.body);
         const metashrewResponse = await (
           await fetch(METASHREW_URI, {
             method: "POST",
