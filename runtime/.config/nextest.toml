@@ -1,5 +1,0 @@
-[profile.default]
-default-filter = "all()"
-
-[[profile.default.overrides]]
-platform = 'x86_64-unknown-linux-gnu'

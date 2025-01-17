@@ -4,7 +4,7 @@ set -euo pipefail
 
 # Configure paths and settings from environment
 PROGRAM_PATH=${PROGRAM_PATH:-"/metashrew/indexer.wasm"}
-ROCKS_DB_PATH=${ROCKS_DB_PATH:-"/data"}
+ROCKS_DB_PATH=${ROCKS_DB_PATH:-"/data/metashrew"}
 SECONDARY_PATH=${SECONDARY_PATH:-"/data/secondary"}
 HOST=${HOST:-"0.0.0.0"}
 PORT=${PORT:-"8080"}

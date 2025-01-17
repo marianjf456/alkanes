@@ -11,6 +11,8 @@ import {
   RPCAUTH,
   ORD_PORT,
   ORD_HOST,
+  ESPLORA_HOST,
+  ESPLORA_PORT,
   DAEMON_RPC_ADDR,
 } from "./params";
 import { getLogger } from "./logger";
@@ -111,11 +113,12 @@ export async function executeRPC(req, res) {
         });
         break;
       case "ord":
+      case "esplora":
         const response = await fetch(
           url.format({
             protocol: "http:",
-            hostname: ORD_HOST,
-            port: ORD_PORT,
+            hostname: methodSplit[0] === 'ord' ? ORD_HOST : ESPLORA_HOST,
+            port: methodSplit[0] === 'ord' ? ORD_PORT : ESPLORA_PORT,
             pathname: path.join(
               "/",
               ...[

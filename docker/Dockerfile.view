@@ -1,18 +1,45 @@
-FROM debian:latest
+# Build stage
+FROM rust:1-slim-bookworm as builder
+
+# Install build dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
-    curl \
     git \
     pkg-config \
     libclang-dev \
-    libssl-dev
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
-RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
-WORKDIR /opt
-RUN git clone https://github.com/sandshrewmetaprotocols/metashrew
-WORKDIR /opt/metashrew
-RUN bash -c 'source ~/.bashrc; cargo build --release'
-RUN bash -c 'ulimit -n $(ulimit -n -H)'
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clone specific commit of metashrew
+WORKDIR /build
+RUN git clone https://github.com/sandshrewmetaprotocols/metashrew.git . \
+    && git checkout 00e014b160b527e1e5e5d3584f7ad17dfd2b5b4b
+
+# Build release binary
+RUN cargo build --release --bin rockshrew-view
+
+# Runtime stage
+FROM debian:bookworm-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libssl3 \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy binary and entrypoint
+COPY --from=builder /build/target/release/rockshrew-view /usr/local/bin/
 COPY docker/view-entrypoint.sh /docker-entrypoint.sh
 COPY vendor/alkanes.wasm /metashrew/indexer.wasm
+
+# Create non-root user and required directories
+RUN useradd -r -s /bin/false metashrew \
+    && mkdir -p /data/metashrew /data/secondary \
+    && chown -R metashrew:metashrew /data /metashrew
+
+USER metashrew
+VOLUME ["/data/metashrew", "/data/secondary"]
+
+ENV RUST_LOG=info
+
 CMD ["bash", "/docker-entrypoint.sh"]

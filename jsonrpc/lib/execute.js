@@ -15,6 +15,7 @@ async function executeRPC(req, res) {
     try {
         const methodSplit = req.body.method.split("_");
         const namespace = methodSplit[0];
+        console.log(namespace);
         if (req.body.method === "ord_content") {
             const bytes = await (await (await fetch(node_url_1.default.format({
                 protocol: "http:",
@@ -89,10 +90,11 @@ async function executeRPC(req, res) {
                 });
                 break;
             case "ord":
+            case "esplora":
                 const response = await fetch(node_url_1.default.format({
                     protocol: "http:",
-                    hostname: params_1.ORD_HOST,
-                    port: params_1.ORD_PORT,
+                    hostname: methodSplit[0] === 'ord' ? params_1.ORD_HOST : params_1.ESPLORA_HOST,
+                    port: methodSplit[0] === 'ord' ? params_1.ORD_PORT : params_1.ESPLORA_PORT,
                     pathname: node_path_1.default.join("/", ...[
                         ...methodSplit[1]
                             .split(":")
