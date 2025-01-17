@@ -19,6 +19,12 @@ export const rpc = new Proxy(client, {
   get(target, prop, receiver) {
     return async (...args) => {
       const split: string[] = (prop as string).split('_') as string[];
+      console.log(split);
+      if (split[0] === 'height') {
+        const result = await client.call('metashrew_height', []);
+        console.log(result);
+        return result;
+      }
       const method: string = (split.length === 1 ? 'alkanes_' + split[split.length - 1] : prop) as any;
       return ((await client.call(method, ...args.map((v) => convertTypesJsonrpc(v)))).data as any).result;
     }

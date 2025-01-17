@@ -33,6 +33,21 @@ const timeout = async (n) =>
 const bip32 = BIP32Factory(ecc);
 
 const client = new Client("regtest");
+async function waitForSync(maxAttempts = 60): Promise<void> {
+  for (let i = 0; i < maxAttempts; i++) {
+    const btcHeight = Number((await client.call("getblockcount")).data.result);
+    const msHeight = Number(await rpc.height());
+    logger.info("btc: " + btcHeight + "|metashrew: " + msHeight);
+    
+    if (msHeight >= btcHeight) {
+      return;
+    }
+    
+    await timeout(1000); // 1 second delay between attempts
+  }
+  
+  throw new Error("Timeout waiting for Metashrew to sync with Bitcoin height");
+}
 
 const gzip = promisify(_gzip);
 
@@ -83,6 +98,7 @@ export async function deployGenesis(): Promise<void> {
   const hash = blockHash.data.result[0];
   logger.info("blockhash with payment: " + hash);
   await timeout(2000);
+  await waitForSync();
   const blockDetails = await client.call("getblock", hash, 0);
   const count = (await client.call("getblockcount")).data.result - 101;
   const block = (
@@ -106,6 +122,7 @@ export async function deployGenesis(): Promise<void> {
   ).toString("hex");
   logger.info("wait 5s");
   await timeout(5000);
+  await waitForSync();
   logger.info(
     (await client.call("getrawtransaction", coinbaseTxid)).data.result,
   );
@@ -147,6 +164,7 @@ export async function deployGenesis(): Promise<void> {
     fundingTransactionHex,
   );
   await client.generateBlock();
+  await waitForSync();
   const txid = new Uint8Array(
     Array.from(Buffer.from(sendHex.data.result, "hex")),
   );
@@ -183,6 +201,7 @@ export async function deployGenesis(): Promise<void> {
   }); */
   const revealTxSend = await client.call("sendrawtransaction", txHex);
   await client.generateBlock();
+  await waitForSync();
   const revealTxid = revealTxSend.data.result;
   const revealTransactionFromRegtest = btc.Transaction.fromRaw(
     new Uint8Array(
@@ -199,7 +218,8 @@ export async function deployGenesis(): Promise<void> {
   logger.info("reveal tx:");
   logger.info(revealTransactionFromRegtest);
   logger.info("wait 20s...");
-  await timeout(20000);
+  await timeout(1000);
+  await waitForSync();
   const revealTxidReversed = Buffer.from(
     Array.from(Buffer.from(revealTxid, "hex")).reverse(),
   ).toString("hex");
