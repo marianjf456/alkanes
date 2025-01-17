@@ -25,7 +25,7 @@ services:
       DAEMON_RPC_ADDR: http://bitcoind:18443
       AUTH: bitcoinrpc:bitcoinrpc
       DB_PATH: /data
-      LOG_FILTERS: none,rockshrew=debug
+#      LOG_FILTERS: none,rockshrew=debug
     restart: unless-stopped
   jsonrpc:
     build:
