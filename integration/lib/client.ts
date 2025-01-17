@@ -40,7 +40,6 @@ export class Client {
   async generateBlock() {
     await timeout(5000);
     const mempool = await this.call("getrawmempool", true);
-    console.log(mempool.data);
     const keys = Object.keys(mempool.data.result);
     const blockHash = await this.call("generateblock", RANDOM_ADDRESS, keys);
     await timeout(5000);

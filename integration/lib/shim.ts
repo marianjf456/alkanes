@@ -19,7 +19,6 @@ export const rpc = new Proxy(client, {
   get(target, prop, receiver) {
     return async (...args) => {
       const split: string[] = (prop as string).split('_') as string[];
-      console.log(split);
       if (split[0] === 'height') {
         const result = (await client.call('metashrew_height', [])).data.result;
         return result;

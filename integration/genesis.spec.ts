@@ -94,7 +94,6 @@ export async function deployGenesis(): Promise<void> {
     customScripts,
   );
   const blockHash = await client.call("generatetoaddress", 200, faucetAddress);
-  console.log(blockHash);
   const hash = blockHash.data.result[0];
   logger.info("blockhash with payment: " + hash);
   await timeout(2000);
