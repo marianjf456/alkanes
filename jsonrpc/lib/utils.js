@@ -26,7 +26,7 @@ function dumpJSONRPCPayload(payload) {
 function mapToPrimitives(v) {
     switch (typeof v) {
         case "bigint":
-            return "0x" + v.toString(16);
+            return Number(v);
         case "object":
             if (v === null)
                 return null;
@@ -42,7 +42,8 @@ function mapToPrimitives(v) {
 function unmapFromPrimitives(v) {
     switch (typeof v) {
         case "string":
-            if (v !== '0x' && !isNaN((0, exports.stripHexPrefix)(v)))
+            console.log("tigaaaaa", v);
+            if (v !== '0x' && !isNaN(v))
                 return BigInt(v);
             if (v.substr(0, 2) === "0x" || /^[0-9a-f]+$/.test(v))
                 return Buffer.from((0, exports.stripHexPrefix)(v), "hex");
