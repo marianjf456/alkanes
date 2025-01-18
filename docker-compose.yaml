@@ -7,8 +7,8 @@ services:
   bitcoind:
     image: bitcoind:alkanes
     build:
-      dockerfile: docker/Dockerfile.bitcoind
-      context: ./
+      dockerfile: Dockerfile
+      context: ./docker/bitcoind
     volumes:
       - bitcoin-data:/root/.bitcoin
     command:
@@ -16,8 +16,8 @@ services:
     restart: unless-stopped
   metashrew:
     build:
-      dockerfile: docker/Dockerfile.indexer
-      context: ./
+      dockerfile: Dockerfile.indexer
+      context: ./docker/metashrew
     image: rockshrew:alkanes
     volumes:
       - metashrew-data:/data
@@ -29,8 +29,8 @@ services:
     restart: unless-stopped
   jsonrpc:
     build:
-      dockerfile: docker/Dockerfile.jsonrpc
-      context: ./
+      dockerfile: Dockerfile
+      context: ./jsonrpc
     image: jsonrpc:alkanes
     environment:
       HOST: 0.0.0.0
@@ -47,8 +47,8 @@ services:
     restart: unless-stopped
   ord:
     build:
-      dockerfile: docker/Dockerfile.ord
-      context: ./
+      dockerfile: Dockerfile
+      context: ./docker/ord
     image: ord:alkanes
     environment:
       CHAIN: regtest
@@ -59,8 +59,8 @@ services:
     restart: unless-stopped
   metashrew-view:
     build:
-      dockerfile: docker/Dockerfile.view
-      context: ./
+      dockerfile: Dockerfile.view
+      context: ./docker/metashrew
     image: rockshrew-view:alkanes
     environment:
       DB_PATH: /data/metashrew
@@ -73,8 +73,8 @@ services:
     restart: unless-stopped
   esplora:
     build:
-      dockerfile: docker/Dockerfile.electrs
-      context: ./
+      dockerfile: Dockerfile
+      context: ./docker/electrs
     image: esplora:alkanes
     volumes:
       - bitcoin-data:/data/bitcoin

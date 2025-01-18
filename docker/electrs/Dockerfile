@@ -25,7 +25,7 @@ COPY --from=builder /app/target/release/flextrs /usr/local/bin/flextrs
 RUN mkdir -p /data/bitcoin /data/electrs
 
 # Copy entrypoint script
-COPY docker/esplora-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Set default data directories

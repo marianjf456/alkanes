@@ -12,7 +12,7 @@ RUN cargo build --bin ord --release
 FROM debian:bookworm-slim
 
 COPY --from=builder /usr/src/ord/target/release/ord /usr/local/bin
-COPY docker/ord-entrypoint.sh /docker-entrypoint.sh
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN apt-get update && apt-get install -y openssl
 ENV RUST_BACKTRACE=1
