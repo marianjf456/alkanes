@@ -1,5 +1,5 @@
 {
-  "name": "jsonrpc",
+  "name": "alkanes-jsonrpc",
   "scripts": {
     "build": "tsc",
     "start": "cross-env node bin/jsonrpc"

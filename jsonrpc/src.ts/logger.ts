@@ -60,7 +60,7 @@ const createLogger = (proc?: string): ReturnType<typeof createWinstonLogger> => 
   return logger;
 };
 
-const logger = createLogger(require("../../package").name);
+const logger = createLogger(require("../package").name);
 
 export function getLogger() {
   return logger;

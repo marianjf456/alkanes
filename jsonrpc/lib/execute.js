@@ -9,7 +9,7 @@ const node_url_1 = __importDefault(require("node:url"));
 const utils_1 = require("./utils");
 const params_1 = require("./params");
 const logger_1 = require("./logger");
-const rpc_1 = require("../../lib/rpc");
+const rpc_1 = require("./lib/rpc");
 const logger = (0, logger_1.getLogger)();
 async function executeRPC(req, res) {
     try {

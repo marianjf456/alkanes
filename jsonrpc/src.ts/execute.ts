@@ -16,7 +16,7 @@ import {
   DAEMON_RPC_ADDR,
 } from "./params";
 import { getLogger } from "./logger";
-import { AlkanesRpc } from "../../lib/rpc";
+import { AlkanesRpc } from "./lib/rpc";
 
 const logger = getLogger();
 export async function executeRPC(req, res) {
