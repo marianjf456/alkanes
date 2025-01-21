@@ -25,8 +25,7 @@ services:
       DAEMON_RPC_ADDR: http://bitcoind:18443
       AUTH: bitcoinrpc:bitcoinrpc
       DB_PATH: /data
-#      LOG_FILTERS: none,rockshrew=debug
-    restart: unless-stopped
+      LOG_FILTERS: none,rockshrew=debug
   jsonrpc:
     build:
       dockerfile: Dockerfile
@@ -70,7 +69,6 @@ services:
     volumes:
       - secondary-data:/data/secondary
       - metashrew-data:/data/metashrew
-    restart: unless-stopped
   esplora:
     build:
       dockerfile: Dockerfile
