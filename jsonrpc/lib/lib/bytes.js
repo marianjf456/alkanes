@@ -9,6 +9,7 @@ exports.leftPad16 = leftPad16;
 exports.leftPad8 = leftPad8;
 exports.toUint128 = toUint128;
 exports.fromUint128 = fromUint128;
+exports.toHexString = toHexString;
 exports.u128ToBuffer = u128ToBuffer;
 exports.encodeVarInt = encodeVarInt;
 exports.encipher = encipher;
@@ -19,7 +20,13 @@ exports.pack = pack;
 const seekbuffer_js_1 = require("./seekbuffer.js");
 const alkanes_1 = require("./proto/alkanes");
 function toProtobufAlkaneTransfer(v) {
-    return new alkanes_1.alkanes.AlkaneTransfer({ id: new alkanes_1.alkanes.AlkaneId({ block: toUint128(v.id.block), tx: toUint128(v.id.tx) }), value: toUint128(v.value) });
+    return new alkanes_1.alkanes.AlkaneTransfer({
+        id: new alkanes_1.alkanes.AlkaneId({
+            block: toUint128(v.id.block),
+            tx: toUint128(v.id.tx),
+        }),
+        value: toUint128(v.value),
+    });
 }
 function unpack(v) {
     return Array.from(v)
@@ -49,6 +56,8 @@ function leftPad16(v) {
     return "0".repeat(32 - v.length) + v;
 }
 function leftPad8(v) {
+    console.log(v);
+    console.log(v.length);
     if (v.length > 16)
         throw Error("varint in encoding cannot exceed 15 bytes");
     return "0".repeat(16 - v.length) + v;
@@ -57,15 +66,18 @@ function toUint128(v) {
     let hex = leftPad16(v.toString(16));
     return new alkanes_1.alkanes.uint128({
         hi: BigInt("0x" + hex.substr(0, 16)).toString(10),
-        lo: BigInt("0x" + hex.substr(16, 32)).toString(10)
+        lo: BigInt("0x" + hex.substr(16, 32)).toString(10),
     });
 }
 function fromUint128(v) {
     return u128ToBuffer(v);
 }
+function toHexString(v) {
+    return BigInt(v).toString(16);
+}
 function u128ToBuffer(v) {
     return BigInt("0x" +
-        Buffer.from(leftPad8(v.hi.toString(16)) + leftPad8(v.lo.toString(16)), "hex").toString("hex"));
+        Buffer.from(leftPad8(toHexString(v.hi)) + leftPad8(toHexString(v.lo)), "hex").toString("hex"));
 }
 function encodeVarInt(value) {
     const v = [];

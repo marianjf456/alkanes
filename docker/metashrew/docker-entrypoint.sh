@@ -27,8 +27,7 @@ if [ -z "$HOST" ] || [ -z "$PORT" ]; then
 fi
 
 # Configure logging
-export RUST_LOG=${LOG_FILTERS}
-
+export RUST_LOG=DEBUG
 # Build command with optional parameters
 CMD="/usr/local/bin/rockshrew-mono --host $HOST --port $PORT --indexer $INDEXER --db-path $DB_PATH --auth $AUTH --daemon-rpc-url $DAEMON_RPC_ADDR"
 
