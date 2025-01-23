@@ -110,6 +110,22 @@ export class AlkanesRpc extends BaseRpc {
       }, blockTag),
     );
   }
+  async runesbyoutpoint({ txid, vout }, blockTag: BlockTag = "latest") {
+    const buffer =
+      "0x" +
+      Buffer.from(
+        new protobuf.Outpoint({
+          txid: Buffer.from(txid, "hex"),
+          vout,
+        }).serializeBinary(),
+      ).toString("hex");
+    return invoke.decodeOutpointResponse(
+      await this._call({
+        method: "protorunesbyoutpoint",
+        input: buffer,
+      }, blockTag),
+    );
+  }
 
   async trace({ txid, vout }: { txid: string; vout: number }, blockTag: BlockTag = "latest"): Promise<any> {
     const buffer = invoke.encodeTraceRequest({

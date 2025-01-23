@@ -94,6 +94,17 @@ class AlkanesRpc extends base_rpc_1.BaseRpc {
             input: buffer,
         }, blockTag));
     }
+    async runesbyoutpoint({ txid, vout }, blockTag = "latest") {
+        const buffer = "0x" +
+            Buffer.from(new protorune_1.protorune.Outpoint({
+                txid: Buffer.from(txid, "hex"),
+                vout,
+            }).serializeBinary()).toString("hex");
+        return invoke.decodeOutpointResponse(await this._call({
+            method: "protorunesbyoutpoint",
+            input: buffer,
+        }, blockTag));
+    }
     async trace({ txid, vout }, blockTag = "latest") {
         const buffer = invoke.encodeTraceRequest({
             txid,

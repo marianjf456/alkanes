@@ -44,6 +44,10 @@ export declare class AlkanesRpc extends BaseRpc {
         vout: any;
         protocolTag: any;
     }, blockTag?: BlockTag): Promise<any>;
+    runesbyoutpoint({ txid, vout }: {
+        txid: any;
+        vout: any;
+    }, blockTag?: BlockTag): Promise<any>;
     trace({ txid, vout }: {
         txid: string;
         vout: number;
