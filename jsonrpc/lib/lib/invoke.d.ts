@@ -2,15 +2,15 @@ import { AlkaneTransfer, AlkaneId } from "./bytes";
 export declare function formatKey(v: any): string;
 export declare function toAlkaneTransfer(v: any): {
     id: {
-        block: bigint;
-        tx: bigint;
+        block: any;
+        tx: any;
     };
     value: bigint;
 };
 export declare function fromCallType(v: number): string;
 export declare function toAlkaneId(v: any): {
-    block: bigint;
-    tx: bigint;
+    block: any;
+    tx: any;
 };
 export declare function toStorageSlot(v: any): {
     key: string;
@@ -18,12 +18,12 @@ export declare function toStorageSlot(v: any): {
 };
 export declare function toContext(v: any): {
     myself: {
-        block: bigint;
-        tx: bigint;
+        block: any;
+        tx: any;
     };
     caller: {
-        block: bigint;
-        tx: bigint;
+        block: any;
+        tx: any;
     };
     inputs: any;
     incomingAlkanes: any;
@@ -37,8 +37,8 @@ export declare function toResponse(v: any): {
 export declare function toEvent(v: any): {
     event: string;
     data: {
-        block: bigint;
-        tx: bigint;
+        block: any;
+        tx: any;
     };
 } | {
     event: string;
@@ -46,20 +46,18 @@ export declare function toEvent(v: any): {
         type: string;
         context: {
             myself: {
-                block: bigint;
-                tx: bigint;
+                block: any;
+                tx: any;
             };
             caller: {
-                block: bigint;
-                tx: bigint;
+                block: any;
+                tx: any;
             };
             inputs: any;
             incomingAlkanes: any;
             vout: any;
         };
         fuel: any;
-        status?: undefined;
-        response?: undefined;
     };
 } | {
     event: string;
@@ -70,12 +68,9 @@ export declare function toEvent(v: any): {
             data: string;
             storage: any;
         };
-        type?: undefined;
-        context?: undefined;
-        fuel?: undefined;
     };
 };
-export declare function encodeTraceRequest({ txid, vout }: {
+export declare function encodeTraceRequest({ txid, vout, }: {
     txid: string;
     vout: number;
 }): string;

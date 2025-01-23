@@ -4,7 +4,13 @@ import { alkanes as alkanes_protobuf } from "./proto/alkanes";
 export function toProtobufAlkaneTransfer(
   v: AlkaneTransfer,
 ): alkanes_protobuf.AlkaneTransfer {
-  return new alkanes_protobuf.AlkaneTransfer({ id: new alkanes_protobuf.AlkaneId({ block: toUint128(v.id.block), tx: toUint128(v.id.tx) }), value: toUint128(v.value) });
+  return new alkanes_protobuf.AlkaneTransfer({
+    id: new alkanes_protobuf.AlkaneId({
+      block: toUint128(v.id.block),
+      tx: toUint128(v.id.tx),
+    }),
+    value: toUint128(v.value),
+  });
 }
 
 /**
@@ -77,25 +83,27 @@ export function leftPad8(v: string): string {
   return "0".repeat(16 - v.length) + v;
 }
 
-export function toUint128(
-  v: bigint,
-): any {
+export function toUint128(v: bigint): any {
   let hex = leftPad16(v.toString(16));
   return new alkanes_protobuf.uint128({
     hi: BigInt("0x" + hex.substr(0, 16)).toString(10),
-    lo: BigInt("0x" + hex.substr(16, 32)).toString(10)
+    lo: BigInt("0x" + hex.substr(16, 32)).toString(10),
   });
 }
 
-export function fromUint128(v: { hi: bigint; lo: bigint }): bigint {
+export function fromUint128(v: { hi: any; lo: any }): bigint {
   return u128ToBuffer(v);
 }
 
-export function u128ToBuffer(v: { hi: bigint; lo: bigint }): bigint {
+export function toHexString(v: any): string {
+  return BigInt(v).toString(16);
+}
+
+export function u128ToBuffer(v: { hi: any; lo: any }): bigint {
   return BigInt(
     "0x" +
       Buffer.from(
-        leftPad8(v.hi.toString(16)) + leftPad8(v.lo.toString(16)),
+        leftPad8(toHexString(v.hi)) + leftPad8(toHexString(v.lo)),
         "hex",
       ).toString("hex"),
   );
