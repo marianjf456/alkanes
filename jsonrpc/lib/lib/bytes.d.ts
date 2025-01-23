@@ -41,12 +41,13 @@ export declare function leftPad16(v: string): string;
 export declare function leftPad8(v: string): string;
 export declare function toUint128(v: bigint): any;
 export declare function fromUint128(v: {
-    hi: bigint;
-    lo: bigint;
+    hi: any;
+    lo: any;
 }): bigint;
+export declare function toHexString(v: any): string;
 export declare function u128ToBuffer(v: {
-    hi: bigint;
-    lo: bigint;
+    hi: any;
+    lo: any;
 }): bigint;
 export declare function encodeVarInt(value: bigint): Buffer;
 export declare function encipher(values: bigint[]): Buffer;
