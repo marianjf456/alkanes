@@ -13,10 +13,10 @@ RUN apt-get update && apt-get install -y \
 # Clone specific commit of metashrew
 WORKDIR /build
 RUN git clone https://github.com/sandshrewmetaprotocols/metashrew.git . \
-    && git checkout 22c8a2e05d9977c1e8784596331672f6823ada95
+    && git checkout v8.1.0
 
 # Build release binary
-RUN cargo build --release --bin rockshrew-view
+RUN cargo build --release --bin rockshrew-mono
 
 # Runtime stage
 FROM debian:bookworm-slim
@@ -28,18 +28,16 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy binary and entrypoint
-COPY --from=builder /build/target/release/rockshrew-view /usr/local/bin/
-COPY view-entrypoint.sh /docker-entrypoint.sh
+COPY --from=builder /build/target/release/rockshrew-mono /usr/local/bin/
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY vendor/alkanes.wasm /metashrew/indexer.wasm
 
-# Create non-root user and required directories
+# Create non-root user
 RUN useradd -r -s /bin/false metashrew \
-    && mkdir -p /data/metashrew /data/secondary \
-    && chown -R metashrew:metashrew /data /metashrew
+    && mkdir -p /data \
+    && chown metashrew:metashrew /data /metashrew
 
 USER metashrew
-VOLUME ["/data/metashrew", "/data/secondary"]
-
-ENV RUST_LOG=info
+VOLUME /data
 
 CMD ["bash", "/docker-entrypoint.sh"]

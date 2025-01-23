@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
   metashrew:
     build:
-      dockerfile: Dockerfile.indexer
+      dockerfile: Dockerfile
       context: ./docker/metashrew
     image: rockshrew:alkanes
     volumes:
@@ -26,6 +26,9 @@ services:
       AUTH: bitcoinrpc:bitcoinrpc
       DB_PATH: /data
       LOG_FILTERS: none,rockshrew=debug
+      HOST: 0.0.0.0
+      PORT: 8080
+    restart: unless-stopped
   jsonrpc:
     build:
       dockerfile: Dockerfile
@@ -40,6 +43,7 @@ services:
       ORD_PORT: 8090
       ESPLORA_HOST: esplora
       ESPLORA_PORT: 50010
+      METASHREW_URI: http://metashrew:8080
       PORT: 18888
     ports:
       - 18888:18888
@@ -56,19 +60,6 @@ services:
       PORT: 8090
       DAEMON_RPC_ADDR: bitcoind:18443
     restart: unless-stopped
-  metashrew-view:
-    build:
-      dockerfile: Dockerfile.view
-      context: ./docker/metashrew
-    image: rockshrew-view:alkanes
-    environment:
-      DB_PATH: /data/metashrew
-      SECONDARY_PATH: /data/secondary
-      HOST: 0.0.0.0
-      LOG_FILTERS: none,rockshrew_view=debug
-    volumes:
-      - secondary-data:/data/secondary
-      - metashrew-data:/data/metashrew
   esplora:
     build:
       dockerfile: Dockerfile
