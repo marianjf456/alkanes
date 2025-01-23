@@ -74,6 +74,20 @@ async function executeRPC(req, res) {
                         break;
                 }
                 break;
+            case "memshrew":
+                const memshrewResponse = await (await fetch(params_1.MEMSHREW_URI, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(req.body),
+                })).json();
+                res.json({
+                    id: req.body.id,
+                    result: memshrewResponse.result,
+                    jsonrpc: "2.0",
+                });
+                break;
             case "metashrew":
                 const metashrewResponse = await (await fetch(params_1.METASHREW_URI, {
                     method: "POST",

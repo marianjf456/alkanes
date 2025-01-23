@@ -18,7 +18,6 @@ const bytes_1 = require("./bytes");
 const alkanes_1 = require("./proto/alkanes");
 const utils_1 = require("./utils");
 const protorune_1 = require("./proto/protorune");
-const node_util_1 = require("node:util");
 const { SimulateResponse, MessageContextParcel, AlkanesTrace } = alkanes_1.alkanes;
 const SEP = "/".charCodeAt(0);
 function formatKey(v) {
@@ -90,15 +89,12 @@ function toResponse(v) {
 }
 function toEvent(v) {
     let k = Object.keys(v)[0];
-    console.log(k);
-    console.log((0, node_util_1.inspect)(v[k], true, 5));
     switch (k) {
         case "create_alkane":
             let create_event = {
                 event: "create",
                 data: toAlkaneId(v[k].new_alkane),
             };
-            console.log(create_event);
             return create_event;
         case "enter_context":
             let enter_context = {
@@ -119,7 +115,6 @@ function toEvent(v) {
                     //fuelUsed: v[k].response.fuel_used
                 },
             };
-            console.log(exit_context);
             return exit_context;
     }
 }
@@ -133,7 +128,6 @@ function encodeTraceRequest({ txid, vout, }) {
 }
 function decodeTraceResponse(hex) {
     const resp = alkanes_1.alkanes.AlkanesTrace.deserializeBinary(Buffer.from((0, utils_1.stripHexPrefix)(hex), "hex"));
-    console.log(resp);
     return resp.toObject().events.map((v) => toEvent(v));
 }
 function encodeSimulateRequest({ alkanes, transaction, height, block, inputs, target, txindex, vout, pointer, refundPointer, }) {

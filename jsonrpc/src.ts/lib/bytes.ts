@@ -79,9 +79,7 @@ export function leftPad16(v: string): string {
   return "0".repeat(32 - v.length) + v;
 }
 export function leftPad8(v: string): string {
-  console.log(v);
-  console.log(v.length);
-  if (v.length > 16) throw Error("varint in encoding cannot exceed 15 bytes");
+//  if (v.length > 16) throw Error("varint in encoding cannot exceed 15 bytes");
   return "0".repeat(16 - v.length) + v;
 }
 

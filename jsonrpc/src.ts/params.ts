@@ -7,6 +7,9 @@ export const RPCAUTH =
 export const METASHREW_URI =
   process.env.METASHREW_URI || "http://metashrew-view:8080";
 
+export const MEMSHREW_URI =
+  process.env.MEMSHREW_URI || "http://memshrew:8080";
+
 export const ORD_PORT = process.env.ORD_PORT && Number(process.env.ORD_PORT) || 8090;
 export const ESPLORA_PORT = process.env.ESPLORA_PORT && Number(process.env.ESPLORA_PORT) || 50010;
 

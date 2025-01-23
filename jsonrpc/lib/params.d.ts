@@ -2,6 +2,7 @@ export declare const RPCUSER: string;
 export declare const RPCPASSWORD: string;
 export declare const RPCAUTH: string;
 export declare const METASHREW_URI: string;
+export declare const MEMSHREW_URI: string;
 export declare const ORD_PORT: number;
 export declare const ESPLORA_PORT: number;
 export declare const ORD_HOST: string;

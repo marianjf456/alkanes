@@ -9,7 +9,6 @@ import {
 import { alkanes as alkanes_protobuf } from "./proto/alkanes";
 import { stripHexPrefix } from "./utils";
 import { protorune as protobuf } from "./proto/protorune";
-import { inspect } from "node:util";
 const { SimulateResponse, MessageContextParcel, AlkanesTrace } =
   alkanes_protobuf;
 
@@ -92,15 +91,12 @@ export function toResponse(v) {
 }
 export function toEvent(v) {
   let k = Object.keys(v)[0];
-  console.log(k);
-  console.log(inspect(v[k], true, 5));
   switch (k) {
     case "create_alkane":
       let create_event = {
         event: "create",
         data: toAlkaneId(v[k].new_alkane),
       };
-      console.log(create_event);
       return create_event;
     case "enter_context":
       let enter_context = {
@@ -121,7 +117,6 @@ export function toEvent(v) {
           //fuelUsed: v[k].response.fuel_used
         },
       };
-      console.log(exit_context);
       return exit_context;
   }
 }
@@ -147,7 +142,6 @@ export function decodeTraceResponse(hex: string): any {
   const resp = alkanes_protobuf.AlkanesTrace.deserializeBinary(
     Buffer.from(stripHexPrefix(hex), "hex"),
   );
-  console.log(resp);
   return resp.toObject().events.map((v) => toEvent(v));
 }
 

@@ -29,6 +29,18 @@ services:
       HOST: 0.0.0.0
       PORT: 8080
     restart: unless-stopped
+  memshrew:
+    build:
+      dockerfile: Dockerfile
+      context: ./docker/memshrew
+    image: memshrew:alkanes
+    environment:
+      DAEMON_RPC_ADDR: http://bitcoind:18443
+      AUTH: bitcoinrpc:bitcoinrpc
+      LOG_FILTERS: none,memshrew=debug
+      HOST: 0.0.0.0
+      PORT: 8080
+    restart: unless-stopped
   jsonrpc:
     build:
       dockerfile: Dockerfile

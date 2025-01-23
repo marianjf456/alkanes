@@ -56,10 +56,7 @@ function leftPad16(v) {
     return "0".repeat(32 - v.length) + v;
 }
 function leftPad8(v) {
-    console.log(v);
-    console.log(v.length);
-    if (v.length > 16)
-        throw Error("varint in encoding cannot exceed 15 bytes");
+    //  if (v.length > 16) throw Error("varint in encoding cannot exceed 15 bytes");
     return "0".repeat(16 - v.length) + v;
 }
 function toUint128(v) {

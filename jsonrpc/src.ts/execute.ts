@@ -8,6 +8,7 @@ import {
 } from "./utils";
 import {
   METASHREW_URI,
+  MEMSHREW_URI,
   RPCAUTH,
   ORD_PORT,
   ORD_HOST,
@@ -95,6 +96,22 @@ export async function executeRPC(req, res) {
             });
             break;
         }
+        break;
+      case "memshrew":
+        const memshrewResponse = await (
+          await fetch(MEMSHREW_URI, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(req.body),
+          })
+        ).json();
+        res.json({
+          id: req.body.id,
+          result: memshrewResponse.result,
+          jsonrpc: "2.0",
+        });
         break;
       case "metashrew":
         const metashrewResponse = await (
