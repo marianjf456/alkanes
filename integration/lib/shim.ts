@@ -15,6 +15,8 @@ function convertTypesJsonrpc(o) {
   }
 }
 
+const ln = (v) => ((console.log(require('util').inspect(v, { colors: true, depth: 15 }))), v);
+
 export const rpc = new Proxy(client, {
   get(target, prop, receiver) {
     return async (...args) => {
@@ -24,7 +26,7 @@ export const rpc = new Proxy(client, {
         return result;
       }
       const method: string = (split.length === 1 ? 'alkanes_' + split[split.length - 1] : prop) as any;
-      return ((await client.call(method, ...args.map((v) => convertTypesJsonrpc(v)))).data as any).result;
+      return ln((await client.call(method, ...args.map((v) => convertTypesJsonrpc(v)))).data as any).result;
     }
   }
 });

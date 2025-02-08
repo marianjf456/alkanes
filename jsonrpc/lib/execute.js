@@ -96,11 +96,18 @@ async function executeRPC(req, res) {
                     },
                     body: JSON.stringify(req.body),
                 })).json();
-                res.json({
-                    id: req.body.id,
-                    result: metashrewResponse.result,
-                    jsonrpc: "2.0",
-                });
+                if (metashrewResponse.error)
+                    res.json({
+                        id: req.body.id,
+                        error: metashrewResponse.error,
+                        jsonrpc: "2.0",
+                    });
+                else
+                    res.json({
+                        id: req.body.id,
+                        result: metashrewResponse.result,
+                        jsonrpc: "2.0"
+                    });
                 break;
             case "ord":
             case "esplora":
