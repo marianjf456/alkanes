@@ -27,23 +27,9 @@ import { getLogger } from "./lib/logger";
 
 const rpc: any = shim.rpc;
 const logger = getLogger("alkanes:wrap-frbtc");
-async function waitForSync(maxAttempts = 60): Promise<void> {
-  for (let i = 0; i < maxAttempts; i++) {
-    const btcHeight = Number((await client.call("getblockcount")).data.result);
-    const msHeight = Number(await rpc.height());
-    logger.info("btc: " + btcHeight + "|metashrew: " + msHeight);
-    
-    if (msHeight >= btcHeight) {
-      return;
-    }
-    
-    await timeout(1000);
-  }
-  
-  throw new Error("Timeout waiting for Metashrew to sync with Bitcoin height");
-}
 const AUTH_TOKEN_FACTORY_ID = BigInt(0xffee);
-const TEST_MULTISIG = "bcrt1pys2f8u8yx7nu08txn9kzrstrmlmpvfprdazz9se5qr5rgtuz8htsaz3chd";
+const TEST_MULTISIG =
+  "bcrt1pys2f8u8yx7nu08txn9kzrstrmlmpvfprdazz9se5qr5rgtuz8htsaz3chd";
 
 const timeout = async (n) =>
   await new Promise((resolve) => setTimeout(resolve, n));
@@ -51,6 +37,22 @@ const timeout = async (n) =>
 const bip32 = BIP32Factory(ecc);
 
 const client = new Client("regtest");
+
+async function waitForSync(maxAttempts = 60): Promise<void> {
+  for (let i = 0; i < maxAttempts; i++) {
+    const btcHeight = Number((await client.call("getblockcount")).data.result);
+    const msHeight = Number(await rpc.height());
+    logger.info("btc: " + btcHeight + "|metashrew: " + msHeight);
+
+    if (msHeight >= btcHeight) {
+      return;
+    }
+
+    await timeout(1000); // 1 second delay between attempts
+  }
+
+  throw new Error("Timeout waiting for Metashrew to sync with Bitcoin height");
+}
 
 const gzip = promisify(_gzip);
 
@@ -74,11 +76,7 @@ export async function wrapBTC() {
 
   // We need this to enable custom scripts outside
   const customScripts = [envelope.OutOrdinalReveal];
-  const blockHash = await client.call(
-    "generatetoaddress",
-    200,
-    faucetAddress,
-  );
+  const blockHash = await client.call("generatetoaddress", 200, faucetAddress);
   logger.info("Generated initial blocks");
 
   const blockDetails = await client.call(
@@ -99,7 +97,7 @@ export async function wrapBTC() {
     Buffer.from(blockDetails.data.result, "hex"),
   );
   const coinbase = decoded.tx[0];
-  
+
   logger.debug("Setting up funding transaction");
   const fundingTransaction = new btc.Transaction({
     allowLegacyWitnessUtxo: true,
@@ -114,8 +112,7 @@ export async function wrapBTC() {
     new Uint8Array(
       Array.from(
         Buffer.from(
-          (await client.call("getrawtransaction", coinbaseTxid)).data
-            .result,
+          (await client.call("getrawtransaction", coinbaseTxid)).data.result,
           "hex",
         ),
       ),
@@ -132,8 +129,12 @@ export async function wrapBTC() {
   const funding = revealAmount;
   logger.debug(`Funding amount: ${funding}`);
 
-  fundingTransaction.addOutputAddress(TEST_MULTISIG, funding - 546n*3n, REGTEST_PARAMS);
-  fundingTransaction.addOutputAddress(faucetAddress, 546n*3n, REGTEST_PARAMS);
+  fundingTransaction.addOutputAddress(
+    TEST_MULTISIG,
+    funding - 546n * 3n,
+    REGTEST_PARAMS,
+  );
+  fundingTransaction.addOutputAddress(faucetAddress, 546n * 3n, REGTEST_PARAMS);
   const script = encodeRunestoneProtostone({
     protostones: [
       ProtoStone.message({
@@ -151,10 +152,14 @@ export async function wrapBTC() {
   });
 
   logger.info("Signing funding transaction");
-  fundingTransaction.sign(faucetPrivate.privateKey, [ btc.SigHash.ALL],  new Uint8Array(0x20));
+  fundingTransaction.sign(
+    faucetPrivate.privateKey,
+    [btc.SigHash.ALL],
+    new Uint8Array(0x20),
+  );
   fundingTransaction.finalize();
   const fundingTransactionHex = hex.encode(fundingTransaction.extract());
-  
+
   logger.info("Broadcasting funding transaction");
   const sendHex = await client.call(
     "sendrawtransaction",
@@ -169,14 +174,14 @@ export async function wrapBTC() {
   ).toString("hex");
   logger.debug(`Funding transaction ID: ${txidReversed}`);
 
-  await timeout(30000);
+  await waitForSync();
   logger.info("Checking balances");
   const balances = (
-    (await client.call('alkanes_protorunesbyaddress', {
-      protocolTag: '1',
-      address: faucetAddress
-    })).data.result
-  ).outpoints.filter((v) => v.runes.length > 0);
+    await client.call("alkanes_protorunesbyaddress", {
+      protocolTag: "1",
+      address: faucetAddress,
+    })
+  ).data.result.outpoints.filter((v) => v.runes.length > 0);
   logger.info("Current balances:", { balances });
 
   logger.debug("Creating unwrap transaction");
@@ -210,16 +215,39 @@ export async function wrapBTC() {
   });
 
   logger.info("Signing unwrap transaction");
-  unwrapTransaction.sign(faucetPrivate.privateKey, [ btc.SigHash.ALL],  new Uint8Array(0x20));
+  unwrapTransaction.sign(
+    faucetPrivate.privateKey,
+    [btc.SigHash.ALL],
+    new Uint8Array(0x20),
+  );
   unwrapTransaction.finalize();
   const unwrapTransactionHex = hex.encode(unwrapTransaction.extract());
-  
+
   logger.info("Broadcasting unwrap transaction");
   const sendHexUnwrap = await client.call(
     "sendrawtransaction",
     unwrapTransactionHex,
   );
   await client.generateBlock();
+  let count2 = await client.call("getblockcount");
+  console.log(count2);
+  logger.info(
+    await client.call("alkanes_simulate", {
+      alkanes: [],
+      transaction: "0x",
+      block: "0x",
+      height: count2.data.result,
+      txindex: 0,
+      target: {
+        block: "4",
+        tx: "0",
+      },
+      inputs: ["1001"],
+      pointer: 0,
+      refundPointer: 0,
+      vout: 0,
+    }),
+  );
   logger.info("BTC wrapping operation completed");
 }
 
