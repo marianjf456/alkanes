@@ -131,15 +131,23 @@ export async function wrapBTC() {
 
   fundingTransaction.addOutputAddress(
     TEST_MULTISIG,
-    funding - 546n * 3n,
+    funding - 546n * 6n,
     REGTEST_PARAMS,
   );
+  fundingTransaction.addOutputAddress(faucetAddress, 546n * 3n, REGTEST_PARAMS);
   fundingTransaction.addOutputAddress(faucetAddress, 546n * 3n, REGTEST_PARAMS);
   const script = encodeRunestoneProtostone({
     protostones: [
       ProtoStone.message({
         protocolTag: 1n,
-        edicts: [],
+        edicts: [{
+          id: {
+            block: 4n,
+            tx: 0n
+          },
+          amount: 100000n,
+          output: 2
+        }],
         pointer: 1,
         refundPointer: 1,
         calldata: encipher([4n, 0n, 77n]),
@@ -176,12 +184,36 @@ export async function wrapBTC() {
 
   await waitForSync();
   logger.info("Checking balances");
+  // Check frBTC balance
+  const frbtcBalances = (
+    await client.call("alkanes_protorunesbyaddress", {
+      protocolTag: "1",
+      address: faucetAddress,
+    })
+  ).data.result.outpoints.filter((v) =>
+    v.runes.find((v) => v.rune.name === "SUBFROST BTC")
+  );
+  logger.info("frBTC balances:", { frbtcBalances });
+
+  // Check AUTH balance separately
+  const authBalances = (
+    await client.call("alkanes_protorunesbyaddress", {
+      protocolTag: "1", 
+      address: faucetAddress,
+    })
+  ).data.result.outpoints.filter((v) =>
+    v.runes.find((v) => v.rune.id && v.rune.id.block === "0x2" && v.rune.id.tx === "0x1")
+  );
+  logger.info("AUTH balances:", { authBalances });
+  logger.info("Checking balances");
   const balances = (
     await client.call("alkanes_protorunesbyaddress", {
       protocolTag: "1",
       address: faucetAddress,
     })
-  ).data.result.outpoints.filter((v) => v.runes.length > 0);
+  ).data.result.outpoints.filter((v) =>
+    v.runes.find((v) => v.rune.name === "SUBFROST BTC"),
+  );
   logger.info("Current balances:", { balances });
 
   logger.debug("Creating unwrap transaction");
@@ -189,13 +221,14 @@ export async function wrapBTC() {
     allowLegacyWitnessUtxo: true,
     allowUnknownOutputs: true,
   });
-
-  unwrapTransaction.addInput({
-    witnessUtxo: (fundingTransaction as any).outputs[1],
+  const input = {
+    witnessUtxo: (fundingTransaction as any).outputs[2],
     txid: fundingTransaction.id,
     sighashType: btc.SigHash.ALL,
-    index: 1,
-  });
+    index: 2,
+  };
+  logger.info(input);
+  unwrapTransaction.addInput(input);
   unwrapTransaction.addOutputAddress(faucetAddress, 546n, REGTEST_PARAMS);
   unwrapTransaction.addOutputAddress(TEST_MULTISIG, 546n, REGTEST_PARAMS);
   const unwrapScript = encodeRunestoneProtostone({
@@ -213,13 +246,8 @@ export async function wrapBTC() {
     script: unwrapScript,
     amount: 0n,
   });
-
   logger.info("Signing unwrap transaction");
-  unwrapTransaction.sign(
-    faucetPrivate.privateKey,
-    [btc.SigHash.ALL],
-    new Uint8Array(0x20),
-  );
+  unwrapTransaction.sign(faucetPrivate.privateKey, [ btc.SigHash.ALL],  new Uint8Array(0x20));
   unwrapTransaction.finalize();
   const unwrapTransactionHex = hex.encode(unwrapTransaction.extract());
 
@@ -228,15 +256,20 @@ export async function wrapBTC() {
     "sendrawtransaction",
     unwrapTransactionHex,
   );
+  logger.info(sendHexUnwrap);
   await client.generateBlock();
+  await waitForSync();
   let count2 = await client.call("getblockcount");
-  console.log(count2);
-  logger.info(
-    await client.call("alkanes_simulate", {
+  for (
+    let i = Number(count2.data.result);
+    i > Number(count2.data.result) - 1;
+    i--
+  ) {
+    const response = await client.call("alkanes_simulate", {
       alkanes: [],
       transaction: "0x",
       block: "0x",
-      height: Number(count2.data.result) - 1,
+      height: i,
       txindex: 0,
       target: {
         block: "4",
@@ -246,8 +279,10 @@ export async function wrapBTC() {
       pointer: 0,
       refundPointer: 0,
       vout: 0,
-    }),
-  );
+    });
+    logger.info(response);
+  }
+  await client.generateBlock();
   logger.info("BTC wrapping operation completed");
 }
 
