@@ -236,7 +236,7 @@ export async function wrapBTC() {
       alkanes: [],
       transaction: "0x",
       block: "0x",
-      height: count2.data.result,
+      height: Number(count2.data.result) - 1,
       txindex: 0,
       target: {
         block: "4",
