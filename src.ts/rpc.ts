@@ -44,6 +44,7 @@ export class AlkanesRpc extends BaseRpc {
       method: "protorunesbyaddress",
       input: buffer,
     }, blockTag);
+    console.log(byteString);
     const decoded = protowallet.decodeWalletOutput(byteString);
     return decoded;
   }
