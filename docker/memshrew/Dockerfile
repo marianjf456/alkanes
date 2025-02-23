@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 # Clone specific commit of metashrew
 WORKDIR /build
 RUN git clone https://github.com/sandshrewmetaprotocols/metashrew.git . \
-    && git checkout b4b818517af3af5a05d37691ca0b3761cf42de55
+    && git checkout 34eaed247d3912a32db10dbfcb3e0f40f9c5527b
 
 # Build release binary
 RUN cargo build --release --bin memshrew-p2p

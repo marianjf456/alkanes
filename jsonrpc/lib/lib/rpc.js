@@ -43,6 +43,7 @@ class AlkanesRpc extends base_rpc_1.BaseRpc {
             method: "protorunesbyaddress",
             input: buffer,
         }, blockTag);
+        console.log(byteString);
         const decoded = protowallet.decodeWalletOutput(byteString);
         return decoded;
     }
