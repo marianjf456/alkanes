@@ -140,6 +140,15 @@ export class AlkanesRpc extends BaseRpc {
     );
   }
 
+  async traceblock({ block }: { block: number | bigint }, blockTag: BlockTag = "latest"): Promise<any> {
+    const buffer = invoke.encodeTraceBlockRequest({ block });
+    const byteString = await this._call({
+      method: "traceblock",
+      input: buffer
+    }, blockTag);
+    const decoded = invoke.decodeTraceBlockResponse(byteString);
+    return decoded;
+  }
   async trace({ txid, vout }: { txid: string; vout: number }, blockTag: BlockTag = "latest"): Promise<any> {
     const buffer = invoke.encodeTraceRequest({
       txid,
