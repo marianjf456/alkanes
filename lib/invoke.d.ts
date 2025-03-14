@@ -7,6 +7,7 @@ export declare function toAlkaneTransfer(v: any): {
     };
     value: bigint;
 };
+export declare function encodeGetBytecodeRequest(v: any): Uint8Array;
 export declare function fromCallType(v: number): string;
 export declare function toAlkaneId(v: any): {
     block: any;

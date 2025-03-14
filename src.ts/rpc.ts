@@ -32,6 +32,12 @@ const addHexPrefix = (s) => (s.substr(0, 2) === "0x" ? s : "0x" + s);
 let id = 0;
 
 export class AlkanesRpc extends BaseRpc {
+  async getbytecode({ block, tx }: any, blockTag: BlockTag = "latest"): Promise<string> {
+    return await this._call({
+      method: "getbytecode",
+      input: invoke.encodeGetBytecodeRequest({ block, tx })
+    }, blockTag);
+  }
   async protorunesbyaddress({ address, protocolTag }: any, blockTag: BlockTag = "latest"): Promise<{
     outpoints: OutPoint[];
     balanceSheet: RuneOutput[];

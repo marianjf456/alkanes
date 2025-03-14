@@ -45,6 +45,10 @@ export function toAlkaneTransfer(v) {
   };
 }
 
+export function encodeGetBytecodeRequest(v) {
+  return new alkanes_protobuf.AlkaneId(toAlkaneId(v)).serializeBinary();
+}
+
 export function fromCallType(v: number): string {
   switch (v) {
     case 1:
