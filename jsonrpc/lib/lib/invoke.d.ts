@@ -7,6 +7,7 @@ export declare function toAlkaneTransfer(v: any): {
     };
     value: bigint;
 };
+export declare function encodeGetBytecodeRequest(v: any): Uint8Array;
 export declare function fromCallType(v: number): string;
 export declare function toAlkaneId(v: any): {
     block: any;
@@ -74,6 +75,10 @@ export declare function encodeTraceRequest({ txid, vout, }: {
     txid: string;
     vout: number;
 }): string;
+export declare function encodeTraceBlockRequest({ block, }: {
+    block: bigint | number;
+}): string;
+export declare function decodeTraceBlockResponse(hex: string): any;
 export declare function decodeTraceResponse(hex: string): any;
 export declare function encodeSimulateRequest({ alkanes, transaction, height, block, inputs, target, txindex, vout, pointer, refundPointer, }: {
     alkanes: AlkaneTransfer[];
@@ -101,3 +106,4 @@ export type DecodedSimulateResponse = {
 export declare function decodeSimulateResponse(response: string): DecodedSimulateResponse;
 export declare function outpointResponseToObject(v: any[]): any;
 export declare function decodeOutpointResponse(result: any): any;
+export declare function decodeMetaResponse(response: string): any;
