@@ -4,6 +4,7 @@ import { AlkaneTransfer } from "./alkane";
 import { ProtoruneEdict } from "./protorune/protoruneedict";
 import { BlockTag } from "./base-rpc";
 export declare class AlkanesRpc extends BaseRpc {
+    getbytecode({ block, tx }: any, blockTag?: BlockTag): Promise<string>;
     protorunesbyaddress({ address, protocolTag }: any, blockTag?: BlockTag): Promise<{
         outpoints: OutPoint[];
         balanceSheet: RuneOutput[];
@@ -52,11 +53,15 @@ export declare class AlkanesRpc extends BaseRpc {
         txid: any;
         vout: any;
     }, blockTag?: BlockTag): Promise<any>;
+    traceblock({ block }: {
+        block: number | bigint;
+    }, blockTag?: BlockTag): Promise<any>;
     trace({ txid, vout }: {
         txid: string;
         vout: number;
     }, blockTag?: BlockTag): Promise<any>;
     simulate({ alkanes, transaction, height, block, txindex, target, inputs, vout, pointer, refundPointer, }: any, blockTag?: BlockTag): Promise<any>;
+    meta({ alkanes, transaction, height, block, txindex, target, inputs, vout, pointer, refundPointer, }: any, blockTag?: BlockTag): Promise<any>;
     runtime({ protocolTag }: any, blockTag?: BlockTag): Promise<{
         balances: RuneOutput[];
     }>;

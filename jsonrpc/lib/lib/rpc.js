@@ -37,6 +37,12 @@ const bytes_1 = require("./bytes");
 const addHexPrefix = (s) => (s.substr(0, 2) === "0x" ? s : "0x" + s);
 let id = 0;
 class AlkanesRpc extends base_rpc_1.BaseRpc {
+    async getbytecode({ block, tx }, blockTag = "latest") {
+        return await this._call({
+            method: "getbytecode",
+            input: invoke.encodeGetBytecodeRequest({ block, tx }),
+        }, blockTag);
+    }
     async protorunesbyaddress({ address, protocolTag }, blockTag = "latest") {
         const buffer = protowallet.encodeProtorunesWalletInput(address, protocolTag);
         const byteString = await this._call({
@@ -115,6 +121,15 @@ class AlkanesRpc extends base_rpc_1.BaseRpc {
             input: buffer,
         }, blockTag));
     }
+    async traceblock({ block }, blockTag = "latest") {
+        const buffer = invoke.encodeTraceBlockRequest({ block });
+        const byteString = await this._call({
+            method: "traceblock",
+            input: buffer,
+        }, blockTag);
+        const decoded = invoke.decodeTraceBlockResponse(byteString);
+        return decoded;
+    }
     async trace({ txid, vout }, blockTag = "latest") {
         const buffer = invoke.encodeTraceRequest({
             txid,
@@ -145,6 +160,26 @@ class AlkanesRpc extends base_rpc_1.BaseRpc {
             input: buffer,
         }, blockTag);
         const decoded = invoke.decodeSimulateResponse(byteString);
+        return decoded;
+    }
+    async meta({ alkanes, transaction, height, block, txindex, target, inputs, vout, pointer, refundPointer, }, blockTag = "latest") {
+        const buffer = invoke.encodeSimulateRequest({
+            alkanes,
+            transaction,
+            height,
+            txindex,
+            target,
+            block,
+            inputs,
+            vout,
+            pointer,
+            refundPointer,
+        });
+        const byteString = await this._call({
+            method: "meta",
+            input: buffer,
+        }, blockTag);
+        const decoded = invoke.decodeMetaResponse(byteString);
         return decoded;
     }
     async runtime({ protocolTag }, blockTag = "latest") {

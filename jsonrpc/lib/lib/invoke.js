@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatKey = formatKey;
 exports.toAlkaneTransfer = toAlkaneTransfer;
+exports.encodeGetBytecodeRequest = encodeGetBytecodeRequest;
 exports.fromCallType = fromCallType;
 exports.toAlkaneId = toAlkaneId;
 exports.toStorageSlot = toStorageSlot;
@@ -9,11 +10,14 @@ exports.toContext = toContext;
 exports.toResponse = toResponse;
 exports.toEvent = toEvent;
 exports.encodeTraceRequest = encodeTraceRequest;
+exports.encodeTraceBlockRequest = encodeTraceBlockRequest;
+exports.decodeTraceBlockResponse = decodeTraceBlockResponse;
 exports.decodeTraceResponse = decodeTraceResponse;
 exports.encodeSimulateRequest = encodeSimulateRequest;
 exports.decodeSimulateResponse = decodeSimulateResponse;
 exports.outpointResponseToObject = outpointResponseToObject;
 exports.decodeOutpointResponse = decodeOutpointResponse;
+exports.decodeMetaResponse = decodeMetaResponse;
 const bytes_1 = require("./bytes");
 const alkanes_1 = require("./proto/alkanes");
 const utils_1 = require("./utils");
@@ -46,6 +50,9 @@ function toAlkaneTransfer(v) {
         id: toAlkaneId(v.id),
         value: (0, bytes_1.fromUint128)(v.value),
     };
+}
+function encodeGetBytecodeRequest(v) {
+    return new alkanes_1.alkanes.AlkaneId(toAlkaneId(v)).serializeBinary();
 }
 function fromCallType(v) {
     switch (v) {
@@ -126,6 +133,24 @@ function encodeTraceRequest({ txid, vout, }) {
     return ("0x" +
         Buffer.from(new protorune_1.protorune.Outpoint(input).serializeBinary()).toString("hex"));
 }
+function encodeTraceBlockRequest({ block, }) {
+    const input = {
+        block: Number(block),
+    };
+    return ("0x" +
+        Buffer.from(new alkanes_1.alkanes.TraceBlockRequest(input).serializeBinary()).toString("hex"));
+}
+function decodeTraceBlockResponse(hex) {
+    return alkanes_1.alkanes.TraceBlockResponse.deserializeBinary(Buffer.from((0, utils_1.stripHexPrefix)(hex), "hex")).traces.map(({ outpoint, trace }) => {
+        return {
+            outpoint: {
+                txid: Buffer.from(outpoint.txid).toString("hex"),
+                vout: outpoint.vout,
+            },
+            trace: trace.events.map((v) => toEvent(v)),
+        };
+    });
+}
 function decodeTraceResponse(hex) {
     const resp = alkanes_1.alkanes.AlkanesTrace.deserializeBinary(Buffer.from((0, utils_1.stripHexPrefix)(hex), "hex"));
     return resp.toObject().events.map((v) => toEvent(v));
@@ -184,5 +209,18 @@ function outpointResponseToObject(v) {
 }
 function decodeOutpointResponse(result) {
     return outpointResponseToObject(((protorune_1.protorune.OutpointResponse.deserializeBinary(Buffer.from(result.substr(2), "hex")).toObject() || {}).balances || {}).entries || []);
+}
+function decodeMetaResponse(response) {
+    if (!response || response === "0x") {
+        return null;
+    }
+    const bytes = Buffer.from((0, utils_1.stripHexPrefix)(response), "hex");
+    try {
+        return JSON.parse(bytes.toString("utf8"));
+    }
+    catch (e) {
+        console.error("Failed to parse meta response as JSON:", e);
+        return null;
+    }
 }
 //# sourceMappingURL=invoke.js.map

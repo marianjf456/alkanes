@@ -61,6 +61,7 @@ export declare class AlkanesRpc extends BaseRpc {
         vout: number;
     }, blockTag?: BlockTag): Promise<any>;
     simulate({ alkanes, transaction, height, block, txindex, target, inputs, vout, pointer, refundPointer, }: any, blockTag?: BlockTag): Promise<any>;
+    meta({ alkanes, transaction, height, block, txindex, target, inputs, vout, pointer, refundPointer, }: any, blockTag?: BlockTag): Promise<any>;
     runtime({ protocolTag }: any, blockTag?: BlockTag): Promise<{
         balances: RuneOutput[];
     }>;

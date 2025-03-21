@@ -75,7 +75,7 @@ export declare function encodeTraceRequest({ txid, vout, }: {
     txid: string;
     vout: number;
 }): string;
-export declare function encodeTraceBlockRequest({ block }: {
+export declare function encodeTraceBlockRequest({ block, }: {
     block: bigint | number;
 }): string;
 export declare function decodeTraceBlockResponse(hex: string): any;
@@ -106,3 +106,4 @@ export type DecodedSimulateResponse = {
 export declare function decodeSimulateResponse(response: string): DecodedSimulateResponse;
 export declare function outpointResponseToObject(v: any[]): any;
 export declare function decodeOutpointResponse(result: any): any;
+export declare function decodeMetaResponse(response: string): any;
