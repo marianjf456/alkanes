@@ -32,7 +32,7 @@
     "prettier:assemblyscript": "prettier --write ./assembly/**/*.ts --plugin assemblyscript-prettier",
     "prettier:ts": "prettier --write ./src.ts/**/*.ts",
     "prettier": "npm-run-all prettier:ts",
-    "test": "NODE_NO_WARNINGS=1 ts-mocha --timeout 0 ./tests/**.spec.ts",
+    "test": "NODE_NO_WARNINGS=1 ts-mocha --timeout 0 ./tests/*.spec.ts",
     "inspect": "wasm-dis",
     "opt": "wasm-opt build/combined.wasm --multi-memory-lowering -n -o build/combined-out.wasm",
     "full-test-build": "npm-run-all build bundleup opt metadce"

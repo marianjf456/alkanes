@@ -246,16 +246,16 @@ export class AlkanesRpc extends BaseRpc {
     blockTag: BlockTag = "latest"
   ): Promise<any> {
     const buffer = invoke.encodeSimulateRequest({
-      alkanes,
-      transaction,
-      height,
-      txindex,
-      target,
-      block,
-      inputs,
-      vout,
-      pointer,
-      refundPointer,
+      alkanes: alkanes,
+      transaction: transaction,
+      height: height,
+      block: block,
+      inputs: inputs,
+      target: target,
+      txindex: txindex,
+      vout: vout,
+      pointer: pointer,
+      refundPointer: refundPointer,
     });
     const byteString = await this._call(
       {
