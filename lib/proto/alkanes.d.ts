@@ -39,6 +39,26 @@ export declare namespace alkanes {
         serializeBinary(): Uint8Array;
         static deserializeBinary(bytes: Uint8Array): uint128;
     }
+    class BytecodeRequest extends pb_1.Message {
+        #private;
+        constructor(data?: any[] | {
+            id?: AlkaneId;
+        });
+        get id(): AlkaneId;
+        set id(value: AlkaneId);
+        get has_id(): boolean;
+        static fromObject(data: {
+            id?: ReturnType<typeof AlkaneId.prototype.toObject>;
+        }): BytecodeRequest;
+        toObject(): {
+            id?: ReturnType<typeof AlkaneId.prototype.toObject>;
+        };
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): BytecodeRequest;
+        serializeBinary(): Uint8Array;
+        static deserializeBinary(bytes: Uint8Array): BytecodeRequest;
+    }
     class AlkaneId extends pb_1.Message {
         #private;
         constructor(data?: any[] | {
