@@ -105,6 +105,76 @@ export namespace alkanes {
             return uint128.deserialize(bytes);
         }
     }
+    export class BytecodeRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            id?: AlkaneId;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("id" in data && data.id != undefined) {
+                    this.id = data.id;
+                }
+            }
+        }
+        get id() {
+            return pb_1.Message.getWrapperField(this, AlkaneId, 1) as AlkaneId;
+        }
+        set id(value: AlkaneId) {
+            pb_1.Message.setWrapperField(this, 1, value);
+        }
+        get has_id() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        static fromObject(data: {
+            id?: ReturnType<typeof AlkaneId.prototype.toObject>;
+        }): BytecodeRequest {
+            const message = new BytecodeRequest({});
+            if (data.id != null) {
+                message.id = AlkaneId.fromObject(data.id);
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                id?: ReturnType<typeof AlkaneId.prototype.toObject>;
+            } = {};
+            if (this.id != null) {
+                data.id = this.id.toObject();
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_id)
+                writer.writeMessage(1, this.id, () => this.id.serialize(writer));
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): BytecodeRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new BytecodeRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.id, () => message.id = AlkaneId.deserialize(reader));
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): BytecodeRequest {
+            return BytecodeRequest.deserialize(bytes);
+        }
+    }
     export class AlkaneId extends pb_1.Message {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {

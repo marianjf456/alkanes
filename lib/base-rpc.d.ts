@@ -4,7 +4,10 @@ export declare class BaseRpc {
     baseUrl: string;
     memshrewUrl: string;
     blockTag: BlockTag;
-    constructor({ baseUrl, memshrewUrl, blockTag }: any);
+    headers: {
+        [key: string]: string;
+    };
+    constructor({ baseUrl, memshrewUrl, headers, blockTag }: any);
     _preview({ method, input }: {
         method: any;
         input: any;

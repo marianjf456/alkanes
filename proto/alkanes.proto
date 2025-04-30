@@ -5,6 +5,10 @@ message uint128 {
   uint64 hi = 2 [jstype = JS_STRING];
 }
 
+message BytecodeRequest {
+  AlkaneId id = 1;
+}
+
 message AlkaneId {
   uint128 block = 1;
   uint128 tx = 2;
