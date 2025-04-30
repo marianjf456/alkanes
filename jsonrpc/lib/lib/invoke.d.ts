@@ -1,4 +1,5 @@
 import { AlkaneTransfer, AlkaneId } from "./bytes";
+import { alkanes as alkanes_protobuf } from "./proto/alkanes";
 export declare function formatKey(v: any): string;
 export declare function toAlkaneTransfer(v: any): {
     id: {
@@ -7,7 +8,8 @@ export declare function toAlkaneTransfer(v: any): {
     };
     value: bigint;
 };
-export declare function encodeGetBytecodeRequest(v: any): Uint8Array;
+export declare function toBytecodeRequest({ block, tx }: any): alkanes_protobuf.BytecodeRequest;
+export declare function encodeGetBytecodeRequest(v: any): string;
 export declare function fromCallType(v: number): string;
 export declare function toAlkaneId(v: any): {
     block: any;

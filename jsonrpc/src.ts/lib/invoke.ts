@@ -7,7 +7,7 @@ import {
   encipher,
 } from "./bytes";
 import { alkanes as alkanes_protobuf } from "./proto/alkanes";
-import { stripHexPrefix } from "./utils";
+import { addHexPrefix, stripHexPrefix } from "./utils";
 import { protorune as protobuf } from "./proto/protorune";
 const { SimulateResponse, MessageContextParcel, AlkanesTrace } =
   alkanes_protobuf;
@@ -45,8 +45,21 @@ export function toAlkaneTransfer(v) {
   };
 }
 
+export function toBytecodeRequest({
+  block,
+  tx
+}: any): alkanes_protobuf.BytecodeRequest {
+  return new alkanes_protobuf.BytecodeRequest({
+    id: new alkanes_protobuf.AlkaneId({
+      block: toUint128(block),
+      tx: toUint128(tx),
+    })
+  });
+}
+
 export function encodeGetBytecodeRequest(v) {
-  return new alkanes_protobuf.AlkaneId(toAlkaneId(v)).serializeBinary();
+  const id = toBytecodeRequest(v);
+  return addHexPrefix(Buffer.from(id.serializeBinary()).toString('hex'));
 }
 
 export function fromCallType(v: number): string {

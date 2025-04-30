@@ -14,14 +14,19 @@ export class BaseRpc {
   public baseUrl: string;
   public memshrewUrl: string;
   public blockTag: BlockTag;
+  public headers: {
+    [key: string]: string
+  };
   constructor({
     baseUrl,
     memshrewUrl,
+    headers,
     blockTag
   }: any) {
     this.baseUrl = baseUrl || 'http://localhost:8080';
     this.memshrewUrl = memshrewUrl || baseUrl;
     this.blockTag = blockTag || 'latest';
+    this.headers = headers || {};
   }
   async _preview({
     method,
@@ -66,10 +71,7 @@ export class BaseRpc {
     if (blockTag === "pending") {
       return await this._preview({ method, input });
     }
-    const response = (await (await fetch(url.format({
-      ...url.parse(this.baseUrl),
-      pathname: '/'
-    }), {
+    const response = (await (await fetch(this.baseUrl, {
       method: 'POST',
       body: JSON.stringify({
         id: id++,
@@ -77,10 +79,10 @@ export class BaseRpc {
 	method: 'metashrew_view',
 	params: [ method, input, blockTag || this.blockTag ]
       }),
-      headers: {
+      headers: Object.assign({}, {
         'Content-Type': 'application/json',
 	'Accept': 'application/json'
-      }
+      }, this.headers)
     })).json());
     return addHexPrefix(response.result);
   }

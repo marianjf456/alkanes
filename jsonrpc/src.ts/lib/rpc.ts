@@ -5,7 +5,9 @@ import * as invoke from "./invoke";
 import {
   OutPoint,
   RuneOutput,
+  decodeAlkanesIdToOutpointResponse,
   decodeRunesResponse,
+  encodeAlkanesIdToOutpointInput,
   encodeBlockHeightInput,
   encodeProtorunesByHeightInput,
 } from "./outpoint";
@@ -197,6 +199,22 @@ export class AlkanesRpc extends BaseRpc {
     );
   }
 
+  async alkanes_id_to_outpoint(
+    { block, tx }: { block: bigint; tx: bigint },
+    blockTag: BlockTag = "latest"
+  ) {
+    const payload = encodeAlkanesIdToOutpointInput(block, tx);
+    const response = await this._call(
+      {
+        method: "alkanes_id_to_outpoint",
+        input: payload,
+      },
+      blockTag
+    );
+    const decodedResponse = decodeAlkanesIdToOutpointResponse(response);
+    return decodedResponse;
+  }
+
   async traceblock(
     { block }: { block: number | bigint },
     blockTag: BlockTag = "latest"
@@ -246,16 +264,16 @@ export class AlkanesRpc extends BaseRpc {
     blockTag: BlockTag = "latest"
   ): Promise<any> {
     const buffer = invoke.encodeSimulateRequest({
-      alkanes: alkanes,
-      transaction: transaction,
-      height: height,
-      block: block,
-      inputs: inputs,
-      target: target,
-      txindex: txindex,
-      vout: vout,
-      pointer: pointer,
-      refundPointer: refundPointer,
+      alkanes,
+      transaction,
+      height,
+      txindex,
+      target,
+      block,
+      inputs,
+      vout,
+      pointer,
+      refundPointer,
     });
     const byteString = await this._call(
       {
