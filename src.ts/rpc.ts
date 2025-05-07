@@ -5,7 +5,9 @@ import * as invoke from "./invoke";
 import {
   OutPoint,
   RuneOutput,
+  decodeAlkanesIdToOutpointResponse,
   decodeRunesResponse,
+  encodeAlkanesIdToOutpointInput,
   encodeBlockHeightInput,
   encodeProtorunesByHeightInput,
 } from "./outpoint";
@@ -195,6 +197,22 @@ export class AlkanesRpc extends BaseRpc {
         blockTag
       )
     );
+  }
+
+  async alkanes_id_to_outpoint(
+    { block, tx }: { block: bigint; tx: bigint },
+    blockTag: BlockTag = "latest"
+  ) {
+    const payload = encodeAlkanesIdToOutpointInput(block, tx);
+    const response = await this._call(
+      {
+        method: "alkanes_id_to_outpoint",
+        input: payload,
+      },
+      blockTag
+    );
+    const decodedResponse = decodeAlkanesIdToOutpointResponse(response);
+    return decodedResponse;
   }
 
   async traceblock(

@@ -538,6 +538,50 @@ export declare namespace alkanes {
         serializeBinary(): Uint8Array;
         static deserializeBinary(bytes: Uint8Array): AlkaneInventoryResponse;
     }
+    class AlkaneIdToOutpointRequest extends pb_1.Message {
+        #private;
+        constructor(data?: any[] | {
+            id?: AlkaneId;
+        });
+        get id(): AlkaneId;
+        set id(value: AlkaneId);
+        get has_id(): boolean;
+        static fromObject(data: {
+            id?: ReturnType<typeof AlkaneId.prototype.toObject>;
+        }): AlkaneIdToOutpointRequest;
+        toObject(): {
+            id?: ReturnType<typeof AlkaneId.prototype.toObject>;
+        };
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): AlkaneIdToOutpointRequest;
+        serializeBinary(): Uint8Array;
+        static deserializeBinary(bytes: Uint8Array): AlkaneIdToOutpointRequest;
+    }
+    class AlkaneIdToOutpointResponse extends pb_1.Message {
+        #private;
+        constructor(data?: any[] | {
+            txid?: Uint8Array;
+            vout?: number;
+        });
+        get txid(): Uint8Array;
+        set txid(value: Uint8Array);
+        get vout(): number;
+        set vout(value: number);
+        static fromObject(data: {
+            txid?: Uint8Array;
+            vout?: number;
+        }): AlkaneIdToOutpointResponse;
+        toObject(): {
+            txid?: Uint8Array;
+            vout?: number;
+        };
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): AlkaneIdToOutpointResponse;
+        serializeBinary(): Uint8Array;
+        static deserializeBinary(bytes: Uint8Array): AlkaneIdToOutpointResponse;
+    }
     class Outpoint extends pb_1.Message {
         #private;
         constructor(data?: any[] | {

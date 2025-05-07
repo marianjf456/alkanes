@@ -38,3 +38,15 @@ export declare function decodeRunesResponse(hex: string): {
 };
 export declare function encodeBlockHeightInput(height: number): string;
 export declare function encodeProtorunesByHeightInput(height: number, protocolTag: bigint): string;
+export declare function encodeAlkanesIdToOutpointInput(block: bigint, tx: bigint): string;
+export declare function decodeAlkanesIdToOutpointResponse(hex: string): {
+    outpoint: {
+        txid?: undefined;
+        vout?: undefined;
+    };
+} | {
+    outpoint: {
+        txid: string;
+        vout: number;
+    };
+};
