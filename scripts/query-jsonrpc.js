@@ -31,9 +31,9 @@ const alkanes = new AlkanesRpc({ baseUrl: "http://localhost:18879" });
 // console.log("Simulation result:", simulation);
 
 // Alkane id to outpoint
-const outpoint = await alkanes.alkanes_id_to_outpoint({
+const outpoint = await alkanes.alkanesidtooutpoint({
   block: 4,
   tx: 797,
 });
 
-console.log("alkanes_id_to_outpoint result:", outpoint);
+console.log("alkanesidtooutpoint result:", outpoint);

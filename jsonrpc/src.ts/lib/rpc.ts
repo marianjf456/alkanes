@@ -199,14 +199,14 @@ export class AlkanesRpc extends BaseRpc {
     );
   }
 
-  async alkanes_id_to_outpoint(
+  async alkanesidtooutpoint(
     { block, tx }: { block: bigint; tx: bigint },
     blockTag: BlockTag = "latest"
   ) {
     const payload = encodeAlkanesIdToOutpointInput(block, tx);
     const response = await this._call(
       {
-        method: "alkanes_id_to_outpoint",
+        method: "alkanesidtooutpoint",
         input: payload,
       },
       blockTag

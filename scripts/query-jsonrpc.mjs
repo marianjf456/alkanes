@@ -121,7 +121,7 @@ console.log('prodsimulation result:', prodsimulation);
 // ));
 
 
-// let t = await rpc.alkanes_id_to_outpoint({
+// let t = await rpc.alkanesidtooutpoint({
 //   block: 2n, tx: 16n
 // });
 

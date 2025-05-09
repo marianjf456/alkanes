@@ -199,7 +199,7 @@ export class AlkanesRpc extends BaseRpc {
     );
   }
 
-  async alkanes_id_to_outpoint(
+  async alkanesidtooutpoint(
     { block, tx }: { block: bigint; tx: bigint },
     blockTag: BlockTag = "latest"
   ) {
