@@ -206,7 +206,7 @@ export class AlkanesRpc extends BaseRpc {
     const payload = encodeAlkanesIdToOutpointInput(block, tx);
     const response = await this._call(
       {
-        method: "alkanesidtooutpoint",
+        method: "alkanes_id_to_outpoint",
         input: payload,
       },
       blockTag
