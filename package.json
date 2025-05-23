@@ -14,10 +14,13 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "start": "cross-env node jsonrpc/bin/jsonrpc",
-    "asbuild:debug": "asc assembly/indexer/index.ts --target debug --enable threads --config asconfig.json",
-    "asbuild:release": "asc assembly/indexer/index.ts --target release --config asconfig.json",
-    "asbuild:test": "asc assembly/index.ts --target release --config asconfig.json",
+    "asbuild:debug": "npx asc assembly/indexer/index.ts --target debug --enable threads --config asconfig.json",
+    "asbuild:release": "npx asc assembly/indexer/index.ts --target release --config asconfig.json",
+    "asbuild:test": "npx asc assembly/index.ts --target release --config asconfig.json",
+    "asbuild:custom_token:debug": "npx asc assembly/contracts/custom_token/index.ts --target debug --enable threads --config asconfig.json --outFile build/custom_token_debug.wasm",
+    "asbuild:custom_token:release": "npx asc assembly/contracts/custom_token/index.ts --target release --config asconfig.json --outFile build/custom_token_release.wasm",
     "bundleup": "wasm-merge build/debug.wasm alkanes runtime/target/wasm32-unknown-unknown/debug/alkanes_runtime.wasm alkanes_runtime -o build/combined.wasm -n -q -sec --enable-bulk-memory",
+    "bundleup:custom_token": "npx wasm-merge build/custom_token_release.wasm alkanes_token vendor/alkanes.wasm alkanes_runtime -o build/custom_token_combined.wasm -n -q -sec --enable-bulk-memory",
     "metadce": "wasm-metadce build/combined-out.wasm --graph-file metadce/graph.json -o build/combined-metadce.wasm --all-features > /dev/null",
     "build": "npm-run-all build:protoc build:ts",
     "build:ts": "tsc && tsc -p tsconfig.esm.json",
@@ -55,7 +58,8 @@
     "google-protobuf": "^3.21.4",
     "lodash": "^4.17.21",
     "micro-packed": "~0.6.2",
-    "postinstall": "^0.10.3"
+    "postinstall": "^0.10.3",
+    "as-bignum": "^0.2.20"
   },
   "devDependencies": {
     "@noble/curves": "^1.4.0",
